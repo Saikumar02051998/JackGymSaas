@@ -57,7 +57,7 @@
     </x-card>
 
     @if ($workout->exercises->isEmpty())
-        <x-card>
+        <x-card class="mt-6">
             <div class="p-8">
                 <x-empty-state icon="dumbbell" title="No exercises" message="Add exercises to this plan." />
             </div>
@@ -66,7 +66,7 @@
         @php
             $grouped = $workout->exercises->groupBy('day_of_week');
         @endphp
-        <div class="grid gap-6 lg:grid-cols-2">
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
             @foreach ($grouped as $day => $exercises)
                 <x-card :title="$day ?: 'General'" :padding="false">
                     <div class="divide-y divide-ink-100 dark:divide-ink-800">
@@ -103,7 +103,7 @@
     @endif
 
     @if ($workout->notes)
-        <x-card title="Notes">
+        <x-card title="Notes" class="mt-6">
             <p class="whitespace-pre-line text-sm leading-relaxed text-ink-600 dark:text-ink-300">{{ $workout->notes }}</p>
         </x-card>
     @endif

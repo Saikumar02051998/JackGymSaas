@@ -19,7 +19,7 @@
     </form>
 
     @if ($selectedClient)
-        <form method="POST" action="{{ route('payments.store') }}" x-data="paymentForm(@js($membershipMap))">
+        <form method="POST" action="{{ route('payments.store') }}" x-data="paymentForm(@js($membershipMap))" class="mt-6">
             @csrf
             <input type="hidden" name="client_id" value="{{ $selectedClient->id }}">
 
@@ -85,7 +85,7 @@
             </div>
         </form>
     @else
-        <x-card>
+        <x-card class="mt-6">
             <div class="p-6 text-center text-sm text-ink-400">Select a client above to continue recording the payment.</div>
         </x-card>
     @endif
