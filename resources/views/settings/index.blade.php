@@ -1,0 +1,98 @@
+<x-layouts.app
+    title="Settings"
+    description="Configure your gym details and payment gateway."
+    :breadcrumbs="[['label' => 'Settings']]">
+
+    @php
+        $reminderDays = array_map('intval', json_decode((string) gym_setting('membership_reminder_days', '[]'), true) ?: []);
+    @endphp
+
+    <div class="mx-auto max-w-3xl space-y-6">
+        <x-card title="Gym Information">
+            @if ($gym->logo)
+                <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="mb-4 size-16 rounded-xl object-cover">
+            @endif
+            <form method="POST" action="{{ route('settings.update') }}" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                @method('PUT')
+
+                <x-input label="Gym name" name="name" value="{{ old('name', $gym->name) }}" required />
+                <x-field label="Address" name="address">
+                    <textarea name="address" rows="2" class="input">{{ old('address', $gym->address) }}</textarea>
+                </x-field>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-input label="Phone" name="phone" value="{{ old('phone', $gym->phone) }}" />
+                    <x-input label="Email" name="email" type="email" value="{{ old('email', $gym->email) }}" />
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-input label="Website" name="website" type="url" value="{{ old('website', $gym->website) }}" />
+                    <x-input label="Timezone" name="timezone" value="{{ old('timezone', $gym->timezone) }}" help="e.g. Asia/Kolkata" />
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-input label="Currency code" name="currency" value="{{ old('currency', $gym->currency) }}" help="e.g. INR" />
+                    <x-input label="Currency symbol" name="currency_symbol" value="{{ old('currency_symbol', $gym->currency_symbol) }}" help="e.g. ₹" />
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-input label="Tax percent (%)" name="tax_percent" type="number" step="0.01" min="0" max="100" value="{{ old('tax_percent', $gym->tax_percent) }}" />
+                    <x-input label="Invoice prefix" name="invoice_prefix" value="{{ old('invoice_prefix', $gym->invoice_prefix) }}" help="e.g. INV" />
+                </div>
+
+                <x-field label="Logo" name="logo">
+                    <input type="file" name="logo" accept="image/jpg,image/jpeg,image/png,image/webp" class="input">
+                </x-field>
+
+                <div>
+                    <p class="mb-2 text-sm font-semibold text-ink-900 dark:text-white">Membership expiry reminders</p>
+                    <p class="mb-3 text-xs text-ink-400">Notify clients before their membership expires.</p>
+                    <div class="flex flex-wrap gap-4">
+                        @foreach ([7 => '7 days before', 15 => '15 days before', 30 => '30 days before'] as $days => $label)
+                            <label class="flex cursor-pointer items-center gap-2 text-sm text-ink-600 dark:text-ink-300">
+                                <input type="checkbox" name="membership_reminder_days[]" value="{{ $days }}"
+                                       class="size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400"
+                                       @checked(in_array($days, $reminderDays))>
+                                {{ $label }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="flex justify-end border-t border-ink-100 pt-4 dark:border-ink-800">
+                    <x-button type="submit">
+                        <x-icon name="save" class="size-4" />
+                        Save Settings
+                    </x-button>
+                </div>
+            </form>
+        </x-card>
+
+        @if (can_manage('settings.manage'))
+            <x-card title="Payment Gateway">
+                <div class="mb-4">
+                    @if ($razorpayConfigured)
+                        <x-badge color="green">Razorpay configured</x-badge>
+                    @else
+                        <x-badge color="amber">Razorpay not configured</x-badge>
+                    @endif
+                </div>
+                <form method="POST" action="{{ route('settings.payment-gateway') }}" class="space-y-4">
+                    @csrf
+
+                    <x-input label="Razorpay Key ID" name="key_id" value="{{ old('key_id') }}" autocomplete="off" help="Saved per gym; leave blank to keep current" />
+                    <x-input label="Razorpay Key Secret" name="key_secret" type="password" autocomplete="new-password" help="Leave blank to keep current" />
+                    <x-input label="Webhook Secret" name="webhook_secret" type="password" autocomplete="new-password" help="Leave blank to keep current" />
+
+                    <div class="flex justify-end border-t border-ink-100 pt-4 dark:border-ink-800">
+                        <x-button type="submit">
+                            <x-icon name="save" class="size-4" />
+                            Save Gateway
+                        </x-button>
+                    </div>
+                </form>
+            </x-card>
+        @endif
+    </div>
+</x-layouts.app>

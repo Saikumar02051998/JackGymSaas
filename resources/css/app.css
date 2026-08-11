@@ -1,0 +1,291 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif, 'Segoe UI', 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-gold-50: #fbf8ec;
+    --color-gold-100: #f6efd0;
+    --color-gold-200: #ecdfa3;
+    --color-gold-300: #e0c96e;
+    --color-gold-400: #debc40;
+    --color-gold-500: #d0a42c;
+    --color-gold-600: #b38221;
+    --color-gold-700: #8f611e;
+    --color-gold-800: #774f1f;
+    --color-gold-900: #66431f;
+
+    --color-surface: #ffffff;
+    --color-ink-50: #f7f7f8;
+    --color-ink-100: #eeeef0;
+    --color-ink-200: #d9d9de;
+    --color-ink-300: #b7b7c0;
+    --color-ink-400: #8f8f9c;
+    --color-ink-500: #72727f;
+    --color-ink-600: #5a5a66;
+    --color-ink-700: #494955;
+    --color-ink-800: #30303a;
+    --color-ink-900: #17171d;
+    --color-ink-950: #0d0d12;
+
+    --color-night-800: #17171e;
+    --color-night-900: #101016;
+    --color-night-950: #0b0b10;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none;
+    }
+
+    * {
+        @apply border-ink-200 dark:border-ink-800;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-ink-50 text-ink-900 antialiased dark:bg-night-950 dark:text-ink-100;
+        font-feature-settings: 'cv02', 'cv03', 'cv04';
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-semibold tracking-tight text-ink-900 dark:text-white;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+@utility btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-night-950 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+@layer components {
+    .card {
+        @apply rounded-2xl border border-ink-200 bg-white shadow-sm dark:border-ink-800 dark:bg-night-900;
+    }
+
+    .card-body {
+        @apply p-5 sm:p-6;
+    }
+
+    .btn-primary {
+        @apply btn bg-gold-400 text-ink-950 shadow-sm shadow-gold-400/30 hover:bg-gold-300;
+    }
+
+    .btn-dark {
+        @apply btn bg-ink-900 text-white hover:bg-ink-800 dark:bg-white dark:text-ink-900 dark:hover:bg-ink-100;
+    }
+
+    .btn-outline {
+        @apply btn border border-ink-300 bg-transparent text-ink-700 hover:bg-ink-100 hover:text-ink-900 dark:border-ink-700 dark:text-ink-200 dark:hover:bg-ink-800;
+    }
+
+    .btn-ghost {
+        @apply btn text-ink-600 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800;
+    }
+
+    .btn-danger {
+        @apply btn bg-red-500 text-white hover:bg-red-600;
+    }
+
+    .btn-success {
+        @apply btn bg-emerald-500 text-white hover:bg-emerald-600;
+    }
+
+    .btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    .btn-lg {
+        @apply px-6 py-3 text-base;
+    }
+
+    .input {
+        @apply w-full rounded-xl border border-ink-300 bg-white px-3.5 py-2.5 text-sm text-ink-900 shadow-sm transition-colors placeholder:text-ink-400 focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/30 dark:border-ink-700 dark:bg-night-900 dark:text-ink-100 dark:placeholder:text-ink-500 dark:focus:border-gold-400;
+    }
+
+    select.input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%238f8f9c' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m6 9 6 6 6-6'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.25rem;
+        padding-right: 2.5rem;
+    }
+
+    .dark select.input {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23b7b7c0' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m6 9 6 6 6-6'/%3e%3c/svg%3e");
+    }
+
+    .page-loader {
+        @apply pointer-events-none fixed inset-x-0 top-0 z-[100] h-1 opacity-0 transition-opacity duration-300;
+    }
+
+    .page-loader-bar {
+        @apply h-full w-0 bg-gradient-to-r from-gold-300 via-gold-500 to-gold-300;
+        transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .page-loader.active {
+        @apply opacity-100;
+    }
+
+    .page-loader.active .page-loader-bar {
+        width: 100%;
+    }
+
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-ink-700 dark:text-ink-200;
+    }
+
+    .badge-green {
+        @apply badge bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400;
+    }
+
+    .badge-red {
+        @apply badge bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400;
+    }
+
+    .badge-amber {
+        @apply badge bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400;
+    }
+
+    .badge-blue {
+        @apply badge bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400;
+    }
+
+    .badge-gray {
+        @apply badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300;
+    }
+
+    .badge-gold {
+        @apply badge bg-gold-50 text-gold-700 dark:bg-gold-500/10 dark:text-gold-400;
+    }
+
+    .badge-purple {
+        @apply badge bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400;
+    }
+
+    .table-wrap {
+        @apply w-full overflow-x-auto;
+    }
+
+    .table {
+        @apply w-full text-left text-sm;
+    }
+
+    .table thead th {
+        @apply border-b border-ink-200 bg-ink-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-500 dark:border-ink-800 dark:bg-night-800 dark:text-ink-400;
+    }
+
+    .table tbody td {
+        @apply border-b border-ink-100 px-4 py-3 align-middle dark:border-ink-800/60;
+    }
+
+    .table tbody tr {
+        @apply transition-colors hover:bg-ink-50/70 dark:hover:bg-ink-800/40;
+    }
+
+    .stat-value {
+        @apply text-2xl font-bold tracking-tight text-ink-900 dark:text-white;
+    }
+
+    .page-title {
+        @apply text-xl font-bold tracking-tight text-ink-900 dark:text-white sm:text-2xl;
+    }
+
+    .page-desc {
+        @apply mt-1 text-sm text-ink-500 dark:text-ink-400;
+    }
+
+    .divider {
+        @apply my-4 h-px w-full bg-ink-100 dark:bg-ink-800;
+    }
+}
+
+@layer utilities {
+    .sidebar-link {
+        @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-900 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-white;
+    }
+
+    .sidebar-link-active {
+        @apply bg-gold-400/15 text-gold-700 hover:bg-gold-400/20 hover:text-gold-700 dark:bg-gold-500/10 dark:text-gold-400 dark:hover:bg-gold-500/15 dark:hover:text-gold-400;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.25s ease-out;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .animate-slide-in-right {
+        animation: slideInRight 0.25s ease-out;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.2s ease-out;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
