@@ -30,7 +30,7 @@
     <x-card>
         <div class="flex flex-wrap items-center gap-4">
             <span class="avatar-lg">
-                <x-icon name="apple" class="size-7" />
+                <x-icon name="utensils" class="size-7" />
             </span>
             <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
@@ -86,7 +86,7 @@
     @if ($diet->meals->isEmpty())
         <x-card class="mt-6">
             <div class="p-8">
-                <x-empty-state icon="apple" title="No meals" message="Add food items to this diet plan." />
+                <x-empty-state icon="utensils" title="No meals" message="Add food items to this diet plan." />
             </div>
         </x-card>
     @else

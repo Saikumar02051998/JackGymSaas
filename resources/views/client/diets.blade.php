@@ -8,7 +8,7 @@
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="flex size-11 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                        <x-icon name="apple" class="size-6" />
+                        <x-icon name="utensils" class="size-6" />
                     </div>
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
@@ -94,6 +94,6 @@
             @endif
         </x-card>
     @empty
-        <x-empty-state icon="apple" title="No diet plans yet" message="Your nutritionist will assign diet plans that appear here." />
+        <x-empty-state icon="utensils" title="No diet plans yet" message="Your nutritionist will assign diet plans that appear here." />
     @endforelse
 </x-layouts.app>

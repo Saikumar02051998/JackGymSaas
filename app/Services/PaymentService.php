@@ -309,7 +309,7 @@ class PaymentService
 
         $invoice = Invoice::create([
             'gym_id' => $payment->gym_id,
-            'invoice_no' => $prefix . '-' . str_pad((string) Invoice::max('id') + 1, 6, '0', STR_PAD_LEFT),
+            'invoice_no' => $prefix . '-' . str_pad((string) ((int) Invoice::max('id') + 1), 6, '0', STR_PAD_LEFT),
             'client_id' => $payment->client_id,
             'membership_id' => $payment->membership_id,
             'payment_id' => $payment->id,

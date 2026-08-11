@@ -7,7 +7,7 @@
         <x-stat label="Total Check-ins" :value="$stats['check_ins']" icon="calendar-check" />
         <x-stat label="This Month" :value="$stats['this_month']" icon="trending-up" />
         <x-stat label="Active Workouts" :value="$stats['active_workouts']" icon="dumbbell" />
-        <x-stat label="Active Diets" :value="$stats['active_diets']" icon="apple" />
+        <x-stat label="Active Diets" :value="$stats['active_diets']" icon="utensils" />
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">

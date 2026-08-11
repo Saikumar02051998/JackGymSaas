@@ -34,6 +34,14 @@
                     </div>
                 </x-card>
 
+                <x-card title="Account Access">
+                    <p class="mb-4 text-sm text-ink-400">The client logs in with their email or phone and this password. Leave blank to keep the current password.</p>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <x-input label="New password" type="password" name="password" autocomplete="new-password" placeholder="Leave blank to keep current" />
+                        <x-input label="Confirm new password" type="password" name="password_confirmation" autocomplete="new-password" placeholder="Repeat new password" />
+                    </div>
+                </x-card>
+
                 <x-card title="Health Profile">
                     <div class="grid gap-4 sm:grid-cols-3">
                         <x-input label="Height (cm)" type="number" step="0.1" name="height" value="{{ old('height', $client->healthProfile?->height) }}" />

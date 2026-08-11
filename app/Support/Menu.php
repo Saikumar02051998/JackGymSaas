@@ -31,7 +31,7 @@ class Menu
             ],
             'memberships' => [
                 ['route' => 'memberships.index', 'label' => 'Memberships', 'icon' => 'card', 'permission' => 'memberships.view'],
-                ['route' => 'memberships.plans.index', 'label' => 'Membership Plans', 'icon' => 'ticket', 'permission' => 'memberships.manage'],
+                ['route' => 'memberships.plans.index', 'label' => 'Membership Plans', 'icon' => 'identification', 'permission' => 'memberships.manage'],
                 ['route' => 'memberships.expiring', 'label' => 'Expiring Soon', 'icon' => 'clock', 'permission' => 'memberships.view'],
             ],
             'attendance' => [
@@ -56,7 +56,7 @@ class Menu
             ],
             'fitness' => [
                 ['route' => 'workouts.index', 'label' => 'Workout Plans', 'icon' => 'dumbbell', 'permission' => 'workouts.manage'],
-                ['route' => 'diets.index', 'label' => 'Diet Plans', 'icon' => 'apple', 'permission' => 'diets.manage'],
+                ['route' => 'diets.index', 'label' => 'Diet Plans', 'icon' => 'utensils', 'permission' => 'diets.manage'],
                 ['route' => 'progress.index', 'label' => 'Progress Tracking', 'icon' => 'trending-up', 'permission' => 'progress.view'],
                 ['route' => 'pt.index', 'label' => 'PT Sessions', 'icon' => 'bolt', 'permission' => 'pt.view'],
             ],
@@ -105,7 +105,7 @@ class Menu
             ],
             'fitness' => [
                 ['route' => 'client.workouts', 'label' => 'Workout', 'icon' => 'dumbbell'],
-                ['route' => 'client.diets', 'label' => 'Diet', 'icon' => 'apple'],
+                ['route' => 'client.diets', 'label' => 'Diet', 'icon' => 'utensils'],
                 ['route' => 'client.progress', 'label' => 'Progress', 'icon' => 'trending-up'],
             ],
             'activity' => [

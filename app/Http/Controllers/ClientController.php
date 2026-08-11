@@ -8,6 +8,7 @@ use App\Models\StaffProfile;
 use App\Services\ClientService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
@@ -109,6 +110,8 @@ class ClientController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $data['password'] = Str::random(8);
+
         $client = $this->clients->create($data, current_gym()->id, $data['assigned_trainer_id'] ?? null);
 
         if ($request->boolean('start_trial')) {
@@ -147,7 +150,9 @@ class ClientController extends Controller
             }
         }
 
-        return redirect()->route('clients.show', $client)->with('success', 'Client created successfully.');
+        return redirect()->route('clients.show', $client)
+            ->with('success', 'Client created successfully.')
+            ->with('client_password', $data['password']);
     }
 
     public function show(Client $client)
@@ -221,6 +226,7 @@ class ClientController extends Controller
             'allergies' => ['nullable', 'string'],
             'important_notes' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
         $this->clients->update($client, $data);

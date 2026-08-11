@@ -22,7 +22,7 @@
     @if ($plans->isEmpty())
         <x-card>
             <div class="p-8">
-                <x-empty-state icon="apple" title="No diet plans" message="Create diet plans to get started." @if (can_manage('diets.manage')) action="{{ route('diets.create') }}" action-label="New Diet Plan" @endif />
+                <x-empty-state icon="utensils" title="No diet plans" message="Create diet plans to get started." @if (can_manage('diets.manage')) action="{{ route('diets.create') }}" action-label="New Diet Plan" @endif />
             </div>
         </x-card>
     @else

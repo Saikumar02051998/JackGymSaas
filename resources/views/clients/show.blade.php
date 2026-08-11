@@ -24,6 +24,69 @@
         @endif
     </x-slot>
 
+    @if (session('client_password'))
+        @push('head')
+            <style>
+                @media print {
+                    .no-print { display: none !important; }
+                    body { background: #fff !important; }
+                    aside, header, footer, #page-loader { display: none !important; }
+                    main > * { display: none !important; }
+                    main > .welcome-card { display: block !important; margin: 0 !important; border-width: 1px !important; box-shadow: none !important; }
+                }
+            </style>
+        @endpush
+
+        <div class="welcome-card mb-6 rounded-2xl border-2 border-gold-400/60 bg-gold-400/10 p-6" x-data="{ show: true }" x-show="show">
+            @php
+                $credential = $client->user?->email ?? $client->phone;
+                $loginUrl = rtrim(route('login'), '/');
+            @endphp
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-ink-950">
+                        <x-icon name="identification" class="size-5" />
+                    </span>
+                    <div>
+                        <h2 class="text-lg font-bold text-ink-900 dark:text-white">Welcome card — client login credentials</h2>
+                        <p class="mt-0.5 text-sm text-ink-500 dark:text-ink-400">Share these details with the client so they can log in to their portal.</p>
+                    </div>
+                </div>
+                <div class="no-print flex items-center gap-2">
+                    <button type="button"
+                            x-data="{ copied: false }"
+                            x-on:click="navigator.clipboard.writeText(@js('Login URL: ' . $loginUrl . PHP_EOL . 'Username: ' . $credential . PHP_EOL . 'Password: ' . session('client_password'))).then(() => { copied = true; setTimeout(() => copied = false, 2000); })"
+                            class="btn-primary btn-sm">
+                        <x-icon name="check" class="size-4" x-show="copied" x-cloak />
+                        <x-icon name="document-text" class="size-4" x-show="!copied" />
+                        <span x-text="copied ? 'Copied!' : 'Copy all'"></span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="btn-outline btn-sm">
+                        <x-icon name="print" class="size-4" />
+                        Print
+                    </button>
+                    <button type="button" @click="show = false" class="btn-ghost btn-sm" title="Dismiss">
+                        <x-icon name="x" class="size-4" />
+                    </button>
+                </div>
+            </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                <div class="rounded-xl border border-gold-400/40 bg-white p-4 dark:bg-ink-900">
+                    <p class="text-xs font-bold uppercase tracking-wider text-ink-400">Login URL</p>
+                    <p class="mt-1 truncate font-mono text-sm font-semibold text-ink-900 dark:text-white">{{ $loginUrl }}</p>
+                </div>
+                <div class="rounded-xl border border-gold-400/40 bg-white p-4 dark:bg-ink-900">
+                    <p class="text-xs font-bold uppercase tracking-wider text-ink-400">Username (email or phone)</p>
+                    <p class="mt-1 truncate font-mono text-sm font-semibold text-ink-900 dark:text-white">{{ $credential }}</p>
+                </div>
+                <div class="rounded-xl border border-gold-400/40 bg-white p-4 dark:bg-ink-900">
+                    <p class="text-xs font-bold uppercase tracking-wider text-ink-400">Password</p>
+                    <p class="mt-1 font-mono text-sm font-bold text-gold-600 dark:text-gold-400">{{ session('client_password') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="card">
         <div class="flex flex-col gap-6 p-6 sm:flex-row sm:items-center">
             <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-300 to-gold-500 text-2xl font-extrabold text-ink-950">

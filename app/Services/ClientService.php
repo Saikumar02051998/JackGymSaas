@@ -108,6 +108,10 @@ class ClientService
                 $userData['email'] = $data['email'];
             }
 
+            if (! empty($data['password'])) {
+                $userData['password'] = $data['password'];
+            }
+
             $client->user->update($userData);
 
             $client->update([

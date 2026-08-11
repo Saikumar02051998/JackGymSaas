@@ -116,7 +116,11 @@ if (! function_exists('audit_log')) {
 if (! function_exists('next_sequence')) {
     function next_sequence(string $model, string $column, string $prefix): string
     {
-        $last = $model::withTrashed()->orderByDesc('id')->value($column);
+        $query = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($model), true)
+            ? $model::withTrashed()
+            : $model::query();
+
+        $last = $query->orderByDesc('id')->value($column);
         $number = $last ? ((int) preg_replace('/\D/', '', $last) + 1) : 1;
 
         return $prefix . str_pad((string) $number, 6, '0', STR_PAD_LEFT);
