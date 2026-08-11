@@ -131,11 +131,19 @@ document.addEventListener('alpine:init', () => {
 
 Alpine.start();
 
-// Page loading indicator: shows a top progress bar during page redirects.
+// Page loading indicator: full-screen overlay shown while a page loads and during redirects.
 (() => {
     const KEY = 'page-loading';
 
-    const markNavigation = () => sessionStorage.setItem(KEY, '1');
+    const loader = document.getElementById('page-loader');
+    if (!loader) return;
+
+    const show = () => loader.classList.remove('hidden');
+
+    const markNavigation = () => {
+        sessionStorage.setItem(KEY, '1');
+        show();
+    };
 
     document.addEventListener('click', (e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0 || e.defaultPrevented) return;
@@ -146,7 +154,7 @@ Alpine.start();
         const href = anchor.getAttribute('href');
         if (!href || href.startsWith('#') || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
         if (href.startsWith('http') && ! href.includes(window.location.hostname)) return;
-        if ((anchor.hasAttribute('x-on:click') || anchor.hasAttribute('@click'))) return;
+        if (anchor.hasAttribute('x-on:click') || anchor.hasAttribute('@click')) return;
 
         markNavigation();
     });
@@ -157,23 +165,21 @@ Alpine.start();
         }
     });
 
-    const loader = document.getElementById('page-loader');
-    if (loader && sessionStorage.getItem(KEY)) {
+    const start = performance.now();
+    const wasRedirect = sessionStorage.getItem(KEY);
+    if (wasRedirect) {
         sessionStorage.removeItem(KEY);
+    }
 
-        const start = performance.now();
-        loader.classList.add('active');
+    const finish = () => {
+        const wait = Math.max(0, (wasRedirect ? 350 : 500) - (performance.now() - start));
+        setTimeout(() => loader.classList.add('hidden'), wait);
+    };
 
-        const finish = () => {
-            const remaining = 400 - (performance.now() - start);
-            setTimeout(() => loader.classList.remove('active'), Math.max(0, remaining));
-        };
-
-        if (document.readyState === 'complete') {
-            finish();
-        } else {
-            window.addEventListener('load', finish);
-            setTimeout(finish, 2500);
-        }
+    if (document.readyState === 'complete') {
+        finish();
+    } else {
+        window.addEventListener('load', finish);
+        setTimeout(finish, 2500);
     }
 })();

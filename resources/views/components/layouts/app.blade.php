@@ -25,7 +25,11 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
 <body x-data="{ sidebarOpen: false, mobileOpen: false, profileOpen: false }" x-init="$store.theme.init()">
 
     <div id="page-loader" aria-hidden="true">
-        <div class="page-loader-bar"></div>
+        <div class="loader-dots" role="status" aria-label="Loading">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
 
     <x-toast-container />
