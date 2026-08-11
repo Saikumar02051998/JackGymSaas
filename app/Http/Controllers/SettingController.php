@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class SettingController extends Controller
 {
@@ -43,7 +44,7 @@ class SettingController extends Controller
             $logo = $data['logo']->store('gym', 'public');
         }
 
-        $gym->update(array_merge($data, [
+        $gym->update(array_merge(Arr::except($data, ['membership_reminder_days']), [
             'logo' => $logo,
             'tax_percent' => $data['tax_percent'] ?? $gym->tax_percent,
             'invoice_prefix' => $data['invoice_prefix'] ?? $gym->invoice_prefix,
