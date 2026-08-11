@@ -25,7 +25,6 @@ class Menu
             ],
             'clients' => [
                 ['route' => 'clients.index', 'label' => 'All Clients', 'icon' => 'users', 'permission' => 'clients.view'],
-                ['route' => 'clients.create', 'label' => 'Add Client', 'icon' => 'user-plus', 'permission' => 'clients.create'],
                 ['url' => route('clients.index', ['status' => 'active']), 'label' => 'Active Members', 'icon' => 'check-badge', 'permission' => 'clients.view'],
                 ['url' => route('clients.index', ['status' => 'expired']), 'label' => 'Expired Members', 'icon' => 'clock', 'permission' => 'clients.view'],
                 ['route' => 'memberships.trials', 'label' => 'Trial Members', 'icon' => 'gift', 'permission' => 'clients.view'],
@@ -47,7 +46,6 @@ class Menu
             ],
             'crm' => [
                 ['route' => 'leads.index', 'label' => 'Leads', 'icon' => 'funnel', 'permission' => 'leads.view'],
-                ['route' => 'memberships.trials', 'label' => 'Trial Members', 'icon' => 'gift', 'permission' => 'leads.view'],
                 ['route' => 'followups.index', 'label' => 'Follow-ups', 'icon' => 'chat', 'permission' => 'followups.view'],
             ],
             'finance' => [

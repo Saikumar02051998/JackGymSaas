@@ -33,22 +33,48 @@
         <nav class="flex-1 space-y-5 overflow-y-auto px-4 py-5">
             @foreach ($menu as $group => $items)
                 @php
-                    $hasActiveUrl = collect($items)->contains(fn ($i) => isset($i['url']) && request()->fullUrlIs($i['url']));
+                    $routeName = request()->route()?->getName() ?? '';
+                    $bestIndex = null;
+                    $bestScore = 0;
+
+                    foreach ($items as $index => $item) {
+                        $score = 0;
+
+                        if (isset($item['url'])) {
+                            if (request()->fullUrlIs($item['url'])) {
+                                $score = 1000;
+                            }
+                        } else {
+                            $r = $item['route'];
+
+                            if ($routeName === $r) {
+                                $score = 100;
+                            } elseif (str_starts_with($routeName, $r . '.')) {
+                                $score = 80;
+                            } else {
+                                $pos = strrpos($r, '.');
+                                $module = $pos === false ? $r : substr($r, 0, $pos);
+                                if ($routeName === $module || str_starts_with($routeName, $module . '.')) {
+                                    $score = 50 + (substr_count($module, '.') + 1) * 10;
+                                }
+                            }
+                        }
+
+                        if ($score > $bestScore) {
+                            $bestScore = $score;
+                            $bestIndex = $index;
+                        }
+                    }
                 @endphp
                 <div>
                     <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-400">{{ $group }}</p>
                     <ul class="space-y-0.5">
-                        @foreach ($items as $item)
-                            @php
-                                $isActive = isset($item['url'])
-                                    ? request()->fullUrlIs($item['url'])
-                                    : (request()->routeIs($item['route'] . '*') && ! $hasActiveUrl);
-                            @endphp
+                        @foreach ($items as $index => $item)
                             <li>
                                 <a href="{{ isset($item['url']) ? $item['url'] : route($item['route']) }}"
                                    @class([
                                        'sidebar-link',
-                                       'sidebar-link-active' => $isActive,
+                                       'sidebar-link-active' => $index === $bestIndex && $bestScore > 0,
                                    ])
                                    @click="mobileOpen = false">
                                     <x-icon :name="$item['icon']" class="size-5 shrink-0" />
