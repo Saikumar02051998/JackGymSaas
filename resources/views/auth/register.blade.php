@@ -1,4 +1,4 @@
-<x-layouts.guest title="Login">
+<x-layouts.guest title="Create Your Gym">
     @php $gym = current_gym(); @endphp
     <div class="flex min-h-screen">
         <div class="relative hidden w-1/2 overflow-hidden bg-ink-950 lg:block">
@@ -24,15 +24,15 @@
 
                 <div class="max-w-md">
                     <h1 class="text-4xl font-extrabold leading-tight tracking-tight text-white">
-                        Train harder.<br>
-                        <span class="bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">Grow faster.</span>
+                        Launch your<br>
+                        <span class="bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">own gym.</span>
                     </h1>
                     <p class="mt-4 text-sm leading-relaxed text-ink-300">
-                        A complete management platform for modern gyms — memberships, attendance, payments,
+                        Set up your gym in minutes — memberships, attendance, payments,
                         coaching and financials in one premium dashboard.
                     </p>
                     <div class="mt-8 space-y-3">
-                        @foreach (['Membership & renewal management', 'Attendance with secure check-in', 'Razorpay-powered payments', 'Workout, diet & progress tracking'] as $feature)
+                        @foreach (['Free gym setup & provisioning', 'Membership & renewal management', 'Attendance with secure check-in', 'Razorpay-powered payments'] as $feature)
                             <div class="flex items-center gap-3 text-sm text-ink-200">
                                 <span class="flex size-5 items-center justify-center rounded-full bg-gold-400/20 text-gold-400">
                                     <x-icon name="check" class="size-3" />
@@ -66,8 +66,8 @@
                 </div>
 
                 <div class="animate-slide-up">
-                    <h2 class="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">Welcome back</h2>
-                    <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">Sign in to access your dashboard</p>
+                    <h2 class="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">Create your gym account</h2>
+                    <p class="mt-1 text-sm text-ink-500 dark:text-ink-400">Set up your gym management workspace in under a minute</p>
                 </div>
 
                 @if (session('status'))
@@ -76,18 +76,53 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}" class="card mt-8 animate-slide-up">
+                <form method="POST" action="{{ route('register') }}" class="card mt-8 animate-slide-up">
                     @csrf
                     <div class="card-body space-y-5">
                         <div>
-                            <label for="email" class="label">Email or Phone</label>
+                            <label for="gym_name" class="label">Gym name</label>
+                            <div class="relative">
+                                <x-icon name="building" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
+                                <input type="text" id="gym_name" name="gym_name" value="{{ old('gym_name') }}"
+                                       class="input !pl-10" placeholder="e.g. Fitness Hub Gym" autofocus required>
+                            </div>
+                            @error('gym_name')
+                                <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="name" class="label">Your name</label>
+                            <div class="relative">
+                                <x-icon name="user" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
+                                <input type="text" id="name" name="name" value="{{ old('name') }}"
+                                       class="input !pl-10" placeholder="Owner's full name" required>
+                            </div>
+                            @error('name')
+                                <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="email" class="label">Email</label>
                             <div class="relative">
                                 <x-icon name="mail" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
-                                <input type="text" id="email" name="email" value="{{ old('email') }}"
-                                       class="input !pl-10" placeholder="owner@jackgym.test or phone number"
-                                       autocomplete="username" autofocus required>
+                                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                                       class="input !pl-10" placeholder="you@example.com" autocomplete="username" required>
                             </div>
                             @error('email')
+                                <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="phone" class="label">Phone <span class="font-normal text-ink-400">(optional)</span></label>
+                            <div class="relative">
+                                <x-icon name="phone" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
+                                <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
+                                       class="input !pl-10" placeholder="+91 90000 00000">
+                            </div>
+                            @error('phone')
                                 <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -97,23 +132,24 @@
                             <div class="relative">
                                 <x-icon name="lock" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
                                 <input type="password" id="password" name="password"
-                                       class="input !pl-10" placeholder="••••••••" autocomplete="current-password" required>
+                                       class="input !pl-10" placeholder="••••••••" autocomplete="new-password" required>
                             </div>
                             @error('password')
                                 <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center gap-2 text-sm text-ink-600 dark:text-ink-300">
-                                <input type="checkbox" name="remember" class="size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400" {{ old('remember') ? 'checked' : '' }}>
-                                Remember me
-                            </label>
-                            <a href="{{ route('password.request') }}" class="text-sm font-medium text-gold-600 hover:text-gold-500">Forgot password?</a>
+                        <div>
+                            <label for="password_confirmation" class="label">Confirm password</label>
+                            <div class="relative">
+                                <x-icon name="lock" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
+                                <input type="password" id="password_confirmation" name="password_confirmation"
+                                       class="input !pl-10" placeholder="••••••••" autocomplete="new-password" required>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn-primary w-full py-3">
-                            Sign in
+                            Create gym account
                             <x-icon name="arrow-left" class="size-4 rotate-180" />
                         </button>
                     </div>
@@ -121,12 +157,8 @@
 
                 <div class="mt-6 text-center">
                     <p class="text-xs text-ink-400">
-                        @if (is_saas())
-                            Not a member yet?
-                            <a href="{{ route('register') }}" class="font-semibold text-gold-600 hover:text-gold-500">Create your gym</a>
-                        @else
-                            Not a member yet? <a href="{{ route('home') }}" class="font-semibold text-gold-600 hover:text-gold-500">Visit our website</a>
-                        @endif
+                        Already have an account?
+                        <a href="{{ route('login') }}" class="font-semibold text-gold-600 hover:text-gold-500">Sign in</a>
                     </p>
                 </div>
             </div>

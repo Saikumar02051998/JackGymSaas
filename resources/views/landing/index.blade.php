@@ -15,6 +15,9 @@
                     </div>
                 </a>
                 <div class="flex items-center gap-3">
+                    @if (is_saas())
+                        <a href="{{ route('register') }}" class="btn-outline border-white/20 text-white hover:border-gold-400 hover:text-gold-400">Create your gym</a>
+                    @endif
                     <a href="{{ route('login') }}" class="btn-outline border-white/20 text-white hover:border-gold-400 hover:text-gold-400">Sign in</a>
                     <a href="{{ $gym?->phone ? 'tel:' . $gym->phone : '#plans' }}" class="btn-primary hidden sm:inline-flex">{{ $gym?->phone ?? 'View Plans' }}</a>
                 </div>

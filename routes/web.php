@@ -50,6 +50,11 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 
+    if (is_saas()) {
+        Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+        Route::post('/register', [AuthController::class, 'register']);
+    }
+
     Route::get('/forgot-password', [PasswordController::class, 'showForgot'])->name('password.request');
     Route::post('/forgot-password', [PasswordController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [PasswordController::class, 'showReset'])->name('password.reset');

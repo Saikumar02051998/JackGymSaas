@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\GymService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -18,6 +19,47 @@ class AuthController extends Controller
         }
 
         return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        if (! is_saas()) {
+            abort(404);
+        }
+
+        if (Auth::check()) {
+            return redirect()->intended(Auth::user()->homeRoute());
+        }
+
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        if (! is_saas()) {
+            abort(404);
+        }
+
+        $data = $request->validate([
+            'gym_name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $gym = app(GymService::class)->create($data);
+
+        $user = User::where('email', $data['email'])->first();
+
+        audit_log('auth.register', 'auth', $user->id, "Gym registered ({$gym->name}) by {$user->name}");
+
+        Auth::login($user, true);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended($user->homeRoute())
+            ->with('success', 'Welcome to ' . $gym->name . '! Your gym account is ready.');
     }
 
     public function login(Request $request)

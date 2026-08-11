@@ -72,6 +72,13 @@ if (! function_exists('money')) {
     }
 }
 
+if (! function_exists('is_saas')) {
+    function is_saas(): bool
+    {
+        return config('app.project_mode', 'handover') === 'saas';
+    }
+}
+
 if (! function_exists('can_manage')) {
     function can_manage(string $permission): bool
     {
