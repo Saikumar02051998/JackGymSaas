@@ -1,5 +1,7 @@
 @props(['menu' => []])
 
+@php $gym = current_gym(); @endphp
+
 <div x-show="mobileOpen" x-cloak
      class="fixed inset-0 z-50 lg:hidden"
      x-transition:enter="transition ease-out duration-200"
@@ -20,10 +22,14 @@
            @click.stop>
         <div class="flex h-16 items-center justify-between border-b border-ink-100 px-5 dark:border-ink-800">
             <div class="flex items-center gap-2.5">
-                <div class="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-gold-300 to-gold-500 text-sm font-extrabold text-ink-950">
-                    {{ substr(config('app.name'), 0, 1) }}
-                </div>
-                <p class="text-sm font-bold text-ink-900 dark:text-white">{{ config('app.name') }}</p>
+                @if ($gym?->logo)
+                    <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-8 shrink-0 rounded-lg object-cover">
+                @else
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold-300 to-gold-500 text-sm font-extrabold text-ink-950">
+                        {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+                    </div>
+                @endif
+                <p class="truncate text-sm font-bold text-ink-900 dark:text-white">{{ $gym?->name ?? config('app.name') }}</p>
             </div>
             <button @click="mobileOpen = false" class="rounded-lg p-2 text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800">
                 <x-icon name="x" class="size-5" />

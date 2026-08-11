@@ -1,6 +1,18 @@
 @props(['unreadCount' => 0, 'notifications' => []])
 
+@php $gym = current_gym(); @endphp
+
 <header class="sticky top-0 z-30 hidden h-16 items-center gap-3 border-b border-ink-200 bg-white/80 px-4 backdrop-blur-lg dark:border-ink-800 dark:bg-night-900/80 sm:px-6 lg:flex">
+    <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-2.5">
+        @if ($gym?->logo)
+            <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-9 shrink-0 rounded-xl object-cover">
+        @else
+            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-500 text-sm font-extrabold text-ink-950 shadow-sm shadow-gold-400/40">
+                {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+            </div>
+        @endif
+        <p class="truncate text-sm font-bold tracking-tight text-ink-900 dark:text-white">{{ $gym?->name ?? config('app.name') }}</p>
+    </a>
     <div class="flex items-center gap-1.5 ml-auto">
         <button @click="$store.theme.toggle()"
                 class="rounded-lg p-2 text-ink-500 transition-colors hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800"

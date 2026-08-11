@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
-use App\Models\Gym;
 use App\Models\MembershipPlan;
 use Illuminate\Http\Request;
 
@@ -15,7 +14,7 @@ class LandingController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $gym = Gym::where('slug', 'jack-gym')->first() ?? current_gym();
+        $gym = current_gym();
 
         $plans = MembershipPlan::where('gym_id', $gym?->id)
             ->where('status', 'active')

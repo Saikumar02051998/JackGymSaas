@@ -4,6 +4,7 @@
 use App\Support\Menu;
 $menu = Menu::items();
 $user = auth()->user();
+$gym = current_gym();
 $currentRoute = request()->route()?->getName() ?? '';
 $unreadCount = auth()->user()->unreadNotifications()->count();
 $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
@@ -15,7 +16,7 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ? $title . ' | ' : '' }}{{ config('app.name') }}</title>
+    <title>{{ $title ? $title . ' | ' : '' }}{{ $gym?->name ?? config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -96,7 +97,7 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
             </main>
 
             <footer class="border-t border-ink-200 px-6 py-4 text-center text-xs text-ink-400 dark:border-ink-800">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved. &middot; Premium Gym Management
+                &copy; {{ date('Y') }} {{ $gym?->name ?? config('app.name') }}. All rights reserved. &middot; Premium Gym Management
             </footer>
         </div>
     </div>
