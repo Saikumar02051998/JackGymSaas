@@ -84,7 +84,7 @@
     </x-card>
 
     @if ($diet->meals->isEmpty())
-        <x-card>
+        <x-card class="mt-6">
             <div class="p-8">
                 <x-empty-state icon="apple" title="No meals" message="Add food items to this diet plan." />
             </div>
@@ -93,7 +93,7 @@
         @php
             $grouped = $diet->meals->groupBy('meal');
         @endphp
-        <div class="grid gap-6 lg:grid-cols-2">
+        <div class="mt-6 grid gap-6 lg:grid-cols-2">
             @foreach ($grouped as $mealName => $meals)
                 <x-card :title="$mealName ?: 'General'" :padding="false">
                     <div class="divide-y divide-ink-100 dark:divide-ink-800">
@@ -130,7 +130,7 @@
     @endif
 
     @if ($diet->notes)
-        <x-card title="Notes">
+        <x-card title="Notes" class="mt-6">
             <p class="whitespace-pre-line text-sm leading-relaxed text-ink-600 dark:text-ink-300">{{ $diet->notes }}</p>
         </x-card>
     @endif
