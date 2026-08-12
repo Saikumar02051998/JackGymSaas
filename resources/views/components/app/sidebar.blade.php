@@ -41,7 +41,9 @@
                         } else {
                             $pos = strrpos($r, '.');
                             $module = $pos === false ? $r : substr($r, 0, $pos);
-                            if ($routeName === $module || str_starts_with($routeName, $module . '.')) {
+                            $routePos = strrpos($routeName, '.');
+                            $routeModule = $routePos === false ? $routeName : substr($routeName, 0, $routePos);
+                            if ($module === $routeModule) {
                                 $score = 50 + (substr_count($module, '.') + 1) * 10;
                             }
                         }

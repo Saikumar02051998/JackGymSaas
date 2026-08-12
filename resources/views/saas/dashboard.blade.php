@@ -12,7 +12,7 @@
         <x-stat label="Expired / Suspended" :value="$stats['expired']" icon="clock" />
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
         <x-card title="Subscriptions Expiring Soon">
             @if ($expiringSoon->isEmpty())
                 <p class="py-6 text-center text-sm text-ink-400">No subscriptions expiring in the next 15 days.</p>

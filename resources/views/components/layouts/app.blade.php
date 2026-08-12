@@ -52,7 +52,7 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
             <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
                 @if ($breadcrumbs)
                     <nav class="mb-4 flex items-center gap-1.5 text-xs text-ink-400">
-                        <a href="{{ route('dashboard') }}" class="transition-colors hover:text-gold-600">Home</a>
+                        <a href="{{ $user->homeRoute() }}" class="transition-colors hover:text-gold-600">Home</a>
                         @foreach ($breadcrumbs as $crumb)
                             <span>/</span>
                             @if (isset($crumb['url']))
