@@ -112,10 +112,10 @@
                             <a href="{{ route('password.request') }}" class="text-sm font-medium text-gold-600 hover:text-gold-500">Forgot password?</a>
                         </div>
 
-                        <button type="submit" class="btn-primary w-full py-3">
+                        <x-button type="submit" class="w-full py-3">
                             Sign in
                             <x-icon name="arrow-left" class="size-4 rotate-180" />
-                        </button>
+                        </x-button>
                     </div>
                 </form>
 

@@ -45,12 +45,39 @@ class GymController extends Controller
 
         $gym->load(['subscriptionPlan', 'users.roles']);
 
+        $owner = $gym->users()
+            ->whereHas('roles', fn ($q) => $q->where('slug', 'owner'))
+            ->first();
+
         $payments = $gym->saasPayments()
             ->with('subscriptionPlan')
             ->orderByDesc('created_at')
             ->paginate(15);
 
-        return view('saas.gym-show', compact('gym', 'payments'));
+        return view('saas.gym-show', compact('gym', 'payments', 'owner'));
+    }
+
+    public function resetOwnerPassword(Request $request, Gym $gym)
+    {
+        abort_unless(auth()->user()->hasPermission('saas.gyms.manage'), 403);
+
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $owner = $gym->users()
+            ->whereHas('roles', fn ($q) => $q->where('slug', 'owner'))
+            ->first();
+
+        if (! $owner) {
+            return back()->withErrors(['password' => 'No gym owner found for this gym.']);
+        }
+
+        $owner->update(['password' => $data['password']]);
+
+        audit_log('saas.gym.owner_password', 'saas', $owner->id, "Password reset for gym owner {$owner->name} ({$gym->name})");
+
+        return back()->with('success', "Password updated for {$owner->name}.");
     }
 
     public function toggleStatus(Request $request, Gym $gym)

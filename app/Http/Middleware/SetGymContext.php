@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,12 +17,21 @@ class SetGymContext
 
             if ($gym) {
                 if (is_saas() && ! $gym->isSubscriptionActive()) {
-                    Auth::logout();
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
+                    $routeName = $request->route()?->getName() ?? '';
 
-                    return redirect()->guest(route('login'))
-                        ->withErrors(['email' => 'Your gym\'s subscription has expired. Contact your SaaS administrator to renew it.']);
+                    $allowed = $routeName === 'logout'
+                        || str_starts_with($routeName, 'subscription.');
+
+                    if (! $allowed) {
+                        if ($request->expectsJson()) {
+                            return response()->json([
+                                'message' => 'Your gym\'s subscription has expired. Please renew your subscription.',
+                            ], 403);
+                        }
+
+                        return redirect()->route('subscription.index')
+                            ->with('status', 'Your gym\'s subscription has expired. Please renew your plan to restore access.');
+                    }
                 }
 
                 $timezone = $gym->setting('timezone', $gym->timezone);

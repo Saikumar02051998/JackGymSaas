@@ -75,6 +75,21 @@
                     <li class="py-6 text-center text-sm text-ink-400">No users.</li>
                 @endforelse
             </ul>
+
+            @if ($owner && auth()->user()->hasPermission('saas.gyms.manage'))
+                <form method="POST" action="{{ route('saas.gyms.owner-password', $gym) }}" class="mt-4 space-y-3 border-t border-ink-100 pt-4 dark:border-ink-800">
+                    @csrf
+                    <p class="text-xs font-semibold text-ink-900 dark:text-white">Reset {{ $owner->name }}'s password</p>
+                    <div>
+                        <input type="password" name="password" class="input" placeholder="New password" autocomplete="new-password" required>
+                        @error('password')
+                            <p class="mt-1 text-xs font-medium text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <input type="password" name="password_confirmation" class="input" placeholder="Confirm new password" autocomplete="new-password" required>
+                    <x-button type="submit" size="sm">Reset Password</x-button>
+                </form>
+            @endif
         </x-card>
     </div>
 

@@ -13,9 +13,14 @@ class SubscriptionController extends Controller
     public function index()
     {
         abort_unless(is_saas(), 404);
-        abort_unless(auth()->user()->isOwner(), 403);
 
+        $user = auth()->user();
         $gym = current_gym();
+
+        if (! $user->isOwner() && $gym->isSubscriptionActive()) {
+            abort(403);
+        }
+
         $plans = SubscriptionPlan::where('status', 'active')->orderBy('price_monthly')->get();
         $payments = $gym->saasPayments()->with('subscriptionPlan')->orderByDesc('created_at')->get();
 

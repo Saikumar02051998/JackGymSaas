@@ -148,10 +148,10 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn-primary w-full py-3">
+                        <x-button type="submit" class="w-full py-3">
                             Create gym account
                             <x-icon name="arrow-left" class="size-4 rotate-180" />
-                        </button>
+                        </x-button>
                     </div>
                 </form>
 

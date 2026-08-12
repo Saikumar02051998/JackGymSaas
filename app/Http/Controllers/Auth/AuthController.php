@@ -113,11 +113,12 @@ class AuthController extends Controller
         }
 
         if (is_saas() && $user->gym && ! $user->gym->isSubscriptionActive()) {
-            Auth::logout();
+            $request->session()->regenerate();
 
-            return back()->withErrors([
-                'email' => 'Your gym\'s subscription has expired. Contact your SaaS administrator to renew it.',
-            ]);
+            audit_log('auth.login', 'auth', $user->id, "User logged in ({$user->name})");
+
+            return redirect()->route('subscription.index')
+                ->with('status', 'Your gym\'s subscription has expired. Please renew your plan to restore access.');
         }
 
         $request->session()->regenerate();

@@ -385,6 +385,7 @@ if (is_saas()) {
             Route::get('/', [SaasGymController::class, 'index'])->name('index');
             Route::get('/{gym}', [SaasGymController::class, 'show'])->name('show');
             Route::post('/{gym}/status', [SaasGymController::class, 'toggleStatus'])->name('status');
+            Route::post('/{gym}/owner-password', [SaasGymController::class, 'resetOwnerPassword'])->name('owner-password');
         });
 
         Route::prefix('plans')->name('plans.')->group(function () {
