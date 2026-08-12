@@ -6,12 +6,15 @@ use App\Models\ExpenseCategory;
 use App\Models\Gym;
 use App\Models\MembershipPlan;
 use App\Models\Role;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class GymService
 {
+    public const TRIAL_DAYS = 14;
+
     public function create(array $data): Gym
     {
         return DB::transaction(function () use ($data) {
@@ -26,7 +29,17 @@ class GymService
                 'tax_percent' => (float) env('GST_TAX_PERCENT', 0),
                 'invoice_prefix' => 'INV',
                 'status' => 'active',
+                'subscription_status' => 'trial',
+                'subscription_expires_at' => now()->addDays((int) saas_setting('trial_days', self::TRIAL_DAYS)),
             ]);
+
+            $defaultPlan = SubscriptionPlan::where('status', 'active')->orderBy('price_monthly')->first();
+
+            if ($defaultPlan) {
+                $gym->subscription_plan_id = $defaultPlan->id;
+                $gym->subscription_billing_cycle = 'monthly';
+                $gym->save();
+            }
 
             $this->provisionDefaults($gym);
 

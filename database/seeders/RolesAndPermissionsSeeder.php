@@ -141,6 +141,21 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'Client',
                 'permissions' => [],
             ],
+            'saas_owner' => [
+                'name' => 'SaaS Owner',
+                'permissions' => [
+                    'saas.dashboard.view',
+                    'saas.gyms.view',
+                    'saas.gyms.manage',
+                    'saas.plans.view',
+                    'saas.plans.manage',
+                    'saas.payments.view',
+                    'saas.payments.create',
+                    'saas.payments.refund',
+                    'saas.settings.view',
+                    'saas.settings.manage',
+                ],
+            ],
         ];
 
         foreach ($roles as $slug => $config) {

@@ -40,6 +40,12 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffRoleController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\Saas\DashboardController as SaasDashboardController;
+use App\Http\Controllers\Saas\GymController as SaasGymController;
+use App\Http\Controllers\Saas\PaymentController as SaasPaymentController;
+use App\Http\Controllers\Saas\PlanController as SaasPlanController;
+use App\Http\Controllers\Saas\SettingController as SaasSettingController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WorkoutController;
 use Illuminate\Support\Facades\Route;
@@ -365,6 +371,48 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+if (is_saas()) {
+    Route::middleware('auth')->prefix('subscription')->name('subscription.')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+        Route::post('/order', [SubscriptionController::class, 'createOrder'])->name('order');
+        Route::post('/verify', [SubscriptionController::class, 'verify'])->name('verify');
+    });
+
+    Route::middleware(['auth', 'saas.owner'])->prefix('saas')->name('saas.')->group(function () {
+        Route::get('/', [SaasDashboardController::class, 'index'])->name('dashboard');
+
+        Route::prefix('gyms')->name('gyms.')->group(function () {
+            Route::get('/', [SaasGymController::class, 'index'])->name('index');
+            Route::get('/{gym}', [SaasGymController::class, 'show'])->name('show');
+            Route::post('/{gym}/status', [SaasGymController::class, 'toggleStatus'])->name('status');
+        });
+
+        Route::prefix('plans')->name('plans.')->group(function () {
+            Route::get('/', [SaasPlanController::class, 'index'])->name('index');
+            Route::get('/create', [SaasPlanController::class, 'create'])->name('create');
+            Route::post('/', [SaasPlanController::class, 'store'])->name('store');
+            Route::get('/{plan}/edit', [SaasPlanController::class, 'edit'])->name('edit');
+            Route::put('/{plan}', [SaasPlanController::class, 'update'])->name('update');
+            Route::post('/{plan}/toggle', [SaasPlanController::class, 'toggle'])->name('toggle');
+        });
+
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/', [SaasPaymentController::class, 'index'])->name('index');
+            Route::get('/create', [SaasPaymentController::class, 'create'])->name('create');
+            Route::post('/', [SaasPaymentController::class, 'store'])->name('store');
+        });
+
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', [SaasSettingController::class, 'index'])->name('index');
+            Route::put('/', [SaasSettingController::class, 'update'])->name('update');
+        });
+    });
+}
+
 Route::prefix('api')->group(function () {
     Route::post('/payments/webhook', [PaymentController::class, 'webhook'])->name('payments.webhook');
+
+    if (is_saas()) {
+        Route::post('/payments/saas-webhook', [SubscriptionController::class, 'webhook'])->name('payments.saas-webhook');
+    }
 });

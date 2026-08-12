@@ -14,7 +14,28 @@ class Menu
             return [];
         }
 
+        if ($user->hasRole('saas_owner') && is_saas()) {
+            return self::saasMenu();
+        }
+
         return $user->isClient() ? self::clientMenu() : self::managementMenu();
+    }
+
+    protected static function saasMenu(): array
+    {
+        return [
+            'overview' => [
+                ['route' => 'saas.dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
+            ],
+            'management' => [
+                ['route' => 'saas.gyms.index', 'label' => 'Gyms', 'icon' => 'building'],
+                ['route' => 'saas.plans.index', 'label' => 'Subscription Plans', 'icon' => 'identification'],
+                ['route' => 'saas.payments.index', 'label' => 'Payments', 'icon' => 'banknotes'],
+            ],
+            'system' => [
+                ['route' => 'saas.settings.index', 'label' => 'Settings', 'icon' => 'settings'],
+            ],
+        ];
     }
 
     protected static function managementMenu(): array
@@ -91,6 +112,12 @@ class Menu
             if ($visible) {
                 $filtered[$group] = $visible;
             }
+        }
+
+        if (is_saas() && can_manage('subscription.view')) {
+            $filtered['account'] = [
+                ['route' => 'subscription.index', 'label' => 'Subscription & Billing', 'icon' => 'card', 'permission' => 'subscription.view'],
+            ];
         }
 
         return $filtered;

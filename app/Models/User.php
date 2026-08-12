@@ -110,6 +110,10 @@ class User extends Authenticatable
 
     public function homeRoute(): string
     {
+        if ($this->hasRole('saas_owner') && is_saas()) {
+            return route('saas.dashboard');
+        }
+
         if ($this->isClient()) {
             return route('client.dashboard');
         }

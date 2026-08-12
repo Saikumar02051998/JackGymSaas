@@ -79,6 +79,15 @@ if (! function_exists('is_saas')) {
     }
 }
 
+if (! function_exists('saas_setting')) {
+    function saas_setting(string $key, mixed $default = null): mixed
+    {
+        $setting = \App\Models\Setting::whereNull('gym_id')->where('key', 'saas_' . $key)->first();
+
+        return $setting ? $setting->value : $default;
+    }
+}
+
 if (! function_exists('can_manage')) {
     function can_manage(string $permission): bool
     {

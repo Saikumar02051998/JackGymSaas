@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\EnsureClient;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\EnsureSaasOwner;
 use App\Http\Middleware\SetGymContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => CheckPermission::class,
             'role' => EnsureRole::class,
             'client' => EnsureClient::class,
+            'saas.owner' => EnsureSaasOwner::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('login'));

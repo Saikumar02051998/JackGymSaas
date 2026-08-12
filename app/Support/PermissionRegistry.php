@@ -102,9 +102,24 @@ class PermissionRegistry
         'audit' => [
             'audit.view' => 'View audit logs',
         ],
+        'subscription' => [
+            'subscription.view' => 'View subscription & billing',
+        ],
         'documents' => [
             'documents.view' => 'View documents',
             'documents.manage' => 'Manage documents',
+        ],
+        'saas' => [
+            'saas.dashboard.view' => 'View SaaS dashboard',
+            'saas.gyms.view' => 'View all gyms',
+            'saas.gyms.manage' => 'Manage gyms',
+            'saas.plans.view' => 'View subscription plans',
+            'saas.plans.manage' => 'Manage subscription plans',
+            'saas.payments.view' => 'View SaaS payments',
+            'saas.payments.create' => 'Record SaaS payments',
+            'saas.payments.refund' => 'Refund SaaS payments',
+            'saas.settings.view' => 'View SaaS settings',
+            'saas.settings.manage' => 'Manage SaaS settings',
         ],
     ];
 

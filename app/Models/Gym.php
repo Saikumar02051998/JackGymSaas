@@ -15,6 +15,7 @@ class Gym extends Model
     {
         return [
             'tax_percent' => 'decimal:2',
+            'subscription_expires_at' => 'datetime',
         ];
     }
 
@@ -91,6 +92,41 @@ class Gym extends Model
     public function expenseCategories()
     {
         return $this->hasMany(ExpenseCategory::class);
+    }
+
+    public function subscriptionPlan()
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
+    }
+
+    public function saasPayments()
+    {
+        return $this->hasMany(SaasPayment::class);
+    }
+
+    public function isSubscriptionActive(): bool
+    {
+        if (in_array($this->subscription_status, ['expired', 'suspended'], true)) {
+            return false;
+        }
+
+        if (! $this->subscription_expires_at) {
+            return in_array($this->subscription_status, ['active', 'trial'], true);
+        }
+
+        return in_array($this->subscription_status, ['active', 'trial'], true)
+            && $this->subscription_expires_at->isFuture();
+    }
+
+    public function subscriptionStatusLabel(): string
+    {
+        return match ($this->subscription_status) {
+            'trial' => 'Trial',
+            'active' => 'Active',
+            'expired' => 'Expired',
+            'suspended' => 'Suspended',
+            default => 'None',
+        };
     }
 
     public function setting(string $key, $default = null)

@@ -18,5 +18,9 @@ class DatabaseSeeder extends Seeder
             MembershipPlanSeeder::class,
             ExpenseCategorySeeder::class,
         ]);
+
+        if (is_saas()) {
+            $this->call(SaasSeeder::class);
+        }
     }
 }
