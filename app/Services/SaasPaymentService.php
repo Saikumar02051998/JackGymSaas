@@ -38,7 +38,7 @@ class SaasPaymentService
         $order = app(RazorpayService::class)->createOrder([
             'amount' => (int) round($amount * 100),
             'currency' => $gym->currency ?: 'INR',
-            'receipt' => 'SAAS-' . Str::upper(Str::random(10)),
+            'receipt' => 'SAAS-'.Str::upper(Str::random(10)),
             'notes' => [
                 'gym_id' => (string) $gym->id,
                 'plan_id' => (string) $plan->id,
@@ -157,6 +157,35 @@ class SaasPaymentService
         return $payment;
     }
 
+    public function activateTrial(Gym $gym, SubscriptionPlan $plan): array
+    {
+        $trialDays = (int) saas_setting('trial_days', GymService::TRIAL_DAYS);
+
+        $periodStart = now()->startOfDay();
+        $periodEnd = $periodStart->copy()->addDays($trialDays);
+
+        $payment = SaasPayment::create([
+            'gym_id' => $gym->id,
+            'subscription_plan_id' => $plan->id,
+            'billing_cycle' => $gym->subscription_billing_cycle ?: 'monthly',
+            'amount' => 0,
+            'currency' => $gym->currency ?: 'INR',
+            'payment_method' => 'trial',
+            'status' => 'paid',
+            'period_start' => $periodStart->toDateString(),
+            'period_end' => $periodEnd->toDateString(),
+            'recorded_by' => auth()->id(),
+            'notes' => "Free trial activated for {$gym->name}",
+        ]);
+
+        $gym->subscription_plan_id = $plan->id;
+        $gym->subscription_status = 'trial';
+        $gym->subscription_expires_at = $periodEnd;
+        $gym->save();
+
+        return ['success' => true, 'payment' => $payment];
+    }
+
     public function applyPayment(SaasPayment $payment): void
     {
         $gym = $payment->gym;
@@ -201,7 +230,7 @@ class SaasPaymentService
             'amount' => $payment->amount,
             'expense_date' => now()->toDateString(),
             'vendor' => (string) config('app.name', 'SaaS'),
-            'description' => 'SaaS subscription – ' . ($payment->subscriptionPlan?->name ?? 'Subscription') . ' (' . $payment->billing_cycle . ')',
+            'description' => 'SaaS subscription – '.($payment->subscriptionPlan?->name ?? 'Subscription').' ('.$payment->billing_cycle.')',
             'created_by' => $payment->recorded_by ?? null,
         ]);
     }

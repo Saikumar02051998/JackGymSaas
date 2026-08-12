@@ -36,4 +36,10 @@ class SubscriptionPlan extends Model
     {
         return $this->status === 'active';
     }
+
+    public function isTrial(): bool
+    {
+        return $this->slug === 'trial'
+            || ((float) $this->price_monthly === 0.0 && (float) $this->price_yearly === 0.0);
+    }
 }

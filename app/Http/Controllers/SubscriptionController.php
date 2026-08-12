@@ -40,10 +40,22 @@ class SubscriptionController extends Controller
         $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
         $gym = current_gym();
 
+        if ($plan->isTrial()) {
+            $result = app(SaasPaymentService::class)->activateTrial($gym, $plan);
+
+            if (! $result['success']) {
+                return back()->withErrors(['payment' => $result['message']]);
+            }
+
+            audit_log('saas.trial.activated', 'saas', $gym->id, "Free trial activated for {$gym->name}");
+
+            return redirect()->route('subscription.index')->with('success', 'Free trial activated. Your trial runs until '.$gym->subscription_expires_at->format('d M Y').'.');
+        }
+
         $result = app(SaasPaymentService::class)->createOrder($gym, $plan, $data['billing_cycle']);
 
         if (! $result['success']) {
-            return back()->withErrors(['payment' => 'Could not create Razorpay order: ' . $result['message']]);
+            return back()->withErrors(['payment' => 'Could not create Razorpay order: '.$result['message']]);
         }
 
         $result['payment']->update(['recorded_by' => auth()->id()]);

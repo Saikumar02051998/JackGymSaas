@@ -25,6 +25,8 @@ class GymSeeder extends Seeder
                 'tax_percent' => (float) env('GST_TAX_PERCENT', 0),
                 'invoice_prefix' => 'INV',
                 'status' => 'active',
+                'subscription_status' => 'trial',
+                'subscription_expires_at' => now()->addDays((int) \App\Services\GymService::TRIAL_DAYS),
             ]
         );
 

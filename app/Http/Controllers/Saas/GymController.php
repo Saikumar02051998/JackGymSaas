@@ -91,6 +91,11 @@ class GymController extends Controller
         $gym->subscription_status = $data['subscription_status'];
         $gym->save();
 
+        if (in_array($data['subscription_status'], ['trial', 'active'], true) && ! $gym->subscription_expires_at) {
+            $gym->subscription_expires_at = now()->addDays((int) saas_setting('trial_days', \App\Services\GymService::TRIAL_DAYS));
+            $gym->save();
+        }
+
         audit_log('saas.gym.status', 'saas', $gym->id, "Gym {$gym->name} subscription status set to {$data['subscription_status']}");
 
         return back()->with('success', 'Gym subscription status updated.');

@@ -14,6 +14,7 @@ class SaasSeeder extends Seeder
     public function run(): void
     {
         $plans = [
+            ['name' => 'Trial', 'slug' => 'trial', 'description' => 'Free trial to explore the platform. Expires at the end of the trial period.', 'price_monthly' => 0, 'price_yearly' => 0],
             ['name' => 'Basic', 'slug' => 'basic', 'description' => 'For small gyms starting out.', 'price_monthly' => 499, 'price_yearly' => 4990],
             ['name' => 'Standard', 'slug' => 'standard', 'description' => 'Most popular for growing gyms.', 'price_monthly' => 999, 'price_yearly' => 9990],
             ['name' => 'Premium', 'slug' => 'premium', 'description' => 'Everything for established fitness businesses.', 'price_monthly' => 1499, 'price_yearly' => 14990],

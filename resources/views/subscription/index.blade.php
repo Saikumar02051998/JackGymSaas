@@ -56,8 +56,13 @@
                                         <span x-show="planId === '{{ $plan->id }}'" x-cloak><x-icon name="check" class="size-5 text-gold-500" /></span>
                                     </div>
                                     <p class="mt-1 text-xs text-ink-400">
-                                        <span class="font-semibold text-ink-600 dark:text-ink-300">{{ $symbol }}{{ number_format($plan->price_monthly, 2) }}/mo</span>
-                                        · {{ $symbol }}{{ number_format($plan->price_yearly, 2) }}/yr
+                                        @if ($plan->isTrial())
+                                            <span class="font-semibold text-emerald-600 dark:text-emerald-400">Free</span>
+                                            · expires after trial period
+                                        @else
+                                            <span class="font-semibold text-ink-600 dark:text-ink-300">{{ $symbol }}{{ number_format($plan->price_monthly, 2) }}/mo</span>
+                                            · {{ $symbol }}{{ number_format($plan->price_yearly, 2) }}/yr
+                                        @endif
                                     </p>
                                     @if ($plan->description)
                                         <p class="mt-2 text-xs leading-relaxed text-ink-400">{{ $plan->description }}</p>
@@ -66,7 +71,7 @@
                             @endforeach
                         </div>
 
-                        <x-field label="Billing cycle" name="billing_cycle">
+                        <x-field label="Billing cycle" name="billing_cycle" x-show="!isTrial(planId)" x-cloak>
                             <select name="billing_cycle" class="input" x-model="cycle">
                                 <option value="monthly" :selected="cycle === 'monthly'">Monthly</option>
                                 <option value="yearly" :selected="cycle === 'yearly'">Yearly</option>
@@ -75,13 +80,15 @@
 
                         <div class="flex items-center justify-between rounded-2xl bg-ink-50 p-4 dark:bg-ink-800">
                             <span class="text-sm font-semibold text-ink-900 dark:text-white">Amount due</span>
-                            <span class="text-xl font-extrabold text-ink-900 dark:text-white" x-text="'{{ $symbol }}' + amount(planId, cycle)">{{ $symbol }}0.00</span>
+                            <span class="text-xl font-extrabold text-ink-900 dark:text-white" x-show="!isTrial(planId)" x-text="'{{ $symbol }}' + amount(planId, cycle)">{{ $symbol }}0.00</span>
+                            <span class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400" x-show="isTrial(planId)" x-cloak>Free</span>
                         </div>
 
                         <div class="flex justify-end border-t border-ink-100 pt-4 dark:border-ink-800">
                             <x-button type="submit">
                                 <x-icon name="card" class="size-4" />
-                                Proceed to Payment
+                                <span x-show="isTrial(planId)" x-cloak>Start Free Trial</span>
+                                <span x-show="!isTrial(planId)">Proceed to Payment</span>
                             </x-button>
                         </div>
                     </form>
@@ -142,7 +149,12 @@
 
     @push('scripts')
         <script>
-            const prices = @json($plans->mapWithKeys(fn ($plan) => [$plan->id => ['monthly' => (float) $plan->price_monthly, 'yearly' => (float) $plan->price_yearly]]));
+            const prices = @json($plans->mapWithKeys(fn ($plan) => [$plan->id => ['monthly' => (float) $plan->price_monthly, 'yearly' => (float) $plan->price_yearly, 'trial' => $plan->isTrial()]]));
+
+            function isTrial(planId) {
+                const id = Number(planId);
+                return Boolean(prices[id]?.trial);
+            }
 
             function amount(planId, cycle) {
                 if (!planId || !prices[planId]) return '0.00';
