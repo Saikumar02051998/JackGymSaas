@@ -100,6 +100,7 @@
                 </x-card>
             @endif
 
+            <div id="invoice-status" data-ajax-table="invoice-status">
             @if (can_manage('invoices.manage') && in_array($invoice->status, ['draft', 'issued']))
                 <x-card title="Actions">
                     <div class="space-y-3">
@@ -107,21 +108,21 @@
                             <x-icon name="document-text" class="size-4" />
                             Print Invoice
                         </a>
-                        <form method="POST" action="{{ route('invoices.email', $invoice) }}">
+                        <form method="POST" action="{{ route('invoices.email', $invoice) }}" data-ajax data-refresh="[data-ajax-table='invoice-status']">
                             @csrf
                             <x-button type="submit" variant="outline" class="w-full">
                                 <x-icon name="mail" class="size-4" />
                                 Email to Client
                             </x-button>
                         </form>
-                        <form method="POST" action="{{ route('invoices.paid', $invoice) }}">
+                        <form method="POST" action="{{ route('invoices.paid', $invoice) }}" data-ajax data-refresh="[data-ajax-table='invoice-status']">
                             @csrf
                             <x-button type="submit" variant="success" class="w-full">
                                 <x-icon name="check" class="size-4" />
                                 Mark as Paid
                             </x-button>
                         </form>
-                        <form method="POST" action="{{ route('invoices.void', $invoice) }}"
+                        <form method="POST" action="{{ route('invoices.void', $invoice) }}" data-ajax data-refresh="[data-ajax-table='invoice-status']"
                               x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Void invoice?', message: 'This will void {{ $invoice->invoice_no }}.', confirmText: 'Void' } })">
                             @csrf
                             <x-button type="submit" variant="ghost" class="w-full !text-red-500">Void Invoice</x-button>
@@ -136,6 +137,7 @@
                     </a>
                 </x-card>
             @endif
+            </div>
         </div>
     </div>
 </x-layouts.app>

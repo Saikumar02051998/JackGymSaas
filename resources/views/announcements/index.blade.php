@@ -5,6 +5,7 @@
 
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
+            <div data-ajax-table="announcements-table">
             @if ($announcements->isEmpty())
                 <x-card>
                     <div class="p-8">
@@ -77,7 +78,7 @@
                                                 </form>
                                             </div>
                                         </details>
-                                        <form method="POST" action="{{ route('announcements.destroy', $announcement) }}"
+                                        <form method="POST" action="{{ route('announcements.destroy', $announcement) }}" data-ajax
                                               x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete announcement?', message: 'Delete the {{ $announcement->title }} announcement.', confirmText: 'Delete' } })">
                                             @csrf
                                             @method('DELETE')
@@ -95,6 +96,7 @@
                     <x-pagination :model="$announcements" />
                 </div>
             @endif
+            </div>
         </div>
 
         @if (can_manage('announcements.manage'))

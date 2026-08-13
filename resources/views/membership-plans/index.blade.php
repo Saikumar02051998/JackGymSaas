@@ -12,6 +12,7 @@
         @endif
     </x-slot>
 
+    <div data-ajax-table="plans-table">
     @if ($plans->isEmpty())
         <x-card>
             <div class="p-8">
@@ -55,13 +56,13 @@
                         @if (can_manage('memberships.manage'))
                             <div class="mt-6 flex items-center gap-2 border-t border-ink-100 pt-4 dark:border-ink-800">
                                 <a href="{{ route('memberships.plans.edit', $plan) }}" class="btn-outline btn-sm flex-1">Edit</a>
-                                <form method="POST" action="{{ route('memberships.plans.toggle', $plan) }}">
+                                <form method="POST" action="{{ route('memberships.plans.toggle', $plan) }}" data-ajax>
                                     @csrf
                                     <x-button type="submit" :variant="$plan->status === 'active' ? 'danger' : 'outline'" size="sm">
                                         {{ $plan->status === 'active' ? 'Deactivate' : 'Activate' }}
                                     </x-button>
                                 </form>
-                                <form method="POST" action="{{ route('memberships.plans.destroy', $plan) }}"
+                                <form method="POST" action="{{ route('memberships.plans.destroy', $plan) }}" data-ajax
                                       x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete plan?', message: 'This will permanently delete {{ $plan->name }}.', confirmText: 'Delete' } })">
                                     @csrf
                                     @method('DELETE')
@@ -79,4 +80,5 @@
             <x-pagination :model="$plans" />
         </div>
     @endif
+    </div>
 </x-layouts.app>

@@ -14,6 +14,7 @@
 
     @php $symbol = saas_setting('currency_symbol', env('CURRENCY_SYMBOL', '₹')); @endphp
 
+    <div data-ajax-table="saas-plans-table">
     @if ($plans->isEmpty())
         <x-card>
             <div class="p-8">
@@ -46,7 +47,7 @@
                         @if (auth()->user()->hasPermission('saas.plans.manage'))
                             <div class="mt-6 flex items-center gap-2 border-t border-ink-100 pt-4 dark:border-ink-800">
                                 <a href="{{ route('saas.plans.edit', $plan) }}" class="btn-outline btn-sm flex-1">Edit</a>
-                                <form method="POST" action="{{ route('saas.plans.toggle', $plan) }}">
+                                <form method="POST" action="{{ route('saas.plans.toggle', $plan) }}" data-ajax>
                                     @csrf
                                     <x-button type="submit" :variant="$plan->status === 'active' ? 'danger' : 'outline'" size="sm">
                                         {{ $plan->status === 'active' ? 'Deactivate' : 'Activate' }}
@@ -59,4 +60,5 @@
             @endforeach
         </div>
     @endif
+    </div>
 </x-layouts.app>

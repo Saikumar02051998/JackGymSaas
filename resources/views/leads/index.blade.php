@@ -13,23 +13,23 @@
     </x-slot>
 
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <a href="{{ route('leads.index') }}" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
+        <a href="{{ route('leads.index') }}" data-ajax-link data-target="[data-ajax-table='leads-table']" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
             <p class="text-2xl font-extrabold text-ink-900 dark:text-white">{{ $counts['new'] + $counts['contacted'] }}</p>
             <p class="text-xs font-medium uppercase tracking-wide text-ink-400">New & Contacted</p>
         </a>
-        <a href="{{ route('leads.index', ['status' => 'interested']) }}" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
+        <a href="{{ route('leads.index', ['status' => 'interested']) }}" data-ajax-link data-target="[data-ajax-table='leads-table']" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
             <p class="text-2xl font-extrabold text-amber-500">{{ $counts['interested'] }}</p>
             <p class="text-xs font-medium uppercase tracking-wide text-ink-400">Interested</p>
         </a>
-        <a href="{{ route('leads.index', ['status' => 'trial']) }}" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
+        <a href="{{ route('leads.index', ['status' => 'trial']) }}" data-ajax-link data-target="[data-ajax-table='leads-table']" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
             <p class="text-2xl font-extrabold text-blue-500">{{ $counts['trial'] }}</p>
             <p class="text-xs font-medium uppercase tracking-wide text-ink-400">In Trial</p>
         </a>
-        <a href="{{ route('leads.index', ['status' => 'converted']) }}" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
+        <a href="{{ route('leads.index', ['status' => 'converted']) }}" data-ajax-link data-target="[data-ajax-table='leads-table']" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
             <p class="text-2xl font-extrabold text-emerald-500">{{ $counts['converted'] }}</p>
             <p class="text-xs font-medium uppercase tracking-wide text-ink-400">Converted</p>
         </a>
-        <a href="{{ route('leads.index', ['status' => 'lost']) }}" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
+        <a href="{{ route('leads.index', ['status' => 'lost']) }}" data-ajax-link data-target="[data-ajax-table='leads-table']" class="rounded-2xl border border-ink-100 bg-white p-4 transition-colors hover:border-gold-400/60 dark:border-ink-800 dark:bg-ink-900">
             <p class="text-2xl font-extrabold text-red-500">{{ $counts['lost'] }}</p>
             <p class="text-xs font-medium uppercase tracking-wide text-ink-400">Lost</p>
         </a>
@@ -37,7 +37,7 @@
 
     <x-card :padding="false" class="mt-6">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('leads.index') }}" class="flex flex-1 flex-wrap items-center gap-2">
+            <form method="GET" action="{{ route('leads.index') }}" data-ajax-filter data-target="[data-ajax-table='leads-table']" class="flex flex-1 flex-wrap items-center gap-2">
                 <div class="relative min-w-52 flex-1">
                     <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-400"><x-icon name="search" class="size-4" /></span>
                     <input type="search" name="search" value="{{ request('search') }}" placeholder="Search name, phone, email..." class="input pl-9">
@@ -52,6 +52,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="leads-table">
         @if ($leads->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="funnel" title="No leads found" message="Leads you capture will appear here." />
@@ -112,5 +113,6 @@
                 <x-pagination :model="$leads" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

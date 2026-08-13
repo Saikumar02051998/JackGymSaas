@@ -13,18 +13,19 @@
     </x-slot>
 
     <div class="mb-6 flex flex-wrap items-center gap-2">
-        <a href="{{ route('followups.index', ['filter' => 'today']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'today'])>
+        <a href="{{ route('followups.index', ['filter' => 'today']) }}" data-ajax-link data-target="[data-ajax-table='followups-table']" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'today'])>
             Today
             <x-badge color="gold" class="ml-1">{{ $filter === 'today' ? $followups->total() : '' }}</x-badge>
         </a>
-        <a href="{{ route('followups.index', ['filter' => 'upcoming']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'upcoming'])>Upcoming</a>
-        <a href="{{ route('followups.index', ['filter' => 'overdue']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'overdue'])>Overdue</a>
-        <a href="{{ route('followups.index', ['filter' => 'completed']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'completed'])>Completed</a>
+        <a href="{{ route('followups.index', ['filter' => 'upcoming']) }}" data-ajax-link data-target="[data-ajax-table='followups-table']" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'upcoming'])>Upcoming</a>
+        <a href="{{ route('followups.index', ['filter' => 'overdue']) }}" data-ajax-link data-target="[data-ajax-table='followups-table']" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'overdue'])>Overdue</a>
+        <a href="{{ route('followups.index', ['filter' => 'completed']) }}" data-ajax-link data-target="[data-ajax-table='followups-table']" @class(['btn-ghost btn-sm', 'btn-outline' => $filter === 'completed'])>Completed</a>
     </div>
 
     @php $canManage = can_manage('followups.manage'); @endphp
 
     <x-card :padding="false" x-data="{ reschedule: null, rsDate: '', rsTime: '' }">
+        <div data-ajax-table="followups-table">
         @if ($followups->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="calendar-check" title="No follow-ups" message="Scheduled follow-ups will appear here." />
@@ -73,13 +74,13 @@
                                     <td class="px-5 py-4 text-right">
                                         @if (in_array($followup->status, ['pending', 'overdue', 'rescheduled']))
                                             <div class="flex justify-end gap-2">
-                                                <form method="POST" action="{{ route('followups.complete', $followup) }}" class="inline">
+                                                <form method="POST" action="{{ route('followups.complete', $followup) }}" class="inline" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="success" size="sm">Complete</x-button>
                                                 </form>
                                                 <x-button type="button" variant="outline" size="sm"
                                                           x-on:click="reschedule = @js(['id' => $followup->id, 'date' => $followup->follow_up_date, 'time' => $followup->follow_up_time]); rsDate = reschedule.date; rsTime = reschedule.time; $dispatch('open-modal', 'reschedule-modal')">Reschedule</x-button>
-                                                <form method="POST" action="{{ route('followups.cancel', $followup) }}" class="inline">
+                                                <form method="POST" action="{{ route('followups.cancel', $followup) }}" class="inline" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="ghost" size="sm" class="!text-red-500">Cancel</x-button>
                                                 </form>
@@ -98,10 +99,12 @@
                 <x-pagination :model="$followups" />
             </div>
         @endif
+        </div>
 
         @if ($canManage)
             <x-modal id="reschedule-modal" title="Reschedule Follow-Up">
-                <form method="POST" :action="reschedule ? `/followups/${reschedule.id}/reschedule` : '#'" id="reschedule-form">
+                <form method="POST" :action="reschedule ? `/followups/${reschedule.id}/reschedule` : '#'" id="reschedule-form"
+                      data-ajax data-ajax-dispatch="close-modal" data-refresh="[data-ajax-table='followups-table']">
                     @csrf
                     <div class="grid gap-4 sm:grid-cols-2">
                         <x-input label="Date" type="date" name="follow_up_date" x-model="rsDate" required />

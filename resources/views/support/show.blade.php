@@ -4,6 +4,7 @@
     :breadcrumbs="[['label' => 'Support', 'url' => route('support.index')], ['label' => '#' . $ticket->id]]">
 
     <div class="mx-auto max-w-3xl space-y-6">
+        <div id="ticket-header" data-ajax-table="ticket-header">
         <x-card>
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -18,7 +19,7 @@
                     </p>
                 </div>
                 @if (can_manage('support.reply'))
-                    <form method="POST" action="{{ route('support.status', $ticket) }}" class="flex items-end gap-2">
+                    <form method="POST" action="{{ route('support.status', $ticket) }}" data-ajax data-refresh="[data-ajax-table='ticket-header']" class="flex items-end gap-2">
                         @csrf
                         <x-select name="status" label="Status">
                             @foreach (['open' => 'Open', 'in_progress' => 'In progress', 'resolved' => 'Resolved', 'closed' => 'Closed'] as $value => $label)
@@ -30,8 +31,9 @@
                 @endif
             </div>
         </x-card>
+        </div>
 
-        <div class="space-y-4">
+        <div id="ticket-thread" data-ajax-table="ticket-thread" class="space-y-4">
             @foreach ($ticket->messages as $message)
                 <div class="flex items-start gap-3">
                     <x-avatar :user="$message->user" size="size-9" />
@@ -50,7 +52,7 @@
 
         @if (can_manage('support.reply'))
             <x-card title="Reply">
-                <form method="POST" action="{{ route('support.reply', $ticket) }}" class="space-y-4">
+                <form method="POST" action="{{ route('support.reply', $ticket) }}" data-ajax data-ajax-reset data-refresh="[data-ajax-table='ticket-thread']" class="space-y-4">
                     @csrf
                     <x-field label="Message" name="message">
                         <textarea name="message" rows="4" class="input" required>{{ old('message') }}</textarea>

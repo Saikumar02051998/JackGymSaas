@@ -13,7 +13,7 @@
     </x-slot>
 
     <x-card title="PT Sessions">
-        <form method="GET" action="{{ route('pt.index') }}" class="mb-4 grid gap-3 border-b border-ink-100 pb-4 dark:border-ink-800 sm:grid-cols-2 lg:grid-cols-4">
+        <form method="GET" action="{{ route('pt.index') }}" data-ajax-filter data-target="[data-ajax-table='pt-table']" class="mb-4 grid gap-3 border-b border-ink-100 pb-4 dark:border-ink-800 sm:grid-cols-2 lg:grid-cols-4">
             <x-select label="Status" name="status">
                 <option value="all">All statuses</option>
                 @foreach (['scheduled' => 'Scheduled', 'completed' => 'Completed', 'cancelled' => 'Cancelled'] as $value => $label)
@@ -28,11 +28,12 @@
                     Filter
                 </x-button>
                 @if (request()->hasAny(['status', 'from', 'to']))
-                    <x-button href="{{ route('pt.index') }}" variant="outline" size="sm">Clear</x-button>
+                    <x-button href="{{ route('pt.index') }}" variant="outline" size="sm" data-ajax-clear data-target="[data-ajax-table='pt-table']">Clear</x-button>
                 @endif
             </div>
         </form>
 
+        <div data-ajax-table="pt-table">
         @if ($sessions->isEmpty())
             <x-empty-state icon="dumbbell" title="No PT sessions" message="Schedule personal training sessions for clients." />
         @else
@@ -75,14 +76,14 @@
                                     <td class="px-5 py-4 text-right">
                                         <div class="flex justify-end gap-2">
                                             @if ($session->status === 'scheduled')
-                                                <form method="POST" action="{{ route('pt.complete', $session) }}">
+                                                <form method="POST" action="{{ route('pt.complete', $session) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="success" size="sm">
                                                         <x-icon name="check" class="size-3.5" />
                                                         Complete
                                                     </x-button>
                                                 </form>
-                                                <form method="POST" action="{{ route('pt.cancel', $session) }}">
+                                                <form method="POST" action="{{ route('pt.cancel', $session) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="ghost" size="sm" class="!text-red-500">
                                                         <x-icon name="x" class="size-3.5" />
@@ -102,5 +103,6 @@
                 <x-pagination :model="$sessions" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

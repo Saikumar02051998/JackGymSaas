@@ -13,7 +13,7 @@
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
             <x-card title="Equipment" x-data="{ edit: {} }">
-                <form method="GET" action="{{ route('equipment.index') }}" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
+                <form method="GET" action="{{ route('equipment.index') }}" data-ajax-filter data-target="[data-ajax-table='equipment-table']" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                     <div class="min-w-48 flex-1">
                         <x-input label="Search" name="search" value="{{ request('search') }}" placeholder="Search equipment..." />
                     </div>
@@ -29,6 +29,7 @@
                     </x-button>
                 </form>
 
+                <div data-ajax-table="equipment-table">
                 @if ($equipment->isEmpty())
                     <x-empty-state icon="dumbbell" title="No equipment found" message="Add your gym equipment to start tracking maintenance." />
                 @else
@@ -86,7 +87,7 @@
                                                         <x-icon name="pencil" class="size-3.5" />
                                                         Edit
                                                     </button>
-                                                    <form method="POST" action="{{ route('equipment.destroy', $item) }}"
+                                                    <form method="POST" action="{{ route('equipment.destroy', $item) }}" data-ajax
                                                           x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Remove equipment?', message: 'Remove {{ $item->name }} from equipment.', confirmText: 'Remove' } })">
                                                         @csrf
                                                         @method('DELETE')
@@ -106,10 +107,11 @@
                         <x-pagination :model="$equipment" />
                     </div>
                 @endif
+                </div>
 
                 @if (can_manage('equipment.manage'))
                     <x-modal id="edit-equipment" title="Edit Equipment">
-                        <form method="POST" :action="edit ? `/equipment/${edit.id}` : '#'" id="edit-equipment-form" class="space-y-3">
+                        <form method="POST" :action="edit ? `/equipment/${edit.id}` : '#'" id="edit-equipment-form" data-ajax data-ajax-dispatch="close-modal" data-refresh="[data-ajax-table='equipment-table']" class="space-y-3">
                             @csrf
                             @method('PUT')
                             <div class="grid grid-cols-2 gap-3">

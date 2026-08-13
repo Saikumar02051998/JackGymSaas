@@ -12,6 +12,21 @@
     @stack('head')
 </head>
 <body class="bg-ink-50 dark:bg-night-950">
+    <x-toast-container />
     {{ $slot }}
+
+    @php
+        $flash = session('success') ? ['type' => 'success', 'message' => session('success')]
+            : (session('error') ? ['type' => 'error', 'message' => session('error')]
+            : (session('warning') ? ['type' => 'warning', 'message' => session('warning')]
+            : (session('status') ? ['type' => 'info', 'message' => session('status')] : null)));
+    @endphp
+    @if ($flash)
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => window.toast?.({!! json_encode($flash['message']) !!}, {!! json_encode($flash['type']) !!}), 60);
+            });
+        </script>
+    @endif
 </body>
 </html>

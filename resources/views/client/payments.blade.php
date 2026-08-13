@@ -10,6 +10,7 @@
     </div>
 
     <x-card title="Payment History" class="mt-6">
+        <div data-ajax-table="client-payments-table">
         @if ($payments->isEmpty())
             <x-empty-state icon="banknotes" title="No payments yet" message="Your payment records will appear here." />
         @else
@@ -54,5 +55,6 @@
             </div>
             <x-pagination :model="$payments" />
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

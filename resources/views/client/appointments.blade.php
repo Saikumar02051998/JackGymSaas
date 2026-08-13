@@ -4,7 +4,7 @@
     :breadcrumbs="[['label' => 'My Appointments']]">
 
     <div class="grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-2" data-ajax-table="client-appointments-table">
             @if ($upcoming->isNotEmpty())
                 <x-card title="Upcoming Appointments">
                     <div class="space-y-3">
@@ -37,7 +37,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <form method="POST" action="{{ route('client.appointments.destroy', $appointment) }}"
+                                <form method="POST" action="{{ route('client.appointments.destroy', $appointment) }}" data-ajax
                                       x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Cancel appointment?', message: 'This will cancel your {{ $appointment->appointment_type }} appointment.', confirmText: 'Cancel' } })">
                                     @csrf
                                     @method('DELETE')
@@ -88,7 +88,7 @@
 
         <div>
             <x-card title="Book Appointment">
-                <form action="{{ route('client.appointments.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('client.appointments.store') }}" method="POST" data-ajax data-ajax-reset data-refresh="[data-ajax-table='client-appointments-table']" class="space-y-4">
                     @csrf
 
                     <x-select name="appointment_type" label="Appointment Type" :required="true">

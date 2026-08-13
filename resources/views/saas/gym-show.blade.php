@@ -8,7 +8,7 @@
             <div class="space-y-3 text-sm">
                 <div class="flex items-center justify-between">
                     <span class="text-ink-400">Status</span>
-                    <x-badge :color="match($gym->subscription_status) { 'active' => 'green', 'trial' => 'blue', 'expired' => 'red', 'suspended' => 'purple', default => 'gray' }">{{ $gym->subscriptionStatusLabel() }}</x-badge>
+                    <div id="gym-status-badge"><x-badge :color="match($gym->subscription_status) { 'active' => 'green', 'trial' => 'blue', 'expired' => 'red', 'suspended' => 'purple', default => 'gray' }">{{ $gym->subscriptionStatusLabel() }}</x-badge></div>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-ink-400">Email</span>
@@ -45,7 +45,7 @@
                 </div>
 
                 @if (auth()->user()->hasPermission('saas.gyms.manage'))
-                    <form method="POST" action="{{ route('saas.gyms.status', $gym) }}" class="border-t border-ink-100 pt-4 dark:border-ink-800">
+                    <form method="POST" action="{{ route('saas.gyms.status', $gym) }}" data-ajax data-refresh="#gym-status-badge" class="border-t border-ink-100 pt-4 dark:border-ink-800">
                         @csrf
                         <label class="mb-1 block text-xs font-semibold text-ink-900 dark:text-white">Change status</label>
                         <div class="flex gap-2">
@@ -77,7 +77,7 @@
             </ul>
 
             @if ($owner && auth()->user()->hasPermission('saas.gyms.manage'))
-                <form method="POST" action="{{ route('saas.gyms.owner-password', $gym) }}" class="mt-4 space-y-3 border-t border-ink-100 pt-4 dark:border-ink-800">
+                <form method="POST" action="{{ route('saas.gyms.owner-password', $gym) }}" data-ajax class="mt-4 space-y-3 border-t border-ink-100 pt-4 dark:border-ink-800">
                     @csrf
                     <p class="text-xs font-semibold text-ink-900 dark:text-white">Reset {{ $owner->name }}'s password</p>
                     <div>

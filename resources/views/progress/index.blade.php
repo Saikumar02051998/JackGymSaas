@@ -6,7 +6,7 @@
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
             <x-card title="Client Progress">
-                <form method="GET" action="{{ route('progress.index') }}" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
+                <form method="GET" action="{{ route('progress.index') }}" data-ajax-filter data-target="[data-ajax-table='progress-table']" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                     <div class="min-w-48 flex-1">
                         <x-input label="Search" name="search" value="{{ request('search') }}" placeholder="Search by name or member ID..." />
                     </div>
@@ -16,6 +16,7 @@
                     </x-button>
                 </form>
 
+                <div data-ajax-table="progress-table">
                 @if ($clients->isEmpty())
                     <x-empty-state icon="chart" title="No clients" message="Active clients will appear here for progress tracking." />
                 @else
@@ -64,13 +65,14 @@
                         <x-pagination :model="$clients" />
                     </div>
                 @endif
+                </div>
             </x-card>
         </div>
 
         @if (can_manage('progress.manage'))
             <div>
                 <x-card title="Log Weight">
-                    <form method="POST" action="{{ route('progress.weight') }}" class="space-y-4">
+                    <form method="POST" action="{{ route('progress.weight') }}" data-ajax data-ajax-reset data-refresh="[data-ajax-table='progress-table']" class="space-y-4">
                         @csrf
                         <x-select label="Client" name="client_id" required>
                             @foreach ($clients as $client)

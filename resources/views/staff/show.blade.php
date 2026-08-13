@@ -46,6 +46,7 @@
     </div>
 
     @if ($salaries && $salaries->isNotEmpty())
+        <div data-ajax-table="staff-show-table">
         <x-card title="Salary History" :padding="false" class="mt-6">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -83,10 +84,12 @@
                 <x-pagination :model="$salaries" />
             </div>
         </x-card>
+        </div>
     @endif
 
     <div class="mt-6 grid gap-6 lg:grid-cols-2">
         @if ($attendance && $attendance->isNotEmpty())
+            <div data-ajax-table="staff-show-table">
             <x-card title="Recent Attendance" :padding="false">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -118,9 +121,11 @@
                     <x-pagination :model="$attendance" />
                 </div>
             </x-card>
+            </div>
         @endif
 
         @if ($leaves && $leaves->isNotEmpty())
+            <div data-ajax-table="staff-show-table">
             <x-card title="Leave Requests" :padding="false">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -150,6 +155,7 @@
                     <x-pagination :model="$leaves" />
                 </div>
             </x-card>
+            </div>
         @endif
     </div>
 </x-layouts.app>

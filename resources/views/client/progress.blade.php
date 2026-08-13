@@ -48,7 +48,7 @@
         </x-card>
 
         <x-card title="Log Today's Progress">
-            <form action="{{ route('client.progress.store') }}" method="POST" class="space-y-4">
+            <form action="{{ route('client.progress.store') }}" method="POST" data-ajax data-ajax-reset data-refresh="[data-ajax-table='client-progress-table']" class="space-y-4">
                 @csrf
 
                 <x-input name="weight" label="Weight (kg)" type="number" step="0.1" min="1" max="500" :required="true" value="{{ old('weight') }}" icon="trending-up" />
@@ -115,6 +115,7 @@
     @endif
 
     <div class="mt-6 grid gap-4 lg:grid-cols-2">
+        <div data-ajax-table="client-progress-table">
         @if ($client->weightRecords->isNotEmpty())
             <x-card title="Weight History" :padding="false">
                 <div class="overflow-x-auto">
@@ -134,7 +135,7 @@
                                     <td class="px-5 py-3">{{ $record->weight }} kg</td>
                                     <td class="px-5 py-3">{{ $record->bmi ?? '—' }}</td>
                                     <td class="px-5 py-3 text-right">
-                                        <form method="POST" action="{{ route('client.progress.destroy', $record) }}"
+                                        <form method="POST" action="{{ route('client.progress.destroy', $record) }}" data-ajax
                                               x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete record?', message: 'This weight entry will be permanently removed.', confirmText: 'Delete' } })">
                                             @csrf
                                             @method('DELETE')
@@ -150,6 +151,7 @@
                 </div>
             </x-card>
         @endif
+        </div>
 
         @if ($client->bodyMeasurements->isNotEmpty())
             <x-card title="Body Measurements" :padding="false">

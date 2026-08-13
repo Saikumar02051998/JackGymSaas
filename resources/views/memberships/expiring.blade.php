@@ -3,6 +3,7 @@
     description="Memberships ending within the next 30 days. Reach out to renew."
     :breadcrumbs="[['label' => 'Memberships', 'url' => route('memberships.index')], ['label' => 'Expiring Soon']]">
 
+    <div data-ajax-table="memberships-expiring-table">
     @if ($memberships->isEmpty())
         <x-card>
             <div class="p-8">
@@ -53,4 +54,5 @@
             </div>
         </x-card>
     @endif
+    </div>
 </x-layouts.app>

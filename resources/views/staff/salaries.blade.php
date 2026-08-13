@@ -18,7 +18,7 @@
 
     <x-card :padding="false">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('staff.salaries.index') }}" class="flex flex-wrap items-center gap-2">
+            <form method="GET" action="{{ route('staff.salaries.index') }}" data-ajax-filter data-target="[data-ajax-table='salaries-table']" class="flex flex-wrap items-center gap-2">
                 <select name="period" class="input w-auto">
                     <option value="">All periods</option>
                     @foreach ($periods as $p)
@@ -35,6 +35,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="salaries-table">
         @if ($salaries->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="banknotes" title="No salary records" message="Process salaries to see records here." />
@@ -83,5 +84,6 @@
                 <x-pagination :model="$salaries" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

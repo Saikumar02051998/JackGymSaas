@@ -4,7 +4,7 @@
     :breadcrumbs="[['label' => 'Clients', 'url' => route('clients.index')], ['label' => $client->display_name]]">
 
     <x-slot name="actions">
-        <form method="POST" action="{{ route('clients.toggle-status', $client) }}" class="inline">
+        <form method="POST" action="{{ route('clients.toggle-status', $client) }}" class="inline" data-ajax data-refresh="[data-ajax-table='client-profile-header']">
             @csrf
             <x-button type="submit" variant="{{ $client->status === 'active' ? 'outline' : 'success' }}" size="sm">
                 {{ $client->status === 'active' ? 'Mark Inactive' : 'Mark Active' }}
@@ -87,6 +87,7 @@
         </div>
     @endif
 
+    <div data-ajax-table="client-profile-header">
     <div class="card">
         <div class="flex flex-col gap-6 p-6 sm:flex-row sm:items-center">
             <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-300 to-gold-500 text-2xl font-extrabold text-ink-950">
@@ -115,6 +116,7 @@
             </div>
         </div>
     </div>
+    </div>
 
     <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <x-stat label="Total Visits" :value="$totalAttendance" icon="calendar-check" />
@@ -126,6 +128,7 @@
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
             <x-card title="Membership History">
+                <div data-ajax-table="client-memberships">
                 @forelse ($memberships as $membership)
                     <div class="flex items-center justify-between border-b border-ink-100 py-3 last:border-0 dark:border-ink-800">
                         <div>
@@ -145,9 +148,11 @@
                 @if ($memberships->hasPages())
                     <x-pagination :model="$memberships" />
                 @endif
+                </div>
             </x-card>
 
             <x-card title="Recent Attendance">
+                <div data-ajax-table="client-attendance">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
                         <thead>
@@ -179,6 +184,7 @@
                 @if ($attendance->hasPages())
                     <x-pagination :model="$attendance" />
                 @endif
+                </div>
             </x-card>
 
             <div class="grid gap-6 md:grid-cols-2">
@@ -219,6 +225,7 @@
 
             <div class="grid gap-6 md:grid-cols-2">
                 <x-card title="Weight Progress">
+                    <div data-ajax-table="client-weight">
                     @forelse ($weightRecords as $record)
                         <div class="flex items-center justify-between border-b border-ink-100 py-2.5 last:border-0 dark:border-ink-800">
                             <p class="text-sm text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($record->record_date)->format('d M Y') }}</p>
@@ -230,6 +237,7 @@
                     @if ($weightRecords->hasPages())
                         <x-pagination :model="$weightRecords" />
                     @endif
+                    </div>
                 </x-card>
 
                 <x-card title="Body Measurements">
@@ -381,6 +389,7 @@
             </x-card>
 
             <x-card title="Recent Follow-ups">
+                <div data-ajax-table="client-followups">
                 @forelse ($followups as $followup)
                     <div class="flex items-center justify-between border-b border-ink-100 py-2.5 last:border-0 dark:border-ink-800">
                         <div>
@@ -395,6 +404,7 @@
                 @if ($followups->hasPages())
                     <x-pagination :model="$followups" />
                 @endif
+                </div>
             </x-card>
 
             @if ($client->notes)
@@ -419,7 +429,9 @@
     </div>
 
     <x-modal title="Update Health Profile">
-        <form method="POST" action="{{ route('clients.health', $client) }}" id="health-form" class="grid gap-4 sm:grid-cols-2">
+        <form method="POST" action="{{ route('clients.health', $client) }}" id="health-form"
+              data-ajax data-ajax-dispatch="close-modal" data-refresh="[data-ajax-table='client-weight'], [data-ajax-table='client-profile-header']"
+              class="grid gap-4 sm:grid-cols-2">
             @csrf
             <x-input label="Height (cm)" type="number" step="0.1" name="height" value="{{ $client->healthProfile?->height }}" />
             <x-input label="Weight (kg)" type="number" step="0.1" name="weight" value="{{ $client->healthProfile?->weight }}" />

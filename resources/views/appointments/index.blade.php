@@ -13,7 +13,7 @@
     </x-slot>
 
     <x-card title="Appointments">
-        <form method="GET" action="{{ route('appointments.index') }}" class="mb-4 grid gap-3 border-b border-ink-100 pb-4 dark:border-ink-800 sm:grid-cols-2 lg:grid-cols-4">
+        <form method="GET" action="{{ route('appointments.index') }}" data-ajax-filter data-target="[data-ajax-table='appointments-table']" class="mb-4 grid gap-3 border-b border-ink-100 pb-4 dark:border-ink-800 sm:grid-cols-2 lg:grid-cols-4">
             <x-input label="Date" name="date" type="date" value="{{ request('date', $date) }}" />
             <x-select label="Status" name="status">
                 <option value="all">All statuses</option>
@@ -27,11 +27,12 @@
                     Filter
                 </x-button>
                 @if (request()->hasAny(['date', 'status']))
-                    <x-button href="{{ route('appointments.index') }}" variant="outline" size="sm">Clear</x-button>
+                    <x-button href="{{ route('appointments.index') }}" variant="outline" size="sm" data-ajax-clear data-target="[data-ajax-table='appointments-table']">Clear</x-button>
                 @endif
             </div>
         </form>
 
+        <div data-ajax-table="appointments-table">
         @if ($appointments->isEmpty())
             <x-empty-state icon="calendar-check" title="No appointments" message="Schedule appointments for your clients." />
         @else
@@ -77,14 +78,14 @@
                                     <td class="px-5 py-4 text-right">
                                         <div class="flex justify-end gap-2">
                                             @if ($appointment->status === 'scheduled')
-                                                <form method="POST" action="{{ route('appointments.complete', $appointment) }}">
+                                                <form method="POST" action="{{ route('appointments.complete', $appointment) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="success" size="sm">
                                                         <x-icon name="check" class="size-3.5" />
                                                         Complete
                                                     </x-button>
                                                 </form>
-                                                <form method="POST" action="{{ route('appointments.cancel', $appointment) }}">
+                                                <form method="POST" action="{{ route('appointments.cancel', $appointment) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="ghost" size="sm" class="!text-red-500">
                                                         <x-icon name="x" class="size-3.5" />
@@ -104,5 +105,6 @@
                 <x-pagination :model="$appointments" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

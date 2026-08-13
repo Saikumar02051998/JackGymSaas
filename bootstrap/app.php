@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\ConvertRedirectToJson;
 use App\Http\Middleware\EnsureClient;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureSaasOwner;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             SetGymContext::class,
+            ConvertRedirectToJson::class,
         ]);
 
         $middleware->alias([

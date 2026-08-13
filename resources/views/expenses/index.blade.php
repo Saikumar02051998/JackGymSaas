@@ -23,7 +23,7 @@
 
     <x-card :padding="false" class="mt-6">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('expenses.index') }}" class="flex flex-1 flex-wrap items-center gap-2">
+            <form method="GET" action="{{ route('expenses.index') }}" data-ajax-filter data-target="[data-ajax-table='expenses-table']" class="flex flex-1 flex-wrap items-center gap-2">
                 <input type="date" name="from" value="{{ request('from') }}" class="input w-auto">
                 <input type="date" name="to" value="{{ request('to') }}" class="input w-auto">
                 <select name="category" class="input w-auto">
@@ -36,6 +36,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="expenses-table">
         @if ($expenses->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="banknotes" title="No expenses found" message="Recorded expenses will appear here." />
@@ -67,7 +68,7 @@
                                 <td class="px-5 py-4 font-bold text-ink-900 dark:text-white">{{ money($expense->amount) }}</td>
                                 @if (can_manage('expenses.manage'))
                                     <td class="px-5 py-4 text-right">
-                                        <form method="POST" action="{{ route('expenses.destroy', $expense) }}"
+                                        <form method="POST" action="{{ route('expenses.destroy', $expense) }}" data-ajax
                                               x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete expense?', message: 'This will permanently delete this expense record.', confirmText: 'Delete' } })">
                                             @csrf
                                             @method('DELETE')
@@ -86,5 +87,6 @@
                 <x-pagination :model="$expenses" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

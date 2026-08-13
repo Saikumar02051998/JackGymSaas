@@ -12,7 +12,7 @@
 
     <x-card :padding="false" class="mt-6">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('saas.gyms.index') }}" class="flex flex-1 flex-wrap items-center gap-2">
+            <form method="GET" action="{{ route('saas.gyms.index') }}" data-ajax-filter data-target="[data-ajax-table='gyms-table']" class="flex flex-1 flex-wrap items-center gap-2">
                 <div class="relative min-w-52 flex-1">
                     <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-400"><x-icon name="search" class="size-4" /></span>
                     <input type="search" name="search" value="{{ request('search') }}" placeholder="Search gym name, email, slug..." class="input pl-9">
@@ -27,6 +27,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="gyms-table">
         @if ($gyms->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="building" title="No gyms found" message="Registered gyms will appear here." />
@@ -71,5 +72,6 @@
                 <x-pagination :model="$gyms" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

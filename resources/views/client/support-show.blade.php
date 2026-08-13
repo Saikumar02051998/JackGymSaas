@@ -29,7 +29,7 @@
     </x-card>
 
     <x-card class="mt-6">
-        <div class="space-y-6">
+        <div id="support-thread" class="space-y-6">
             @foreach ($ticket->messages as $message)
                 @php
                     $mine = $message->user_id === auth()->id();
@@ -52,7 +52,7 @@
             @endforeach
         </div>
 
-        <form action="{{ route('client.support.reply', $ticket) }}" method="POST" class="mt-8 border-t border-ink-100 pt-5 dark:border-ink-800">
+        <form action="{{ route('client.support.reply', $ticket) }}" method="POST" data-ajax data-ajax-reset data-refresh="#support-thread" class="mt-8 border-t border-ink-100 pt-5 dark:border-ink-800">
             @csrf
             <x-field label="Reply" name="message">
                 <textarea name="message" rows="4" class="input resize-none" placeholder="Type your reply..." required>{{ old('message') }}</textarea>

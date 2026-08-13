@@ -3,7 +3,7 @@
     description="Track staff check-ins and working hours."
     :breadcrumbs="[['label' => 'Attendance', 'url' => route('attendance.index')], ['label' => 'Staff']]">
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div id="attendance-staff-stats" class="grid gap-4 sm:grid-cols-3">
         <x-stat label="Present Today" :value="$present" icon="check-badge" positive />
         <x-stat label="Total Staff" :value="$totalStaff" icon="users" />
         <x-stat label="My Status" :value="$myRecord?->check_out ? 'Checked out' : ($myRecord?->check_in ? 'Checked in' : 'Not in')" icon="clock" />
@@ -13,7 +13,7 @@
         <x-card title="My Attendance" class="mt-6">
             <div class="flex flex-wrap items-center gap-3">
                 @if ($myRecord?->check_in && ! $myRecord->check_out)
-                    <form method="POST" action="{{ route('attendance.staff-check-out') }}">
+                    <form method="POST" action="{{ route('attendance.staff-check-out') }}" data-ajax data-refresh="#attendance-staff-stats, [data-ajax-table='attendance-staff-table']">
                         @csrf
                         <x-button type="submit">
                             <x-icon name="clock" class="size-4" />
@@ -22,7 +22,7 @@
                     </form>
                     <span class="text-sm text-ink-400">Checked in at <strong class="text-ink-900 dark:text-white">{{ $myRecord->check_in }}</strong></span>
                 @else
-                    <form method="POST" action="{{ route('attendance.staff-check-in') }}">
+                    <form method="POST" action="{{ route('attendance.staff-check-in') }}" data-ajax data-refresh="#attendance-staff-stats, [data-ajax-table='attendance-staff-table']">
                         @csrf
                         <x-button type="submit">
                             <x-icon name="check-badge" class="size-4" />
@@ -42,13 +42,14 @@
 
     <x-card :padding="false" class="mt-6">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('attendance.staff') }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('attendance.staff') }}" data-ajax-filter data-target="[data-ajax-table='attendance-staff-table']" class="flex items-center gap-2">
                 <input type="date" name="date" value="{{ $date }}" class="input w-auto">
                 <x-button type="submit">Filter</x-button>
             </form>
             <p class="ml-auto text-sm text-ink-400">{{ \Carbon\Carbon::parse($date)->format('l, d M Y') }}</p>
         </div>
 
+        <div data-ajax-table="attendance-staff-table" data-poll="15">
         @if ($records->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="users" title="No staff attendance recorded" message="Staff check-ins will appear here." />
@@ -104,5 +105,6 @@
                 <x-pagination :model="$records" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

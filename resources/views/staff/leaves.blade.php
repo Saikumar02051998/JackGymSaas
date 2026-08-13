@@ -91,7 +91,7 @@
 
     <x-card :padding="false">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('staff.leaves.index') }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('staff.leaves.index') }}" data-ajax-filter data-target="[data-ajax-table='staff-leaves-table']" class="flex items-center gap-2">
                 <select name="status" class="input w-auto">
                     <option value="all" {{ request('status', 'all') === 'all' ? 'selected' : '' }}>All statuses</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -103,6 +103,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="staff-leaves-table">
         @if ($leaves->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="calendar" title="No leave requests" message="Leave requests will appear here." />
@@ -146,11 +147,11 @@
                                     <td class="px-5 py-4 text-right">
                                         @if ($leave->status === 'pending')
                                             <div class="flex justify-end gap-2">
-                                                <form method="POST" action="{{ route('staff.leaves.approve', $leave) }}">
+                                                <form method="POST" action="{{ route('staff.leaves.approve', $leave) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="success" size="sm">Approve</x-button>
                                                 </form>
-                                                <form method="POST" action="{{ route('staff.leaves.reject', $leave) }}">
+                                                <form method="POST" action="{{ route('staff.leaves.reject', $leave) }}" data-ajax>
                                                     @csrf
                                                     <x-button type="submit" variant="ghost" size="sm" class="!text-red-500">Reject</x-button>
                                                 </form>
@@ -169,5 +170,6 @@
                 <x-pagination :model="$leaves" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

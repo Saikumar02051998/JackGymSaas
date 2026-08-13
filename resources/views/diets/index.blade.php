@@ -19,6 +19,7 @@
         <a href="{{ route('diets.index', ['status' => 'completed']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'completed'])>Completed</a>
     </div>
 
+    <div data-ajax-table="diets-table">
     @if ($plans->isEmpty())
         <x-card>
             <div class="p-8">
@@ -54,4 +55,5 @@
             <x-pagination :model="$plans" />
         </div>
     @endif
+    </div>
 </x-layouts.app>

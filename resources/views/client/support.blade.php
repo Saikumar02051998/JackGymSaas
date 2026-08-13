@@ -6,6 +6,7 @@
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
             <x-card>
+                <div data-ajax-table="client-support-table">
                 @if ($tickets->isEmpty())
                     <x-empty-state icon="support" title="No support tickets" message="Need help? Create a ticket using the form and our team will get back to you." />
                 @else
@@ -46,12 +47,13 @@
                     </div>
                     <x-pagination :model="$tickets" />
                 @endif
+                </div>
             </x-card>
         </div>
 
         <div>
             <x-card title="Create a Ticket">
-                <form action="{{ route('client.support.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('client.support.store') }}" method="POST" data-ajax data-ajax-reset data-refresh="[data-ajax-table='client-support-table']" class="space-y-4">
                     @csrf
 
                     <x-input name="subject" label="Subject" :required="true" value="{{ old('subject') }}" />

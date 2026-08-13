@@ -11,7 +11,7 @@
 
     <div class="mt-6">
         <x-card title="Support Tickets">
-            <form method="GET" action="{{ route('support.index') }}" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
+            <form method="GET" action="{{ route('support.index') }}" data-ajax-filter data-target="[data-ajax-table='support-table']" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                 <x-select label="Status" name="status">
                     <option value="all">All statuses</option>
                     @foreach (['open' => 'Open', 'in_progress' => 'In progress', 'resolved' => 'Resolved', 'closed' => 'Closed'] as $value => $label)
@@ -30,6 +30,7 @@
                 </x-button>
             </form>
 
+            <div data-ajax-table="support-table">
             @if ($tickets->isEmpty())
                 <x-empty-state icon="support" title="No tickets" message="Support tickets submitted by users will appear here." />
             @else
@@ -77,6 +78,7 @@
                     <x-pagination :model="$tickets" />
                 </div>
             @endif
+            </div>
         </x-card>
     </div>
 </x-layouts.app>

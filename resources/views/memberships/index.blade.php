@@ -13,25 +13,25 @@
     </x-slot>
 
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <a href="{{ route('memberships.index', ['status' => 'active']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('memberships.index', ['status' => 'active']) }}" data-ajax-link data-target="[data-ajax-table='memberships-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body">
                 <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Active</p>
                 <p class="mt-1 text-2xl font-bold text-emerald-500">{{ $counts['active'] }}</p>
             </div>
         </a>
-        <a href="{{ route('memberships.index', ['status' => 'expiring']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('memberships.index', ['status' => 'expiring']) }}" data-ajax-link data-target="[data-ajax-table='memberships-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body">
                 <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Expiring (30d)</p>
                 <p class="mt-1 text-2xl font-bold text-amber-500">{{ $counts['expiring'] }}</p>
             </div>
         </a>
-        <a href="{{ route('memberships.index', ['status' => 'upcoming']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('memberships.index', ['status' => 'upcoming']) }}" data-ajax-link data-target="[data-ajax-table='memberships-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body">
                 <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Upcoming</p>
                 <p class="mt-1 text-2xl font-bold text-blue-500">{{ $counts['upcoming'] }}</p>
             </div>
         </a>
-        <a href="{{ route('memberships.index', ['status' => 'expired']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('memberships.index', ['status' => 'expired']) }}" data-ajax-link data-target="[data-ajax-table='memberships-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body">
                 <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Expired</p>
                 <p class="mt-1 text-2xl font-bold text-red-500">{{ $counts['expired'] }}</p>
@@ -40,14 +40,15 @@
     </div>
 
     <div class="mt-6">
+        <div data-ajax-table="memberships-table">
         <x-card :padding="false">
             <div class="card-body flex flex-col gap-3 border-b border-ink-100 p-4 dark:border-ink-800 sm:flex-row sm:items-center">
-                <form method="GET" class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+                <form method="GET" action="{{ route('memberships.index') }}" data-ajax-filter data-target="[data-ajax-table='memberships-table']" class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
                     <div class="relative flex-1">
                         <x-icon name="search" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by member, ID or membership no..." class="input !pl-10">
                     </div>
-                    <select name="status" class="input appearance-none sm:w-44" onchange="this.form.submit()">
+                    <select name="status" class="input appearance-none sm:w-44" onchange="this.form.requestSubmit()">
                         <option value="all" {{ request('status') === 'all' || ! request('status') ? 'selected' : '' }}>All Statuses</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="expiring" {{ request('status') === 'expiring' ? 'selected' : '' }}>Expiring Soon</option>
@@ -58,7 +59,7 @@
                     </select>
                     <x-button type="submit">Filter</x-button>
                     @if (request()->hasAny(['search', 'status']))
-                        <x-button href="{{ route('memberships.index') }}" variant="outline" size="sm">Clear</x-button>
+                        <x-button href="{{ route('memberships.index') }}" variant="outline" size="sm" data-ajax-clear data-target="[data-ajax-table='memberships-table']">Clear</x-button>
                     @endif
                 </form>
             </div>
@@ -106,7 +107,7 @@
                                     </td>
                                     <td class="px-5 py-4 text-right">
                                         @if ($membership->status === 'active' && can_manage('memberships.renew'))
-                                            <form method="POST" action="{{ route('memberships.renew', $membership) }}" class="inline">
+                                            <form method="POST" action="{{ route('memberships.renew', $membership) }}" class="inline" data-ajax>
                                                 @csrf
                                                 <input type="hidden" name="plan_id" value="{{ $membership->plan_id }}">
                                                 <button type="submit" class="rounded-lg p-2 text-ink-400 transition-colors hover:bg-ink-100 hover:text-gold-600 dark:hover:bg-ink-800" title="Renew">
@@ -115,7 +116,7 @@
                                             </form>
                                         @endif
                                         @if (in_array($membership->status, ['active', 'upcoming', 'frozen']) && can_manage('memberships.renew'))
-                                            <form method="POST" action="{{ route('memberships.cancel', $membership) }}" class="inline"
+                                            <form method="POST" action="{{ route('memberships.cancel', $membership) }}" class="inline" data-ajax
                                                   x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Cancel membership?', message: 'This will cancel {{ $membership->client?->display_name }}'s membership.', confirmText: 'Cancel' } })">
                                                 @csrf
                                                 <button type="submit" class="rounded-lg p-2 text-ink-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10" title="Cancel">
@@ -134,5 +135,6 @@
                 </div>
             @endif
         </x-card>
+        </div>
     </div>
 </x-layouts.app>

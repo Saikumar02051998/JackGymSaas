@@ -6,6 +6,7 @@
     <div class="grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
             <x-card :padding="false" title="Roles">
+                <div data-ajax-table="roles-table">
                 @if ($roles->isEmpty())
                     <div class="p-8">
                         <x-empty-state icon="shield" title="No roles found" message="System roles will appear here." />
@@ -43,7 +44,7 @@
                                                         Edit
                                                     </a>
                                                     @if (! $role->is_system)
-                                                        <form method="POST" action="{{ route('staff.roles.destroy', $role) }}"
+                                                        <form method="POST" action="{{ route('staff.roles.destroy', $role) }}" data-ajax
                                                               x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete role?', message: 'Delete the {{ $role->name }} role.', confirmText: 'Delete' } })">
                                                             @csrf
                                                             @method('DELETE')
@@ -66,6 +67,7 @@
                         <x-pagination :model="$roles" />
                     </div>
                 @endif
+                </div>
             </x-card>
         </div>
 

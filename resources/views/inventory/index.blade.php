@@ -12,7 +12,7 @@
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
             <x-card title="Inventory">
-                <form method="GET" action="{{ route('inventory.index') }}" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
+                <form method="GET" action="{{ route('inventory.index') }}" data-ajax-filter data-target="[data-ajax-table='inventory-table']" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                     <div class="min-w-48 flex-1">
                         <x-input label="Search" name="search" value="{{ request('search') }}" placeholder="Search items..." />
                     </div>
@@ -34,6 +34,7 @@
                     </x-button>
                 </form>
 
+                <div data-ajax-table="inventory-table">
                 @if ($items->isEmpty())
                     <x-empty-state icon="box" title="No items found" message="Add inventory items to track stock levels." />
                 @else
@@ -74,7 +75,7 @@
                                                         </summary>
                                                         <div class="absolute right-0 top-9 z-20 w-72 rounded-2xl border border-ink-100 bg-white p-5 shadow-xl dark:border-ink-800 dark:bg-night-900">
                                                             <p class="mb-3 text-sm font-bold text-ink-900 dark:text-white">Adjust stock: {{ $item->name }}</p>
-                                                            <form method="POST" action="{{ route('inventory.stock', $item) }}" class="space-y-3">
+                                                            <form method="POST" action="{{ route('inventory.stock', $item) }}" data-ajax class="space-y-3">
                                                                 @csrf
                                                                 <div class="grid grid-cols-2 gap-3">
                                                                     <x-select label="Type" name="type">
@@ -96,7 +97,7 @@
                                                         </summary>
                                                         <div class="absolute right-0 top-9 z-20 w-80 rounded-2xl border border-ink-100 bg-white p-5 shadow-xl dark:border-ink-800 dark:bg-night-900">
                                                             <p class="mb-3 text-sm font-bold text-ink-900 dark:text-white">Edit {{ $item->name }}</p>
-                                                            <form method="POST" action="{{ route('inventory.update', $item) }}" class="space-y-3">
+                                                            <form method="POST" action="{{ route('inventory.update', $item) }}" data-ajax class="space-y-3">
                                                                 @csrf
                                                                 @method('PUT')
                                                                 <x-input label="Name" name="name" value="{{ old('name', $item->name) }}" required />
@@ -122,7 +123,7 @@
                                                             </form>
                                                         </div>
                                                     </details>
-                                                    <form method="POST" action="{{ route('inventory.destroy', $item) }}"
+                                                    <form method="POST" action="{{ route('inventory.destroy', $item) }}" data-ajax
                                                           x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Remove item?', message: 'Remove {{ $item->name }} from inventory.', confirmText: 'Remove' } })">
                                                         @csrf
                                                         @method('DELETE')
@@ -142,6 +143,7 @@
                         <x-pagination :model="$items" />
                     </div>
                 @endif
+                </div>
             </x-card>
         </div>
 

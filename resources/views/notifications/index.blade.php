@@ -4,6 +4,7 @@
     :breadcrumbs="[['label' => 'Notifications']]">
 
     <x-card title="Notifications" :padding="false">
+        <div data-ajax-table="notifications-table">
         @if ($notifications->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="bell" title="No notifications" message="You're all caught up." />
@@ -33,7 +34,7 @@
                             <p class="mt-1 text-xs text-ink-400">{{ $notification->created_at->diffForHumans() }}</p>
                         </div>
                         @if ($unread)
-                            <form method="POST" action="{{ route('notifications.read', $notification) }}" class="shrink-0">
+                            <form method="POST" action="{{ route('notifications.read', $notification) }}" class="shrink-0" data-ajax>
                                 @csrf
                                 <x-button type="submit" variant="ghost" size="sm">
                                     <x-icon name="check" class="size-3.5" />
@@ -48,11 +49,12 @@
                 <x-pagination :model="$notifications" />
             </div>
         @endif
+        </div>
     </x-card>
 
     @if (! $notifications->isEmpty() && auth()->user()->unreadNotifications->isNotEmpty())
         <div class="mt-4 flex justify-end">
-            <form method="POST" action="{{ route('notifications.read-all') }}">
+            <form method="POST" action="{{ route('notifications.read-all') }}" data-ajax data-refresh="[data-ajax-table='notifications-table']">
                 @csrf
                 <x-button type="submit" variant="outline" size="sm">
                     <x-icon name="check-badge" class="size-4" />

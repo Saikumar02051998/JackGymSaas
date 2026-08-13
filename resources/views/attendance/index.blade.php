@@ -5,7 +5,7 @@
 
     <x-slot name="actions">
         @if (can_manage('attendance.manage'))
-            <form method="POST" action="{{ route('attendance.checkout-all') }}" class="inline">
+            <form method="POST" action="{{ route('attendance.checkout-all') }}" class="inline" data-ajax data-refresh="#attendance-stats, [data-ajax-table='attendance-table']">
                 @csrf
                 <x-button type="submit" variant="outline" size="sm">
                     <x-icon name="clock" class="size-4" />
@@ -15,7 +15,7 @@
         @endif
     </x-slot>
 
-    <div class="grid gap-4 sm:grid-cols-3">
+    <div id="attendance-stats" class="grid gap-4 sm:grid-cols-3">
         <x-stat label="Total Today" :value="$todayCount" icon="calendar-check" />
         <x-stat label="Checked In" :value="$checkedIn" icon="check-badge" positive />
         <x-stat label="Checked Out" :value="$checkedOut" icon="clock" />
@@ -23,7 +23,7 @@
 
     @if (can_manage('attendance.manage'))
         <x-card title="Quick Check-In" class="mt-6">
-            <form method="POST" action="{{ route('attendance.check-in') }}" class="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <form method="POST" action="{{ route('attendance.check-in') }}" data-ajax data-ajax-reset data-refresh="#attendance-stats, [data-ajax-table='attendance-table']" class="flex flex-col gap-3 sm:flex-row sm:items-end">
                 @csrf
                 <div class="flex-1">
                     <x-select label="Select member" name="client_id" required placeholder="Search by name or member ID">
@@ -47,7 +47,7 @@
     <x-card :padding="false" class="mt-6">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
             <div>
-                <form method="GET" action="{{ route('attendance.index') }}" class="flex items-center gap-2">
+                <form method="GET" action="{{ route('attendance.index') }}" data-ajax-filter data-target="[data-ajax-table='attendance-table']" class="flex items-center gap-2">
                     <input type="date" name="date" value="{{ $date }}" class="input w-auto">
                     <x-button type="submit">Filter</x-button>
                 </form>
@@ -55,6 +55,7 @@
             <p class="ml-auto text-sm text-ink-400">{{ \Carbon\Carbon::parse($date)->format('l, d M Y') }}</p>
         </div>
 
+        <div data-ajax-table="attendance-table" data-poll="15">
         @if ($records->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="clock" title="No attendance on this day" message="Records will appear here once members check in." />
@@ -105,7 +106,7 @@
                                 </td>
                                 <td class="px-5 py-4 text-right">
                                     @if (! $record->check_out && can_manage('attendance.manage'))
-                                        <form method="POST" action="{{ route('attendance.check-out') }}" class="inline">
+                                        <form method="POST" action="{{ route('attendance.check-out') }}" class="inline" data-ajax data-refresh="#attendance-stats, [data-ajax-table='attendance-table']">
                                             @csrf
                                             <input type="hidden" name="client_id" value="{{ $record->client_id }}">
                                             <x-button type="submit" variant="ghost" size="sm">Check Out</x-button>
@@ -121,5 +122,6 @@
                 <x-pagination :model="$records" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

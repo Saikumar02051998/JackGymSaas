@@ -17,7 +17,7 @@
     </x-slot>
 
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <a href="{{ route('clients.index') }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('clients.index') }}" data-ajax-link data-target="[data-ajax-table='clients-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">All Clients</p>
@@ -26,7 +26,7 @@
                 <span class="flex size-10 items-center justify-center rounded-xl bg-gold-400/15 text-gold-600 dark:text-gold-400"><x-icon name="users" class="size-5" /></span>
             </div>
         </a>
-        <a href="{{ route('clients.index', ['status' => 'active']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('clients.index', ['status' => 'active']) }}" data-ajax-link data-target="[data-ajax-table='clients-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Active</p>
@@ -35,7 +35,7 @@
                 <span class="flex size-10 items-center justify-center rounded-xl bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"><x-icon name="check-badge" class="size-5" /></span>
             </div>
         </a>
-        <a href="{{ route('clients.index', ['status' => 'expiring']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('clients.index', ['status' => 'expiring']) }}" data-ajax-link data-target="[data-ajax-table='clients-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Expiring Soon</p>
@@ -44,7 +44,7 @@
                 <span class="flex size-10 items-center justify-center rounded-xl bg-amber-400/15 text-amber-600 dark:text-amber-400"><x-icon name="clock" class="size-5" /></span>
             </div>
         </a>
-        <a href="{{ route('clients.index', ['status' => 'expired']) }}" class="card transition-colors hover:border-gold-300">
+        <a href="{{ route('clients.index', ['status' => 'expired']) }}" data-ajax-link data-target="[data-ajax-table='clients-table']" class="card transition-colors hover:border-gold-300">
             <div class="card-body flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Expired</p>
@@ -56,23 +56,24 @@
     </div>
 
     <div class="mt-6">
+        <div data-ajax-table="clients-table">
         <x-card :padding="false">
             <div class="card-body flex flex-col gap-3 border-b border-ink-100 p-4 dark:border-ink-800 sm:flex-row sm:items-center">
-                <form method="GET" class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+                <form method="GET" action="{{ route('clients.index') }}" data-ajax-filter data-target="[data-ajax-table='clients-table']" class="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
                     <div class="relative flex-1">
                         <x-icon name="search" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, email, phone or member ID..."
                                class="input !pl-10">
                     </div>
                     <div class="flex gap-3">
-                        <select name="status" class="input appearance-none sm:w-44" onchange="this.form.submit()">
+                        <select name="status" class="input appearance-none sm:w-44" onchange="this.form.requestSubmit()">
                             <option value="all" {{ request('status') === 'all' || ! request('status') ? 'selected' : '' }}>All Statuses</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                             <option value="expiring" {{ request('status') === 'expiring' ? 'selected' : '' }}>Expiring Soon</option>
                             <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>Expired</option>
                             <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
-                        <select name="coach" class="input appearance-none sm:w-44" onchange="this.form.submit()">
+                        <select name="coach" class="input appearance-none sm:w-44" onchange="this.form.requestSubmit()">
                             <option value="">All Coaches</option>
                             @foreach ($coaches as $coach)
                                 <option value="{{ $coach->id }}" {{ request('coach') == $coach->id ? 'selected' : '' }}>{{ $coach->display_name }}</option>
@@ -80,7 +81,7 @@
                         </select>
                         <x-button type="submit">Filter</x-button>
                         @if (request()->hasAny(['search', 'status', 'coach']))
-                            <x-button href="{{ route('clients.index') }}" variant="outline" size="sm">Clear</x-button>
+                            <x-button href="{{ route('clients.index') }}" variant="outline" size="sm" data-ajax-clear data-target="[data-ajax-table='clients-table']">Clear</x-button>
                         @endif
                     </div>
                 </form>
@@ -145,6 +146,7 @@
                                             @endif
                                             @if (can_manage('clients.delete'))
                                                 <form method="POST" action="{{ route('clients.destroy', $client) }}"
+                                                      data-ajax
                                                       x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete client?', message: 'This will permanently remove {{ $client->user?->name }} and their access.', confirmText: 'Delete' } })">
                                                     @csrf
                                                     @method('DELETE')
@@ -165,5 +167,6 @@
                 </div>
             @endif
         </x-card>
+        </div>
     </div>
 </x-layouts.app>

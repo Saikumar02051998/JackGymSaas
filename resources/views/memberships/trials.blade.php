@@ -4,21 +4,22 @@
     :breadcrumbs="[['label' => 'Trial Members']]">
 
     <div class="mb-6 flex flex-wrap items-center gap-2">
-        <a href="{{ route('memberships.trials') }}" @class(['btn-ghost btn-sm', 'btn-outline' => ! request('status')])>All</a>
-        <a href="{{ route('memberships.trials', ['status' => 'active']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'active'])>
+        <a href="{{ route('memberships.trials') }}" data-ajax-link data-target="[data-ajax-table='memberships-trials-table']" @class(['btn-ghost btn-sm', 'btn-outline' => ! request('status')])>All</a>
+        <a href="{{ route('memberships.trials', ['status' => 'active']) }}" data-ajax-link data-target="[data-ajax-table='memberships-trials-table']" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'active'])>
             Active
             <x-badge color="green" class="ml-1">{{ $trials->where('status', 'active')->count() }}</x-badge>
         </a>
-        <a href="{{ route('memberships.trials', ['status' => 'converted']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'converted'])>
+        <a href="{{ route('memberships.trials', ['status' => 'converted']) }}" data-ajax-link data-target="[data-ajax-table='memberships-trials-table']" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'converted'])>
             Converted
             <x-badge color="blue" class="ml-1">{{ $trials->where('status', 'converted')->count() }}</x-badge>
         </a>
-        <a href="{{ route('memberships.trials', ['status' => 'expired']) }}" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'expired'])>
+        <a href="{{ route('memberships.trials', ['status' => 'expired']) }}" data-ajax-link data-target="[data-ajax-table='memberships-trials-table']" @class(['btn-ghost btn-sm', 'btn-outline' => request('status') === 'expired'])>
             Expired
             <x-badge color="red" class="ml-1">{{ $trials->where('status', 'expired')->count() }}</x-badge>
         </a>
     </div>
 
+    <div data-ajax-table="memberships-trials-table">
     @if ($trials->isEmpty())
         <x-card>
             <div class="p-8">
@@ -86,4 +87,5 @@
             </div>
         </x-card>
     @endif
+    </div>
 </x-layouts.app>

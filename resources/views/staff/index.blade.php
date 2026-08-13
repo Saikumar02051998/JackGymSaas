@@ -14,7 +14,7 @@
 
     <x-card :padding="false">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
-            <form method="GET" action="{{ route('staff.index') }}" class="flex flex-1 flex-wrap items-center gap-2">
+            <form method="GET" action="{{ route('staff.index') }}" data-ajax-filter data-target="[data-ajax-table='staff-table']" class="flex flex-1 flex-wrap items-center gap-2">
                 <div class="relative min-w-56 flex-1">
                     <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-ink-400"><x-icon name="search" class="size-4" /></span>
                     <input type="search" name="search" value="{{ request('search') }}" placeholder="Search name, email, employee ID..." class="input pl-9">
@@ -29,6 +29,7 @@
             </form>
         </div>
 
+        <div data-ajax-table="staff-table">
         @if ($staff->isEmpty())
             <div class="p-8">
                 <x-empty-state icon="users" title="No staff found" message="Add your first team member to get started." @if (can_manage('staff.create')) action="{{ route('staff.create') }}" action-label="Add Staff" @endif />
@@ -75,13 +76,13 @@
                                             <a href="{{ route('staff.edit', $member) }}" class="btn-outline btn-sm">
                                                 <x-icon name="pencil" class="size-3.5" />
                                             </a>
-                                            <form method="POST" action="{{ route('staff.toggle-status', $member) }}" class="inline">
+                                            <form method="POST" action="{{ route('staff.toggle-status', $member) }}" class="inline" data-ajax>
                                                 @csrf
                                                 <x-button type="submit" variant="ghost" size="sm">{{ $member->status === 'active' ? 'Disable' : 'Enable' }}</x-button>
                                             </form>
                                         @endif
                                         @if (can_manage('staff.delete') && $member->id !== auth()->id())
-                                            <form method="POST" action="{{ route('staff.destroy', $member) }}"
+                                            <form method="POST" action="{{ route('staff.destroy', $member) }}" data-ajax
                                                   x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Remove staff?', message: 'This will permanently remove {{ $member->name }} and their profile.', confirmText: 'Remove' } })">
                                                 @csrf
                                                 @method('DELETE')
@@ -101,5 +102,6 @@
                 <x-pagination :model="$staff" />
             </div>
         @endif
+        </div>
     </x-card>
 </x-layouts.app>

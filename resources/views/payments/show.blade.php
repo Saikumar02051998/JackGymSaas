@@ -125,7 +125,7 @@
 
             @if (can_manage('payments.refund') && in_array($payment->status, ['success', 'partially_refunded']))
                 <x-card title="Refund Payment">
-                    <form method="POST" action="{{ route('payments.refund', $payment) }}" class="space-y-3">
+                    <form method="POST" action="{{ route('payments.refund', $payment) }}" data-ajax class="space-y-3">
                         @csrf
                         <x-input label="Amount" type="number" step="0.01" min="0.01" name="amount" value="{{ old('amount', $payment->final_amount) }}" help="Max {{ money($payment->final_amount) }}" />
                         <x-field label="Notes" name="notes">
