@@ -143,6 +143,9 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="p-4">
+                    <x-pagination :model="$payments" />
+                </div>
             @endif
         </x-card>
     @endif

@@ -40,12 +40,12 @@
 
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-stat label="Assigned Clients" :value="$profile?->assignedClients->count() ?? 0" icon="users" />
-        <x-stat label="Salary Records" :value="$profile?->salaries->count() ?? 0" icon="banknotes" />
-        <x-stat label="Leave Requests" :value="$profile?->leaves->count() ?? 0" icon="calendar" />
-        <x-stat label="Attendance Logs" :value="$profile?->attendance->count() ?? 0" icon="clock" />
+        <x-stat label="Salary Records" :value="$salaries?->total() ?? 0" icon="banknotes" />
+        <x-stat label="Leave Requests" :value="$leaves?->total() ?? 0" icon="calendar" />
+        <x-stat label="Attendance Logs" :value="$attendance?->total() ?? 0" icon="clock" />
     </div>
 
-    @if ($profile && $profile->salaries->isNotEmpty())
+    @if ($salaries && $salaries->isNotEmpty())
         <x-card title="Salary History" :padding="false" class="mt-6">
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -62,7 +62,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
-                        @foreach ($profile->salaries as $salary)
+                        @foreach ($salaries as $salary)
                             <tr>
                                 <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $salary->period }}</td>
                                 <td class="px-5 py-3">{{ money($salary->basic) }}</td>
@@ -79,11 +79,14 @@
                     </tbody>
                 </table>
             </div>
+            <div class="p-4">
+                <x-pagination :model="$salaries" />
+            </div>
         </x-card>
     @endif
 
     <div class="mt-6 grid gap-6 lg:grid-cols-2">
-        @if ($profile && $profile->attendance->isNotEmpty())
+        @if ($attendance && $attendance->isNotEmpty())
             <x-card title="Recent Attendance" :padding="false">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -97,7 +100,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
-                            @foreach ($profile->attendance as $record)
+                            @foreach ($attendance as $record)
                                 <tr>
                                     <td class="px-5 py-3 text-ink-900 dark:text-white">{{ \Carbon\Carbon::parse($record->attendance_date)->format('d M') }}</td>
                                     <td class="px-5 py-3">{{ $record->check_in ?? '—' }}</td>
@@ -111,10 +114,13 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="p-4">
+                    <x-pagination :model="$attendance" />
+                </div>
             </x-card>
         @endif
 
-        @if ($profile && $profile->leaves->isNotEmpty())
+        @if ($leaves && $leaves->isNotEmpty())
             <x-card title="Leave Requests" :padding="false">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -127,7 +133,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
-                            @foreach ($profile->leaves as $leave)
+                            @foreach ($leaves as $leave)
                                 <tr>
                                     <td class="px-5 py-3 font-medium text-ink-900 dark:text-white">{{ $leave->leave_type }}</td>
                                     <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($leave->start_date)->format('d M') }} &rarr; {{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}</td>
@@ -139,6 +145,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <div class="p-4">
+                    <x-pagination :model="$leaves" />
                 </div>
             </x-card>
         @endif

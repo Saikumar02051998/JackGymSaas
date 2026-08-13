@@ -25,7 +25,7 @@ class SubscriptionController extends Controller
             ->where('slug', '!=', 'trial')
             ->orderBy('price_monthly')
             ->get();
-        $payments = $gym->saasPayments()->with('subscriptionPlan')->orderByDesc('created_at')->get();
+        $payments = $gym->saasPayments()->with('subscriptionPlan')->orderByDesc('created_at')->paginate(15);
 
         return view('subscription.index', compact('gym', 'plans', 'payments'));
     }

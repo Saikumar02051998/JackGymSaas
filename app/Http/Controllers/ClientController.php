@@ -180,16 +180,12 @@ class ClientController extends Controller
             'healthProfile',
             'trainer.user',
             'activeMembership.plan',
-            'memberships.plan',
-            'attendance' => fn ($q) => $q->orderByDesc('attendance_date')->take(30),
             'payments' => fn ($q) => $q->orderByDesc('payment_date')->take(10),
             'invoices' => fn ($q) => $q->orderByDesc('created_at')->take(10),
-            'weightRecords' => fn ($q) => $q->orderByDesc('record_date')->take(30),
             'bodyMeasurements' => fn ($q) => $q->orderByDesc('record_date')->take(10),
             'fitnessGoals' => fn ($q) => $q->where('status', '!=', 'completed'),
             'workoutPlans' => fn ($q) => $q->where('status', 'active'),
             'dietPlans' => fn ($q) => $q->where('status', 'active'),
-            'followups' => fn ($q) => $q->latest(),
             'appointments' => fn ($q) => $q->orderByDesc('appointment_date')->take(10),
             'ptSessions' => fn ($q) => $q->orderByDesc('session_date')->take(10),
             'documents',
@@ -198,7 +194,12 @@ class ClientController extends Controller
         $totalAttendance = $client->attendance()->where('status', 'present')->count();
         $lastVisit = $client->attendance()->orderByDesc('attendance_date')->first();
 
-        return view('clients.show', compact('client', 'totalAttendance', 'lastVisit'));
+        $memberships = $client->memberships()->with('plan')->orderByDesc('start_date')->paginate(10);
+        $attendance = $client->attendance()->orderByDesc('attendance_date')->paginate(10);
+        $weightRecords = $client->weightRecords()->orderByDesc('record_date')->paginate(10);
+        $followups = $client->followups()->latest()->paginate(10);
+
+        return view('clients.show', compact('client', 'totalAttendance', 'lastVisit', 'memberships', 'attendance', 'weightRecords', 'followups'));
     }
 
     public function edit(Client $client)

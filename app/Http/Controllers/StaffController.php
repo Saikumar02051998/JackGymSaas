@@ -111,15 +111,13 @@ class StaffController extends Controller
     {
         $this->assertStaff($user);
 
-        $user->load([
-            'roles',
-            'staffProfile',
-            'staffProfile.salaries' => fn ($q) => $q->orderByDesc('period'),
-            'staffProfile.attendance' => fn ($q) => $q->orderByDesc('attendance_date')->take(30),
-            'staffProfile.leaves' => fn ($q) => $q->orderByDesc('start_date'),
-        ]);
+        $user->load(['roles', 'staffProfile']);
 
-        return view('staff.show', compact('user'));
+        $salaries = $user->staffProfile?->salaries()->orderByDesc('period')->paginate(10);
+        $attendance = $user->staffProfile?->attendance()->orderByDesc('attendance_date')->paginate(10);
+        $leaves = $user->staffProfile?->leaves()->orderByDesc('start_date')->paginate(10);
+
+        return view('staff.show', compact('user', 'salaries', 'attendance', 'leaves'));
     }
 
     public function edit(User $user)

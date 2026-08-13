@@ -126,7 +126,7 @@
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="space-y-6 lg:col-span-2">
             <x-card title="Membership History">
-                @forelse ($client->memberships as $membership)
+                @forelse ($memberships as $membership)
                     <div class="flex items-center justify-between border-b border-ink-100 py-3 last:border-0 dark:border-ink-800">
                         <div>
                             <p class="text-sm font-semibold text-ink-900 dark:text-white">{{ $membership->plan?->name ?? 'Membership' }}</p>
@@ -142,6 +142,9 @@
                 @empty
                     <div class="py-8 text-center text-sm text-ink-400">No memberships yet.</div>
                 @endforelse
+                @if ($memberships->hasPages())
+                    <x-pagination :model="$memberships" />
+                @endif
             </x-card>
 
             <x-card title="Recent Attendance">
@@ -157,7 +160,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
-                            @forelse ($client->attendance as $attendance)
+                            @forelse ($attendance as $attendance)
                                 <tr>
                                     <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($attendance->attendance_date)->format('d M Y') }}</td>
                                     <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $attendance->check_in ? \Carbon\Carbon::parse($attendance->check_in)->format('h:i A') : '—' }}</td>
@@ -173,6 +176,9 @@
                         </tbody>
                     </table>
                 </div>
+                @if ($attendance->hasPages())
+                    <x-pagination :model="$attendance" />
+                @endif
             </x-card>
 
             <div class="grid gap-6 md:grid-cols-2">
@@ -213,7 +219,7 @@
 
             <div class="grid gap-6 md:grid-cols-2">
                 <x-card title="Weight Progress">
-                    @forelse ($client->weightRecords as $record)
+                    @forelse ($weightRecords as $record)
                         <div class="flex items-center justify-between border-b border-ink-100 py-2.5 last:border-0 dark:border-ink-800">
                             <p class="text-sm text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($record->record_date)->format('d M Y') }}</p>
                             <p class="text-sm font-semibold text-ink-900 dark:text-white">{{ $record->weight }} kg</p>
@@ -221,6 +227,9 @@
                     @empty
                         <div class="py-8 text-center text-sm text-ink-400">No weight records yet.</div>
                     @endforelse
+                    @if ($weightRecords->hasPages())
+                        <x-pagination :model="$weightRecords" />
+                    @endif
                 </x-card>
 
                 <x-card title="Body Measurements">
@@ -372,7 +381,7 @@
             </x-card>
 
             <x-card title="Recent Follow-ups">
-                @forelse ($client->followups as $followup)
+                @forelse ($followups as $followup)
                     <div class="flex items-center justify-between border-b border-ink-100 py-2.5 last:border-0 dark:border-ink-800">
                         <div>
                             <p class="text-sm font-semibold text-ink-900 dark:text-white">{{ ucfirst($followup->type) }}</p>
@@ -383,6 +392,9 @@
                 @empty
                     <div class="py-8 text-center text-sm text-ink-400">No follow-ups.</div>
                 @endforelse
+                @if ($followups->hasPages())
+                    <x-pagination :model="$followups" />
+                @endif
             </x-card>
 
             @if ($client->notes)
