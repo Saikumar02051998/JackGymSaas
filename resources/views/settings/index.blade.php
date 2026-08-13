@@ -81,7 +81,7 @@
                 <form method="POST" action="{{ route('settings.payment-gateway') }}" class="space-y-4">
                     @csrf
 
-                    <x-input label="Razorpay Key ID" name="key_id" value="{{ old('key_id') }}" autocomplete="off" help="Saved per gym; leave blank to keep current" />
+                    <x-input label="Razorpay Key ID" name="key_id" value="{{ old('key_id', (string) gym_setting('razorpay_key_id')) }}" autocomplete="off" help="Saved per gym; leave blank to keep current" />
                     <x-input label="Razorpay Key Secret" name="key_secret" type="password" autocomplete="new-password" help="Leave blank to keep current" />
                     <x-input label="Webhook Secret" name="webhook_secret" type="password" autocomplete="new-password" help="Leave blank to keep current" />
 

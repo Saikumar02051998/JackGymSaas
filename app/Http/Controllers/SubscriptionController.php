@@ -58,7 +58,7 @@ class SubscriptionController extends Controller
         return view('subscription.checkout', [
             'order' => $result['order'],
             'payment' => $result['payment'],
-            'keyId' => config('services.razorpay.key_id', env('RAZORPAY_KEY_ID')),
+            'keyId' => app(RazorpayService::class)->keyId(),
         ]);
     }
 

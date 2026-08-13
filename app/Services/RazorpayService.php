@@ -8,20 +8,33 @@ use Illuminate\Support\Facades\Log;
 class RazorpayService
 {
     protected ?Api $api = null;
+    protected string $keyId = '';
+    protected string $webhookSecret = '';
 
     public function __construct()
     {
-        $key = config('services.razorpay.key_id', env('RAZORPAY_KEY_ID'));
-        $secret = config('services.razorpay.key_secret', env('RAZORPAY_KEY_SECRET'));
+        $this->keyId = (string) (gym_setting('razorpay_key_id') ?: config('services.razorpay.key_id') ?: env('RAZORPAY_KEY_ID') ?: '');
+        $secret = (string) (gym_setting('razorpay_key_secret') ?: config('services.razorpay.key_secret') ?: env('RAZORPAY_KEY_SECRET') ?: '');
+        $this->webhookSecret = (string) (gym_setting('razorpay_webhook_secret') ?: config('services.razorpay.webhook_secret') ?: env('RAZORPAY_WEBHOOK_SECRET') ?: '');
 
-        if ($key && $secret) {
-            $this->api = new Api($key, $secret);
+        if ($this->keyId !== '' && $secret !== '') {
+            $this->api = new Api($this->keyId, $secret);
         }
     }
 
     public function isConfigured(): bool
     {
         return $this->api !== null;
+    }
+
+    public function keyId(): string
+    {
+        return $this->keyId;
+    }
+
+    public function webhookSecret(): string
+    {
+        return $this->webhookSecret;
     }
 
     public function createOrder(array $params): array
@@ -69,7 +82,7 @@ class RazorpayService
 
     public function verifyWebhookSignature(string $payload, string $signature): bool
     {
-        $secret = config('services.razorpay.webhook_secret', env('RAZORPAY_WEBHOOK_SECRET'));
+        $secret = $this->webhookSecret;
 
         if (! $secret) {
             return false;

@@ -34,13 +34,32 @@
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-ink-400">Payment</span>
-                            <x-badge :color="match($active->payment_status) { 'paid' => 'green', 'partial' => 'amber', 'pending' => 'blue', default => 'gray' }">{{ ucfirst(str_replace('_', ' ', $active->payment_status)) }}</x-badge>
+                            @if (($active->plan?->name ?? '') === 'Free Trial')
+                                <x-badge color="green">Free</x-badge>
+                            @else
+                                <x-badge :color="match($active->payment_status) { 'paid' => 'green', 'partial' => 'amber', 'pending' => 'blue', default => 'gray' }">{{ ucfirst(str_replace('_', ' ', $active->payment_status)) }}</x-badge>
+                            @endif
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-ink-400">Status</span>
                             <x-badge :color="match($active->status) { 'active' => 'green', 'suspended' => 'amber', 'frozen' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst($active->status) }}</x-badge>
                         </div>
                     </div>
+
+                    @if ($due > 0)
+                        <div class="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Amount Due</p>
+                                    <p class="mt-1 text-xl font-extrabold text-ink-900 dark:text-white">{{ money($due) }}</p>
+                                </div>
+                                <x-button href="{{ route('client.payments.checkout') }}">
+                                    <x-icon name="banknotes" class="size-4" />
+                                    Pay Now
+                                </x-button>
+                            </div>
+                        </div>
+                    @endif
 
                     @if ($active->plan?->features)
                         <div class="mt-5 border-t border-ink-100 pt-4 dark:border-ink-800">
@@ -137,5 +156,53 @@
                 </x-card>
             @endif
         </div>
+    </div>
+
+    <div class="mt-6">
+        <x-card title="Available Plans" :padding="false">
+            @if ($plans->isEmpty())
+                <div class="p-6 text-sm text-ink-400">No plans available right now. Contact the front desk.</div>
+            @else
+                <div class="grid auto-rows-fr gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($plans as $plan)
+                        <div class="flex h-full flex-col rounded-2xl border border-ink-100 p-5 dark:border-ink-800">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h4 class="font-bold text-ink-900 dark:text-white">{{ $plan->name }}</h4>
+                                    <p class="mt-0.5 text-xs text-ink-400">{{ $plan->duration_label }}</p>
+                                </div>
+                                <p class="text-lg font-extrabold text-ink-900 dark:text-white">{{ money($plan->final_amount) }}</p>
+                            </div>
+
+                            @if ($plan->description)
+                                <p class="mt-2 text-xs leading-relaxed text-ink-500 dark:text-ink-400">{{ $plan->description }}</p>
+                            @endif
+
+                            @if ($plan->features)
+                                <ul class="mt-3 space-y-1">
+                                    @foreach ($plan->features as $feature)
+                                        <li class="flex items-start gap-1.5 text-xs text-ink-600 dark:text-ink-300">
+                                            <x-icon name="check" class="mt-0.5 size-3.5 shrink-0 text-emerald-500" />
+                                            {{ $feature }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            <div class="mt-auto pt-4">
+                                <form method="POST" action="{{ route('client.membership.renew') }}">
+                                    @csrf
+                                    <input type="hidden" name="plan_id" value="{{ $plan->id }}">
+                                    <x-button type="submit" class="w-full">
+                                        <x-icon name="refresh" class="size-4" />
+                                        {{ $active?->plan_id === $plan->id ? 'Renew Plan' : 'Choose Plan' }}
+                                    </x-button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </x-card>
     </div>
 </x-layouts.app>

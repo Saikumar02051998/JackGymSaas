@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\RazorpayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -12,8 +13,7 @@ class SettingController extends Controller
         $gym = current_gym();
         $gym->load('settings');
 
-        $razorpayConfigured = config('services.razorpay.key_id')
-            && config('services.razorpay.key_secret');
+        $razorpayConfigured = app(RazorpayService::class)->isConfigured();
 
         return view('settings.index', compact('gym', 'razorpayConfigured'));
     }

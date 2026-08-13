@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ClientProfileController::class, 'show'])->name('profile');
         Route::put('/profile', [ClientProfileController::class, 'update'])->name('profile.update');
         Route::get('/membership', [ClientMembershipController::class, 'show'])->name('membership');
+        Route::post('/membership/renew', [ClientMembershipController::class, 'renew'])->name('membership.renew');
         Route::get('/attendance', [ClientAttendanceController::class, 'index'])->name('attendance');
         Route::get('/workouts', [ClientWorkoutController::class, 'index'])->name('workouts');
         Route::get('/diets', [ClientDietController::class, 'index'])->name('diets');
@@ -92,6 +93,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/appointments', [ClientAppointmentController::class, 'store'])->name('appointments.store');
         Route::delete('/appointments/{appointment}', [ClientAppointmentController::class, 'destroy'])->name('appointments.destroy');
         Route::get('/payments', [ClientPaymentController::class, 'index'])->name('payments');
+        Route::get('/payments/checkout', [ClientPaymentController::class, 'checkout'])->name('payments.checkout');
+        Route::post('/payments', [ClientPaymentController::class, 'store'])->name('payments.store');
+        Route::post('/payments/verify', [ClientPaymentController::class, 'verify'])->name('payments.verify');
         Route::get('/invoices', [ClientInvoiceController::class, 'index'])->name('invoices');
         Route::get('/invoices/{invoice}', [ClientInvoiceController::class, 'show'])->name('invoices.show');
         Route::get('/support', [ClientSupportController::class, 'index'])->name('support');

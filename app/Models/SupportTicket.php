@@ -20,7 +20,7 @@ class SupportTicket extends Model
 
     public function messages()
     {
-        return $this->hasMany(SupportTicketMessage::class);
+        return $this->hasMany(SupportTicketMessage::class, 'ticket_id');
     }
 
     public function assignedTo()
@@ -30,6 +30,6 @@ class SupportTicket extends Model
 
     public function latestMessage()
     {
-        return $this->hasOne(SupportTicketMessage::class)->latestOfMany();
+        return $this->hasOne(SupportTicketMessage::class, 'ticket_id')->latestOfMany();
     }
 }

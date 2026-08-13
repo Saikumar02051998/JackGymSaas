@@ -157,7 +157,7 @@ class PaymentController extends Controller
             return view('payments.checkout', [
                 'order' => $result['order'],
                 'payment' => $payment,
-                'keyId' => config('services.razorpay.key_id', env('RAZORPAY_KEY_ID')),
+                'keyId' => $this->razorpay->keyId(),
             ]);
         }
 
