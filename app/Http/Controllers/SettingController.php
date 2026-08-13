@@ -13,7 +13,7 @@ class SettingController extends Controller
         $gym = current_gym();
         $gym->load('settings');
 
-        $razorpayConfigured = app(RazorpayService::class)->isConfigured();
+        $razorpayConfigured = RazorpayService::forGym()->isConfigured();
 
         return view('settings.index', compact('gym', 'razorpayConfigured'));
     }

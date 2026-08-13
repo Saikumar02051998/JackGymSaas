@@ -48,7 +48,7 @@ class PaymentController extends Controller
             return redirect()->route('client.membership')->withErrors(['membership' => 'Your membership is already paid.']);
         }
 
-        $razorpayConfigured = app(RazorpayService::class)->isConfigured();
+        $razorpayConfigured = RazorpayService::forGym()->isConfigured();
 
         return view('client.payments-checkout', compact('membership', 'due', 'razorpayConfigured'));
     }
@@ -60,7 +60,7 @@ class PaymentController extends Controller
 
         abort_unless($membership, 404, 'No active membership found.');
 
-        abort_unless(app(RazorpayService::class)->isConfigured(), 503, 'Online payments are not configured yet.');
+        abort_unless(RazorpayService::forGym()->isConfigured(), 503, 'Online payments are not configured yet.');
 
         $paid = (float) $membership->payments()->where('status', 'success')->sum('final_amount');
         $due = max((float) $membership->final_amount - $paid, 0);
@@ -84,7 +84,7 @@ class PaymentController extends Controller
         return view('client.razorpay-checkout', [
             'order' => $result['order'],
             'payment' => $payment,
-            'keyId' => app(RazorpayService::class)->keyId(),
+            'keyId' => RazorpayService::forGym()->keyId(),
         ]);
     }
 

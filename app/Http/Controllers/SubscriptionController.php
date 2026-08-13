@@ -58,7 +58,7 @@ class SubscriptionController extends Controller
         return view('subscription.checkout', [
             'order' => $result['order'],
             'payment' => $result['payment'],
-            'keyId' => app(RazorpayService::class)->keyId(),
+            'keyId' => RazorpayService::forPlatform()->keyId(),
         ]);
     }
 
@@ -101,7 +101,7 @@ class SubscriptionController extends Controller
         $payload = $request->getContent();
         $signature = $request->header('X-Razorpay-Signature');
 
-        if (! app(RazorpayService::class)->verifyWebhookSignature($payload, $signature)) {
+        if (! RazorpayService::forPlatform()->verifyWebhookSignature($payload, $signature)) {
             return response()->json(['status' => 'invalid signature'], 400);
         }
 

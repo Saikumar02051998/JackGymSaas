@@ -85,7 +85,20 @@
 
             <div class="space-y-6">
                 <x-card title="Membership Setup">
-                    <div x-data="{ trial: {{ old('start_trial', true) ? 'true' : 'false' }}, membership: {{ old('create_membership') ? 'true' : 'false' }} }" class="space-y-4">
+                    <div
+                        x-data="{
+                            trial: {{ old('start_trial', true) ? 'true' : 'false' }},
+                            membership: {{ old('create_membership') ? 'true' : 'false' }},
+                            planId: '{{ old('plan_id') }}',
+                            amount: '{{ old('amount') }}',
+                            syncAmount() {
+                                let opt = this.$refs.planSelect?.selectedOptions?.[0];
+                                this.amount = opt && opt.dataset.planAmount !== undefined ? opt.dataset.planAmount : '';
+                            },
+                        }"
+                        x-init="if (membership) syncAmount()"
+                        class="space-y-4"
+                    >
                         <label class="flex items-start gap-3 rounded-xl border border-ink-200 p-4 transition-colors has-[:checked]:border-gold-400 has-[:checked]:bg-gold-400/5 dark:border-ink-700">
                             <input type="checkbox" name="start_trial" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400"
                                    x-model="trial"
@@ -103,7 +116,7 @@
                         <label class="flex items-start gap-3 rounded-xl border border-ink-200 p-4 transition-colors has-[:checked]:border-gold-400 has-[:checked]:bg-gold-400/5 dark:border-ink-700">
                             <input type="checkbox" name="create_membership" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400"
                                    x-model="membership"
-                                   x-on:change="if (membership) trial = false">
+                                   x-on:change="if (membership) trial = false; $nextTick(() => { if (membership) syncAmount(); else amount = ''; })">
                             <span>
                                 <span class="block text-sm font-semibold text-ink-900 dark:text-white">Create membership &amp; collect payment</span>
                                 <span class="mt-0.5 block text-xs text-ink-400">Register a plan and record the first payment.</span>
@@ -111,9 +124,9 @@
                         </label>
 
                         <div x-show="membership" x-cloak>
-                            <x-select label="Membership plan" name="plan_id" placeholder="Select a plan">
+                            <x-select label="Membership plan" name="plan_id" placeholder="Select a plan" x-ref="planSelect" x-model="planId" x-on:change="syncAmount()">
                                 @foreach (\App\Models\MembershipPlan::where('gym_id', current_gym()?->id)->where('status', 'active')->get() as $plan)
-                                    <option value="{{ $plan->id }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
+                                    <option value="{{ $plan->id }}" data-plan-amount="{{ $plan->final_amount }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
                                         {{ $plan->name }} &middot; {{ gym_setting('currency_symbol', '₹') }}{{ number_format($plan->final_amount, 2) }}
                                     </option>
                                 @endforeach
@@ -121,7 +134,7 @@
                         </div>
 
                         <div x-show="membership" x-cloak>
-                            <x-input label="Amount received" type="number" step="0.01" name="amount" value="{{ old('amount') }}" placeholder="0.00" help="Leave blank to skip payment." />
+                            <x-input label="Amount received" type="number" step="0.01" name="amount" x-model="amount" readonly placeholder="0.00" help="Auto-filled from the selected plan." />
                         </div>
                     </div>
                 </x-card>

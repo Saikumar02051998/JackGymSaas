@@ -11,15 +11,36 @@ class RazorpayService
     protected string $keyId = '';
     protected string $webhookSecret = '';
 
-    public function __construct()
-    {
-        $this->keyId = (string) (gym_setting('razorpay_key_id') ?: config('services.razorpay.key_id') ?: env('RAZORPAY_KEY_ID') ?: '');
-        $secret = (string) (gym_setting('razorpay_key_secret') ?: config('services.razorpay.key_secret') ?: env('RAZORPAY_KEY_SECRET') ?: '');
-        $this->webhookSecret = (string) (gym_setting('razorpay_webhook_secret') ?: config('services.razorpay.webhook_secret') ?: env('RAZORPAY_WEBHOOK_SECRET') ?: '');
+    public function __construct(
+        ?string $keyId = null,
+        ?string $keySecret = null,
+        ?string $webhookSecret = null
+    ) {
+        $this->keyId = (string) ($keyId ?? gym_setting('razorpay_key_id') ?? '');
+        $secret = (string) ($keySecret ?? gym_setting('razorpay_key_secret') ?? '');
+        $this->webhookSecret = (string) ($webhookSecret ?? gym_setting('razorpay_webhook_secret') ?? '');
 
         if ($this->keyId !== '' && $secret !== '') {
             $this->api = new Api($this->keyId, $secret);
         }
+    }
+
+    public static function forGym(): static
+    {
+        return new static(
+            (string) (gym_setting('razorpay_key_id') ?? ''),
+            (string) (gym_setting('razorpay_key_secret') ?? ''),
+            (string) (gym_setting('razorpay_webhook_secret') ?? ''),
+        );
+    }
+
+    public static function forPlatform(): static
+    {
+        return new static(
+            (string) (config('services.razorpay.key_id') ?? ''),
+            (string) (config('services.razorpay.key_secret') ?? ''),
+            (string) (config('services.razorpay.webhook_secret') ?? ''),
+        );
     }
 
     public function isConfigured(): bool

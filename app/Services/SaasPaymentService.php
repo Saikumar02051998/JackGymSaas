@@ -35,7 +35,7 @@ class SaasPaymentService
     {
         $amount = $plan->priceFor($cycle);
 
-        $order = app(RazorpayService::class)->createOrder([
+        $order = RazorpayService::forPlatform()->createOrder([
             'amount' => (int) round($amount * 100),
             'currency' => $gym->currency ?: 'INR',
             'receipt' => 'SAAS-'.Str::upper(Str::random(10)),
@@ -73,7 +73,7 @@ class SaasPaymentService
 
     public function verifyAndComplete(SaasPayment $payment, string $razorpayPaymentId, string $razorpayOrderId, string $signature): array
     {
-        $valid = app(RazorpayService::class)->verifyPaymentSignature([
+        $valid = RazorpayService::forPlatform()->verifyPaymentSignature([
             'razorpay_payment_id' => $razorpayPaymentId,
             'razorpay_order_id' => $razorpayOrderId,
             'razorpay_signature' => $signature,

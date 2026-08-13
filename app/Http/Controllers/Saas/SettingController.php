@@ -18,7 +18,7 @@ class SettingController extends Controller
             'trial_days' => saas_setting('trial_days', GymService::TRIAL_DAYS),
             'currency' => saas_setting('currency', env('CURRENCY', 'INR')),
             'currency_symbol' => saas_setting('currency_symbol', env('CURRENCY_SYMBOL', '₹')),
-            'razorpay_configured' => app(RazorpayService::class)->isConfigured(),
+            'razorpay_configured' => RazorpayService::forPlatform()->isConfigured(),
         ];
 
         return view('saas.settings', compact('settings'));
