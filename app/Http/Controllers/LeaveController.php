@@ -31,26 +31,36 @@ class LeaveController extends Controller
             'paid_half_days' => (int) $gym?->setting('salary_paid_half_days', 4),
         ];
 
+        $monthStart = now()->startOfMonth()->toDateString();
+        $monthEnd = now()->endOfMonth()->toDateString();
+
+        $monthLeaves = StaffLeave::where('gym_id', $gymId)
+            ->where('start_date', '<=', $monthEnd)
+            ->where('end_date', '>=', $monthStart)
+            ->get();
+
+        $overallLeaves = [
+            'pending' => $monthLeaves->where('status', 'pending')->count(),
+            'pending_days' => round($monthLeaves->where('status', 'pending')->sum('days'), 1),
+            'approved' => $monthLeaves->where('status', 'approved')->count(),
+            'approved_days' => round($monthLeaves->where('status', 'approved')->sum('days'), 1),
+            'total' => $monthLeaves->count(),
+        ];
+
         $myLeaves = null;
         if ($profile = auth()->user()->staffProfile) {
-            $monthStart = now()->startOfMonth()->toDateString();
-            $monthEnd = now()->endOfMonth()->toDateString();
-
-            $monthLeaves = StaffLeave::where('staff_id', $profile->id)
-                ->where('start_date', '<=', $monthEnd)
-                ->where('end_date', '>=', $monthStart)
-                ->get();
+            $myMonthLeaves = $monthLeaves->where('staff_id', $profile->id);
 
             $myLeaves = [
-                'pending' => $monthLeaves->where('status', 'pending')->count(),
-                'pending_days' => round($monthLeaves->where('status', 'pending')->sum('days'), 1),
-                'approved' => $monthLeaves->where('status', 'approved')->count(),
-                'approved_days' => round($monthLeaves->where('status', 'approved')->sum('days'), 1),
-                'total' => $monthLeaves->count(),
+                'pending' => $myMonthLeaves->where('status', 'pending')->count(),
+                'pending_days' => round($myMonthLeaves->where('status', 'pending')->sum('days'), 1),
+                'approved' => $myMonthLeaves->where('status', 'approved')->count(),
+                'approved_days' => round($myMonthLeaves->where('status', 'approved')->sum('days'), 1),
+                'total' => $myMonthLeaves->count(),
             ];
         }
 
-        return view('staff.leaves', compact('leaves', 'rules', 'myLeaves'));
+        return view('staff.leaves', compact('leaves', 'rules', 'myLeaves', 'overallLeaves'));
     }
 
     public function create()

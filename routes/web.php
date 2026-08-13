@@ -37,7 +37,6 @@ use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PtSessionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
-use App\Http\Controllers\SalaryRuleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffRoleController;
@@ -197,8 +196,6 @@ Route::middleware('auth')->group(function () {
                 Route::post('/deduction-preview', [SalaryController::class, 'deductionPreview'])->name('deduction-preview');
                 Route::get('/bonus', [SalaryController::class, 'bonus'])->name('bonus');
                 Route::post('/bonus', [SalaryController::class, 'applyBonus'])->name('bonus.apply');
-                Route::get('/rules', [SalaryRuleController::class, 'index'])->name('rules');
-                Route::put('/rules', [SalaryRuleController::class, 'update'])->name('rules.update');
             });
         });
 
@@ -373,6 +370,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('permission:settings.manage')->group(function () {
             Route::put('/', [SettingController::class, 'update'])->name('update');
             Route::post('/payment-gateway', [SettingController::class, 'updatePaymentGateway'])->name('payment-gateway');
+            Route::post('/salary-rules', [SettingController::class, 'updateSalaryRules'])->name('salary-rules');
         });
     });
 

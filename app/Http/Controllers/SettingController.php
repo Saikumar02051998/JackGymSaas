@@ -15,7 +15,13 @@ class SettingController extends Controller
 
         $razorpayConfigured = RazorpayService::forGym()->isConfigured();
 
-        return view('settings.index', compact('gym', 'razorpayConfigured'));
+        $salaryRules = [
+            'calendar_days' => (int) $gym->setting('salary_calendar_days', 30),
+            'paid_leave_days' => (int) $gym->setting('salary_paid_leave_days', 2),
+            'paid_half_days' => (int) $gym->setting('salary_paid_half_days', 4),
+        ];
+
+        return view('settings.index', compact('gym', 'razorpayConfigured', 'salaryRules'));
     }
 
     public function update(Request $request)
@@ -89,5 +95,26 @@ class SettingController extends Controller
         audit_log('settings.payment_gateway', 'settings', $gym->id, 'Payment gateway settings updated');
 
         return back()->with('success', 'Payment gateway settings saved.');
+    }
+
+    public function updateSalaryRules(Request $request)
+    {
+        abort_unless(auth()->user()->hasPermission('settings.manage'), 403);
+
+        $data = $request->validate([
+            'calendar_days' => ['required', 'in:28,30'],
+            'paid_leave_days' => ['required', 'integer', 'min:0', 'max:31'],
+            'paid_half_days' => ['required', 'integer', 'min:0', 'max:62'],
+        ]);
+
+        $gym = current_gym();
+
+        $gym->setSetting('salary_calendar_days', (string) $data['calendar_days']);
+        $gym->setSetting('salary_paid_leave_days', (string) $data['paid_leave_days']);
+        $gym->setSetting('salary_paid_half_days', (string) $data['paid_half_days']);
+
+        audit_log('salary.rules_updated', 'settings', $gym->id, 'Salary rules updated');
+
+        return back()->with('success', 'Salary rules saved.');
     }
 }

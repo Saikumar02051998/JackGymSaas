@@ -46,8 +46,28 @@
             </div>
         </x-card>
 
+        <x-card title="Overall Staffs Leave — {{ now()->format('F Y') }}" class="lg:col-span-2">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $overallLeaves['pending'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">{{ $overallLeaves['pending_days'] }} day{{ $overallLeaves['pending_days'] == 1 ? '' : 's' }} this month</p>
+                </div>
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Taken</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $overallLeaves['approved'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">{{ $overallLeaves['approved_days'] }} day{{ $overallLeaves['approved_days'] == 1 ? '' : 's' }} approved</p>
+                </div>
+                <div class="rounded-xl border border-ink-100 bg-ink-50 px-4 py-3 dark:border-ink-800 dark:bg-ink-800/60">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">Total Requests</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $overallLeaves['total'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">All requests this month</p>
+                </div>
+            </div>
+        </x-card>
+
         @if ($myLeaves)
-            <x-card title="My Leave Summary &mdash; {{ now()->format('F Y') }}" class="lg:col-span-2">
+            <x-card title="My Leave Summary — {{ now()->format('F Y') }}" class="lg:col-span-3">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
                         <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>

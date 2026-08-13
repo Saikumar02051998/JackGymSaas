@@ -61,7 +61,6 @@ class Menu
                 ['route' => 'staff.index', 'label' => 'All Staff', 'icon' => 'briefcase', 'permission' => 'staff.view'],
                 ['route' => 'staff.roles.index', 'label' => 'Roles & Permissions', 'icon' => 'shield', 'permission' => 'staff.roles'],
                 ['route' => 'staff.salaries.index', 'label' => 'Salaries', 'icon' => 'banknotes', 'permission' => 'salary.view'],
-                ['route' => 'staff.salaries.rules', 'label' => 'Salary Rules', 'icon' => 'settings', 'permission' => 'salary.manage'],
                 ['route' => 'staff.leaves.index', 'label' => 'Leaves', 'icon' => 'sun', 'permission' => 'attendance.staff'],
             ],
             'crm' => [
