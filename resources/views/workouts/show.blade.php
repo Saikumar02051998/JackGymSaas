@@ -38,7 +38,11 @@
                     <x-badge :color="match($workout->status) { 'active' => 'green', 'draft' => 'gray', 'completed' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst($workout->status) }}</x-badge>
                 </div>
                 <p class="mt-0.5 text-sm text-ink-400">
-                    For <a href="{{ route('clients.show', $workout->client_id) }}" class="font-medium text-gold-600 hover:underline">{{ $workout->client->display_name }}</a>
+                    @if ($workout->client)
+                        For <a href="{{ route('clients.show', $workout->client_id) }}" class="font-medium text-gold-600 hover:underline">{{ $workout->client->display_name }}</a>
+                    @else
+                        For Deleted client
+                    @endif
                     @if ($workout->start_date)
                         &middot; {{ \Carbon\Carbon::parse($workout->start_date)->format('d M') }}{{ $workout->end_date ? ' → ' . \Carbon\Carbon::parse($workout->end_date)->format('d M Y') : '' }}
                     @endif

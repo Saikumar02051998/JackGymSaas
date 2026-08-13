@@ -77,8 +77,12 @@
                         @foreach ($records as $record)
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4">
-                                    <a href="{{ route('clients.show', $record->client_id) }}" class="font-semibold text-ink-900 hover:text-gold-600 dark:text-white">{{ $record->client->display_name }}</a>
-                                    <p class="text-xs text-ink-400">{{ $record->client->member_id }}</p>
+                                    @if ($record->client)
+                                        <a href="{{ route('clients.show', $record->client_id) }}" class="font-semibold text-ink-900 hover:text-gold-600 dark:text-white">{{ $record->client->display_name }}</a>
+                                        <p class="text-xs text-ink-400">{{ $record->client->member_id }}</p>
+                                    @else
+                                        <span class="text-ink-400">Deleted client</span>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $record->client->activeMembership?->plan?->name ?? '—' }}</td>
                                 <td class="px-5 py-4 font-medium text-ink-900 dark:text-white">{{ $record->check_in }}</td>

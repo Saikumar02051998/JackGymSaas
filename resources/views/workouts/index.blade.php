@@ -33,7 +33,7 @@
                         <div class="flex items-start justify-between">
                             <div>
                                 <h3 class="text-base font-bold text-ink-900 dark:text-white">{{ $plan->name }}</h3>
-                                <p class="mt-0.5 text-xs text-ink-400">{{ $plan->client->display_name }}</p>
+                                <p class="mt-0.5 text-xs text-ink-400">{{ $plan->client?->display_name ?? 'Deleted client' }}</p>
                             </div>
                             <x-badge :color="match($plan->status) { 'active' => 'green', 'draft' => 'gray', 'completed' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst($plan->status) }}</x-badge>
                         </div>

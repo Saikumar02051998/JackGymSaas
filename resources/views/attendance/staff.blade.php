@@ -72,10 +72,10 @@
                             @php $staff = $record->staff; @endphp
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4">
-                                    <span class="font-semibold text-ink-900 dark:text-white">{{ $staff->display_name }}</span>
-                                    <p class="text-xs text-ink-400">{{ $staff->employee_id }}</p>
+                                    <span class="font-semibold text-ink-900 dark:text-white">{{ $staff?->display_name ?? 'Removed staff' }}</span>
+                                    <p class="text-xs text-ink-400">{{ $staff?->employee_id }}</p>
                                 </td>
-                                <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $staff->designation ?? '—' }}</td>
+                                <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $staff?->designation ?? '—' }}</td>
                                 <td class="px-5 py-4 font-medium text-ink-900 dark:text-white">{{ $record->check_in }}</td>
                                 <td class="px-5 py-4 font-medium text-ink-900 dark:text-white">{{ $record->check_out ?? '—' }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">

@@ -145,12 +145,12 @@ class MembershipController extends Controller
 
         $new = $this->memberships->renew($client, $plan, $data);
 
-        if ($request->boolean('collect_payment') && $request->filled('payment_method')) {
-            $payment = $this->payments->createForMembership($client, $new, [
-                'payment_method' => $data['payment_method'],
-                'discount' => $data['discount'] ?? 0,
-            ]);
+        $payment = $this->payments->createForMembership($client, $new, [
+            'payment_method' => $data['payment_method'] ?? 'cash',
+            'discount' => $data['discount'] ?? 0,
+        ]);
 
+        if ($request->boolean('collect_payment') && $request->filled('payment_method')) {
             $this->payments->completePayment($payment, [], 'reception');
         }
 

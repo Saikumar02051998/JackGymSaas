@@ -11,7 +11,7 @@
         <div class="space-y-6 lg:col-span-2">
             <x-card>
                 <div class="flex flex-wrap items-center gap-4">
-                    <span class="avatar-lg">{{ collect(explode(' ', $payment->client->display_name))->take(2)->map(fn ($w) => strtoupper($w[0]))->join('') }}</span>
+                    <span class="avatar-lg">{{ $payment->client ? collect(explode(' ', $payment->client->display_name))->take(2)->map(fn ($w) => strtoupper($w[0]))->join('') : '—' }}</span>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
                             <h2 class="text-xl font-bold text-ink-900 dark:text-white">{{ $payment->payment_no }}</h2>
@@ -82,10 +82,14 @@
 
         <div class="space-y-6">
             <x-card title="Client">
-                <a href="{{ route('clients.show', $payment->client_id) }}" class="block rounded-xl bg-ink-50 p-4 transition-colors hover:bg-ink-100 dark:bg-ink-800 dark:hover:bg-ink-700">
-                    <p class="font-semibold text-ink-900 dark:text-white">{{ $payment->client->display_name }}</p>
-                    <p class="mt-0.5 text-xs text-ink-400">{{ $payment->client->member_id }} · {{ $payment->client->phone ?? '—' }}</p>
-                </a>
+                @if ($payment->client)
+                    <a href="{{ route('clients.show', $payment->client_id) }}" class="block rounded-xl bg-ink-50 p-4 transition-colors hover:bg-ink-100 dark:bg-ink-800 dark:hover:bg-ink-700">
+                        <p class="font-semibold text-ink-900 dark:text-white">{{ $payment->client->display_name }}</p>
+                        <p class="mt-0.5 text-xs text-ink-400">{{ $payment->client->member_id }} · {{ $payment->client->phone ?? '—' }}</p>
+                    </a>
+                @else
+                    <p class="text-sm text-ink-400">Deleted client</p>
+                @endif
             </x-card>
 
             @if ($payment->membership)

@@ -43,10 +43,14 @@
             <div class="flex flex-wrap items-start justify-between gap-6 py-6">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wider text-ink-400">Billed To</p>
-                    <p class="mt-2 text-base font-semibold text-ink-900 dark:text-white">{{ $invoice->client->display_name }}</p>
-                    <p class="mt-0.5 text-sm text-ink-500 dark:text-ink-400">{{ $invoice->client->member_id }}</p>
-                    @if ($invoice->client->phone)
-                        <p class="text-sm text-ink-500 dark:text-ink-400">{{ $invoice->client->phone }}</p>
+                    @if ($invoice->client)
+                        <p class="mt-2 text-base font-semibold text-ink-900 dark:text-white">{{ $invoice->client->display_name }}</p>
+                        <p class="mt-0.5 text-sm text-ink-500 dark:text-ink-400">{{ $invoice->client->member_id }}</p>
+                        @if ($invoice->client->phone)
+                            <p class="text-sm text-ink-500 dark:text-ink-400">{{ $invoice->client->phone }}</p>
+                        @endif
+                    @else
+                        <p class="mt-2 text-base font-semibold text-ink-400">Deleted client</p>
                     @endif
                 </div>
                 <div class="text-right">

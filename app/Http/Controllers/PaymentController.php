@@ -101,14 +101,34 @@ class PaymentController extends Controller
         $membership = isset($data['membership_id']) ? Membership::find($data['membership_id']) : $client->activeMembership;
 
         if ($membership) {
-            $payment = $this->payments->createForMembership($client, $membership, [
-                'amount' => $data['amount'],
-                'discount' => $data['discount'] ?? 0,
-                'payment_method' => $data['payment_method'],
-                'transaction_id' => $data['transaction_id'] ?? null,
-                'payment_date' => $data['payment_date'] ?? null,
-                'notes' => $data['notes'] ?? null,
-            ]);
+            $existing = $membership->payments()
+                ->whereIn('status', ['pending', 'processing'])
+                ->latest('created_at')
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'amount' => $data['amount'],
+                    'discount' => $data['discount'] ?? 0,
+                    'tax' => $membership->tax,
+                    'final_amount' => $data['amount'] - ($data['discount'] ?? 0),
+                    'payment_method' => $data['payment_method'],
+                    'transaction_id' => $data['transaction_id'] ?? null,
+                    'payment_date' => $data['payment_date'] ?? now()->toDateString(),
+                    'notes' => $data['notes'] ?? null,
+                ]);
+
+                $payment = $existing;
+            } else {
+                $payment = $this->payments->createForMembership($client, $membership, [
+                    'amount' => $data['amount'],
+                    'discount' => $data['discount'] ?? 0,
+                    'payment_method' => $data['payment_method'],
+                    'transaction_id' => $data['transaction_id'] ?? null,
+                    'payment_date' => $data['payment_date'] ?? null,
+                    'notes' => $data['notes'] ?? null,
+                ]);
+            }
         } else {
             $payment = Payment::create([
                 'gym_id' => current_gym()->id,

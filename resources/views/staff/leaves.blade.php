@@ -54,8 +54,8 @@
                         @foreach ($leaves as $leave)
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4">
-                                    <p class="font-semibold text-ink-900 dark:text-white">{{ $leave->staff->display_name }}</p>
-                                    <p class="text-xs text-ink-400">{{ $leave->staff->designation ?? '' }}</p>
+                                    <p class="font-semibold text-ink-900 dark:text-white">{{ $leave->staff?->display_name ?? 'Removed staff' }}</p>
+                                    <p class="text-xs text-ink-400">{{ $leave->staff?->designation ?? '' }}</p>
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $leave->leave_type }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($leave->start_date)->format('d M') }} &rarr; {{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}</td>

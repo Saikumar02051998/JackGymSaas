@@ -65,7 +65,7 @@
                         @foreach ($report['records'] as $record)
                             <tr>
                                 <td class="px-5 py-3 text-ink-900 dark:text-white">{{ \Carbon\Carbon::parse($record->attendance_date)->format('d M Y') }}</td>
-                                <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $record->client->display_name }}</td>
+                                <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $record->client?->display_name ?? 'Deleted client' }}</td>
                                 <td class="px-5 py-3">{{ $record->check_in ?? '—' }}</td>
                                 <td class="px-5 py-3">{{ $record->check_out ?? '—' }}</td>
                                 <td class="px-5 py-3">{{ $record->duration_minutes ? intdiv($record->duration_minutes, 60) . 'h ' . ($record->duration_minutes % 60) . 'm' : '—' }}</td>

@@ -57,8 +57,8 @@
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4 font-semibold text-ink-900 dark:text-white">{{ $salary->period }}</td>
                                 <td class="px-5 py-4">
-                                    <p class="font-semibold text-ink-900 dark:text-white">{{ $salary->staff->display_name }}</p>
-                                    <p class="text-xs text-ink-400">{{ $salary->staff->designation ?? '' }}</p>
+                                    <p class="font-semibold text-ink-900 dark:text-white">{{ $salary->staff?->display_name ?? 'Removed staff' }}</p>
+                                    <p class="text-xs text-ink-400">{{ $salary->staff?->designation ?? '' }}</p>
                                 </td>
                                 <td class="px-5 py-4">{{ money($salary->basic) }}</td>
                                 <td class="px-5 py-4">{{ money($salary->allowances) }}</td>

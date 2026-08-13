@@ -49,7 +49,11 @@
                         @foreach ($followups as $followup)
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4">
-                                    <a href="{{ route('clients.show', $followup->client_id) }}" class="font-semibold text-ink-900 hover:text-gold-600 dark:text-white">{{ $followup->client->display_name }}</a>
+                                    @if ($followup->client)
+                                        <a href="{{ route('clients.show', $followup->client_id) }}" class="font-semibold text-ink-900 hover:text-gold-600 dark:text-white">{{ $followup->client->display_name }}</a>
+                                    @else
+                                        <span class="text-ink-400">Deleted client</span>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4">
                                     <x-badge color="gold">{{ $followup->type }}</x-badge>

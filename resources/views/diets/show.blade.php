@@ -38,7 +38,11 @@
                     <x-badge :color="match($diet->status) { 'active' => 'green', 'draft' => 'gray', 'completed' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst($diet->status) }}</x-badge>
                 </div>
                 <p class="mt-0.5 text-sm text-ink-400">
-                    For <a href="{{ route('clients.show', $diet->client_id) }}" class="font-medium text-gold-600 hover:underline">{{ $diet->client->display_name }}</a>
+                    @if ($diet->client)
+                        For <a href="{{ route('clients.show', $diet->client_id) }}" class="font-medium text-gold-600 hover:underline">{{ $diet->client->display_name }}</a>
+                    @else
+                        For Deleted client
+                    @endif
                     @if ($diet->start_date)
                         &middot; {{ \Carbon\Carbon::parse($diet->start_date)->format('d M') }}{{ $diet->end_date ? ' → ' . \Carbon\Carbon::parse($diet->end_date)->format('d M Y') : '' }}
                     @endif

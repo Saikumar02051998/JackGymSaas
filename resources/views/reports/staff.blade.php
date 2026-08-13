@@ -40,7 +40,7 @@
                         @foreach ($report['records'] as $record)
                             <tr>
                                 <td class="px-5 py-3 text-ink-900 dark:text-white">{{ \Carbon\Carbon::parse($record->attendance_date)->format('d M Y') }}</td>
-                                <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $record->staff->display_name }}</td>
+                                <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $record->staff?->display_name ?? 'Removed staff' }}</td>
                                 <td class="px-5 py-3">{{ $record->check_in ?? '—' }}</td>
                                 <td class="px-5 py-3">{{ $record->check_out ?? '—' }}</td>
                                 <td class="px-5 py-3">{{ $record->working_minutes ? intdiv($record->working_minutes, 60) . 'h ' . ($record->working_minutes % 60) . 'm' : '—' }}</td>

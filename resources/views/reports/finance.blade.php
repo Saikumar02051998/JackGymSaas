@@ -75,7 +75,7 @@
                             @foreach ($revenue['payments'] as $payment)
                                 <tr>
                                     <td class="px-5 py-3 font-semibold text-ink-900 dark:text-white">{{ $payment->payment_no }}</td>
-                                    <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ $payment->client->display_name }}</td>
+                                    <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ $payment->client?->display_name ?? 'Deleted client' }}</td>
                                     <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d M') }}</td>
                                     <td class="px-5 py-3 text-right font-bold text-ink-900 dark:text-white">{{ money($payment->final_amount) }}</td>
                                 </tr>

@@ -71,10 +71,14 @@
 
         <div class="space-y-6">
             <x-card title="Client">
-                <a href="{{ route('clients.show', $invoice->client_id) }}" class="block rounded-xl bg-ink-50 p-4 transition-colors hover:bg-ink-100 dark:bg-ink-800 dark:hover:bg-ink-700">
-                    <p class="font-semibold text-ink-900 dark:text-white">{{ $invoice->client->display_name }}</p>
-                    <p class="mt-0.5 text-xs text-ink-400">{{ $invoice->client->member_id }} · {{ $invoice->client->phone ?? '—' }}</p>
-                </a>
+                @if ($invoice->client)
+                    <a href="{{ route('clients.show', $invoice->client_id) }}" class="block rounded-xl bg-ink-50 p-4 transition-colors hover:bg-ink-100 dark:bg-ink-800 dark:hover:bg-ink-700">
+                        <p class="font-semibold text-ink-900 dark:text-white">{{ $invoice->client->display_name }}</p>
+                        <p class="mt-0.5 text-xs text-ink-400">{{ $invoice->client->member_id }} · {{ $invoice->client->phone ?? '—' }}</p>
+                    </a>
+                @else
+                    <p class="text-sm text-ink-400">Deleted client</p>
+                @endif
             </x-card>
 
             @if ($invoice->membership)

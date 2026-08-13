@@ -49,7 +49,7 @@
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4 font-semibold text-ink-900 dark:text-white">{{ $invoice->invoice_no }}</td>
                                 <td class="px-5 py-4">
-                                    <span class="font-medium text-ink-900 dark:text-white">{{ $invoice->client->display_name }}</span>
+                                    <span class="font-medium text-ink-900 dark:text-white">{{ $invoice->client?->display_name ?? 'Deleted client' }}</span>
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d M Y') }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('d M Y') : '—' }}</td>
