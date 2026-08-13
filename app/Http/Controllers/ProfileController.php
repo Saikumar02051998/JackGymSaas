@@ -37,8 +37,10 @@ class ProfileController extends Controller
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
 
-            $data['password'] = $data['new_password'];
+            $data['password'] = Hash::make($data['new_password']);
         }
+
+        unset($data['current_password'], $data['new_password']);
 
         $user->update($data);
 
