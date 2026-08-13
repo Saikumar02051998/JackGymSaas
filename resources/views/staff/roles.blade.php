@@ -35,20 +35,25 @@
                                             <x-badge :color="$role->is_system ? 'gold' : 'gray'">{{ $role->is_system ? 'System' : 'Custom' }}</x-badge>
                                         </td>
                                         <td class="px-5 py-4 text-right">
+                                            @php $locked = in_array($role->slug, ['owner', 'saas_owner'], true); @endphp
                                             <div class="flex justify-end gap-2">
-                                                @if (! $role->is_system && can_manage('staff.roles'))
+                                                @if (! $locked && can_manage('staff.roles'))
                                                     <a href="{{ route('staff.roles.edit', $role) }}" class="btn-outline btn-sm">
                                                         <x-icon name="pencil" class="size-3.5" />
                                                         Edit
                                                     </a>
-                                                    <form method="POST" action="{{ route('staff.roles.destroy', $role) }}"
-                                                          x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete role?', message: 'Delete the {{ $role->name }} role.', confirmText: 'Delete' } })">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <x-button type="submit" variant="ghost" size="sm" class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-500/10">
-                                                            <x-icon name="trash" class="size-4" />
-                                                        </x-button>
-                                                    </form>
+                                                    @if (! $role->is_system)
+                                                        <form method="POST" action="{{ route('staff.roles.destroy', $role) }}"
+                                                              x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Delete role?', message: 'Delete the {{ $role->name }} role.', confirmText: 'Delete' } })">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <x-button type="submit" variant="ghost" size="sm" class="!text-red-500 hover:!bg-red-50 dark:hover:!bg-red-500/10">
+                                                                <x-icon name="trash" class="size-4" />
+                                                            </x-button>
+                                                        </form>
+                                                    @endif
+                                                @else
+                                                    <span class="text-xs text-ink-400">Locked</span>
                                                 @endif
                                             </div>
                                         </td>

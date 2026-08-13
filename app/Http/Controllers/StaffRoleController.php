@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Role;
 use App\Support\PermissionRegistry;
 use Illuminate\Http\Request;
@@ -28,20 +29,22 @@ class StaffRoleController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'alpha_dash', Rule::unique('roles', 'slug')->whereNull('gym_id')],
+            'slug' => ['required', 'alpha_dash', Rule::unique('roles', 'slug')->where(function ($q) {
+                $q->where('gym_id', current_gym()?->id)->orWhereNull('gym_id');
+            })],
             'description' => ['nullable', 'string'],
             'permissions' => ['nullable', 'array'],
         ]);
 
         $role = Role::create([
-            'gym_id' => null,
+            'gym_id' => current_gym()?->id,
             'name' => $data['name'],
             'slug' => $data['slug'],
             'description' => $data['description'] ?? null,
             'is_system' => false,
         ]);
 
-        $role->permissions()->sync($data['permissions'] ?? []);
+        $role->permissions()->sync($this->resolvePermissionIds($data['permissions'] ?? []));
 
         audit_log('role.created', 'staff', $role->id, "Created role {$role->name}");
 
@@ -50,9 +53,7 @@ class StaffRoleController extends Controller
 
     public function edit(Role $role)
     {
-        if ($role->is_system) {
-            abort(403, 'System roles cannot be edited directly.');
-        }
+        $this->guardEditable($role);
 
         $role->load('permissions');
         $permissions = PermissionRegistry::all();
@@ -72,9 +73,7 @@ class StaffRoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
-        if ($role->is_system) {
-            abort(403, 'System roles cannot be edited.');
-        }
+        $this->guardEditable($role);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -87,7 +86,7 @@ class StaffRoleController extends Controller
             'description' => $data['description'] ?? null,
         ]);
 
-        $role->permissions()->sync($data['permissions'] ?? []);
+        $role->permissions()->sync($this->resolvePermissionIds($data['permissions'] ?? []));
 
         audit_log('role.updated', 'staff', $role->id, "Updated role {$role->name}");
 
@@ -100,6 +99,8 @@ class StaffRoleController extends Controller
             abort(403, 'System roles cannot be deleted.');
         }
 
+        abort_if($role->gym_id !== null && $role->gym_id !== current_gym()?->id, 403, 'This role does not belong to your gym.');
+
         if ($role->users()->exists()) {
             return back()->withErrors(['role' => 'This role is assigned to users and cannot be deleted.']);
         }
@@ -110,5 +111,17 @@ class StaffRoleController extends Controller
         audit_log('role.deleted', 'staff', $role->id, "Deleted role {$role->name}");
 
         return back()->with('success', 'Role deleted.');
+    }
+
+    protected function guardEditable(Role $role): void
+    {
+        abort_if(in_array($role->slug, ['owner', 'saas_owner'], true), 403, 'The ' . $role->name . ' role cannot be edited.');
+
+        abort_if($role->gym_id !== null && $role->gym_id !== current_gym()?->id, 403, 'This role does not belong to your gym.');
+    }
+
+    protected function resolvePermissionIds(array $slugs): array
+    {
+        return Permission::whereIn('slug', $slugs)->pluck('id')->all();
     }
 }
