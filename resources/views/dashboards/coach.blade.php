@@ -63,8 +63,8 @@
 
         <x-card title="My Leaves — {{ now()->format('F Y') }}" class="lg:col-span-2">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                <div class="rounded-xl border border-amber-200 bg-amber-100/60 px-4 py-3 dark:border-amber-500/40 dark:bg-amber-500/15">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">Pending</p>
                     <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $coachStats['pending_leaves'] }}</p>
                     <p class="text-xs text-ink-500 dark:text-ink-400">{{ $coachStats['pending_leave_days'] }} day{{ $coachStats['pending_leave_days'] == 1 ? '' : 's' }} this month</p>
                 </div>
@@ -155,7 +155,7 @@
                     <span class="text-xs font-semibold text-ink-700 dark:text-ink-300">New Workout Plan</span>
                 </a>
                 <a href="{{ route('diets.create') }}" class="flex flex-col items-center gap-2 rounded-2xl border border-ink-200 p-4 text-center transition-colors hover:border-gold-300 hover:bg-gold-400/5 dark:border-ink-700">
-                    <x-icon name="apple" class="size-6 text-gold-600 dark:text-gold-400" />
+                    <x-icon name="utensils" class="size-6 text-gold-600 dark:text-gold-400" />
                     <span class="text-xs font-semibold text-ink-700 dark:text-ink-300">New Diet Plan</span>
                 </a>
                 <a href="{{ route('progress.index') }}" class="flex flex-col items-center gap-2 rounded-2xl border border-ink-200 p-4 text-center transition-colors hover:border-gold-300 hover:bg-gold-400/5 dark:border-ink-700">

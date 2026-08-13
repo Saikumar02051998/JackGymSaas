@@ -28,7 +28,7 @@
                             <p class="mt-1 text-xs text-ink-400">Choosing a member pre-fills their basic salary, allowances and leave deduction.</p>
                         </div>
                         <x-input label="Period" name="period" value="{{ old('period', $defaultPeriod) }}" required placeholder="e.g. 2026-08" x-on:change="recompute()" />
-                        <x-input label="Payment date" type="date" name="payment_date" value="{{ old('payment_date', now()->toDateString()) }}" />
+                        <x-input label="Payment date" type="date" name="payment_date" value="{{ old('payment_date', $defaultPaymentDate->format('Y-m-d')) }}" />
                         <x-select label="Payment status" name="payment_status">
                             <option value="pending" {{ old('payment_status') === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="paid" {{ old('payment_status', 'paid') === 'paid' ? 'selected' : '' }}>Paid</option>

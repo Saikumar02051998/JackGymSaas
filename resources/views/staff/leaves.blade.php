@@ -48,8 +48,8 @@
 
         <x-card title="Overall Staffs Leave — {{ now()->format('F Y') }}" class="lg:col-span-2">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                <div class="rounded-xl border border-amber-200 bg-amber-100/60 px-4 py-3 dark:border-amber-500/40 dark:bg-amber-500/15">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">Pending</p>
                     <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $overallLeaves['pending'] }}</p>
                     <p class="text-xs text-ink-500 dark:text-ink-400">{{ $overallLeaves['pending_days'] }} day{{ $overallLeaves['pending_days'] == 1 ? '' : 's' }} this month</p>
                 </div>
@@ -69,8 +69,8 @@
         @if ($myLeaves)
             <x-card title="My Leave Summary — {{ now()->format('F Y') }}" class="lg:col-span-3">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                    <div class="rounded-xl border border-amber-200 bg-amber-100/60 px-4 py-3 dark:border-amber-500/40 dark:bg-amber-500/15">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">Pending</p>
                         <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $myLeaves['pending'] }}</p>
                         <p class="text-xs text-ink-500 dark:text-ink-400">{{ $myLeaves['pending_days'] }} day{{ $myLeaves['pending_days'] == 1 ? '' : 's' }} this month</p>
                     </div>

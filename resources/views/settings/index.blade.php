@@ -98,6 +98,8 @@
                         <x-input label="Paid half-day leaves per month" name="paid_half_days" type="number" min="0" max="62" value="{{ old('paid_half_days', $salaryRules['paid_half_days']) }}" help="Half-day leaves that are fully paid." />
                     </div>
 
+                    <x-input label="Salary payment day of month" name="payment_day" type="number" min="1" max="28" value="{{ old('payment_day', $salaryRules['payment_day']) }}" help="The day each month when salaries are paid (e.g. 5 = paid on the 5th). Used to pre-fill the payment date when processing a salary." />
+
                     <div class="flex justify-end border-t border-ink-100 pt-4 dark:border-ink-800">
                         <x-button type="submit">
                             <x-icon name="save" class="size-4" />

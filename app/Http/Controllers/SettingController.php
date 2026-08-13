@@ -19,6 +19,7 @@ class SettingController extends Controller
             'calendar_days' => (int) $gym->setting('salary_calendar_days', 30),
             'paid_leave_days' => (int) $gym->setting('salary_paid_leave_days', 2),
             'paid_half_days' => (int) $gym->setting('salary_paid_half_days', 4),
+            'payment_day' => (int) $gym->setting('salary_payment_day', 1),
         ];
 
         return view('settings.index', compact('gym', 'razorpayConfigured', 'salaryRules'));
@@ -105,6 +106,7 @@ class SettingController extends Controller
             'calendar_days' => ['required', 'in:28,30'],
             'paid_leave_days' => ['required', 'integer', 'min:0', 'max:31'],
             'paid_half_days' => ['required', 'integer', 'min:0', 'max:62'],
+            'payment_day' => ['required', 'integer', 'min:1', 'max:28'],
         ]);
 
         $gym = current_gym();
@@ -112,6 +114,7 @@ class SettingController extends Controller
         $gym->setSetting('salary_calendar_days', (string) $data['calendar_days']);
         $gym->setSetting('salary_paid_leave_days', (string) $data['paid_leave_days']);
         $gym->setSetting('salary_paid_half_days', (string) $data['paid_half_days']);
+        $gym->setSetting('salary_payment_day', (string) $data['payment_day']);
 
         audit_log('salary.rules_updated', 'settings', $gym->id, 'Salary rules updated');
 

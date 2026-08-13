@@ -45,11 +45,16 @@ class SalaryController extends Controller
 
         $defaultPeriod = now()->format('Y-m');
 
+        $paymentDay = (int) (current_gym()?->setting('salary_payment_day', 1) ?? 1);
+        $defaultPaymentDate = now()->day > $paymentDay
+            ? now()->addMonth()->startOfMonth()->addDays($paymentDay - 1)
+            : now()->startOfMonth()->addDays($paymentDay - 1);
+
         $deductions = $staff->mapWithKeys(fn ($s) => [
             $s->id => $this->salaries->leaveDeduction($s, $defaultPeriod, (float) ($s->basic_salary ?? 0) + (float) ($s->allowances ?? 0)),
         ]);
 
-        return view('staff.salary-create', compact('staff', 'defaultPeriod', 'deductions'));
+        return view('staff.salary-create', compact('staff', 'defaultPeriod', 'defaultPaymentDate', 'deductions'));
     }
 
     public function deductionPreview(Request $request)
