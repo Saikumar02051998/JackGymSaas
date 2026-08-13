@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Attendance;
 use App\Models\Client;
 use App\Models\Expense;
+use App\Models\Followup;
 use App\Models\Lead;
 use App\Models\Membership;
 use App\Models\Payment;
