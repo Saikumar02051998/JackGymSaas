@@ -19,6 +19,8 @@ return [
 
     'default_gym_id' => (int) env('DEFAULT_GYM_ID', 1),
 
+    'saas_owner' => env('SAAS_OWNER', 'TecNano'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

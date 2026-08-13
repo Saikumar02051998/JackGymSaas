@@ -407,7 +407,7 @@
     </div>
 
     <x-modal title="Update Health Profile">
-        <form method="POST" action="{{ route('clients.health', $client) }}" class="grid gap-4 sm:grid-cols-2">
+        <form method="POST" action="{{ route('clients.health', $client) }}" id="health-form" class="grid gap-4 sm:grid-cols-2">
             @csrf
             <x-input label="Height (cm)" type="number" step="0.1" name="height" value="{{ $client->healthProfile?->height }}" />
             <x-input label="Weight (kg)" type="number" step="0.1" name="weight" value="{{ $client->healthProfile?->weight }}" />
@@ -450,7 +450,7 @@
             </div>
             <x-slot name="footer">
                 <x-button type="button" variant="ghost" @click="$dispatch('close-modal')">Cancel</x-button>
-                <x-button type="submit">Save Health</x-button>
+                <x-button type="submit" form="health-form">Save Health</x-button>
             </x-slot>
         </form>
     </x-modal>

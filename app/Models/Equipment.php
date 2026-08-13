@@ -16,6 +16,11 @@ class Equipment extends Model
         return $this->belongsTo(Gym::class);
     }
 
+    public function expense()
+    {
+        return $this->hasOne(Expense::class);
+    }
+
     public function isMaintenanceDue(): bool
     {
         return $this->next_maintenance

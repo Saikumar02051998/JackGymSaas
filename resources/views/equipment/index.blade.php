@@ -12,7 +12,7 @@
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
-            <x-card title="Equipment">
+            <x-card title="Equipment" x-data="{ edit: {} }">
                 <form method="GET" action="{{ route('equipment.index') }}" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                     <div class="min-w-48 flex-1">
                         <x-input label="Search" name="search" value="{{ request('search') }}" placeholder="Search equipment..." />
@@ -68,54 +68,24 @@
                                         @if (can_manage('equipment.manage'))
                                             <td class="px-5 py-4 text-right">
                                                 <div class="flex justify-end gap-2">
-                                                    <details class="group relative">
-                                                        <summary class="btn-outline btn-sm cursor-pointer list-none">
-                                                            <x-icon name="pencil" class="size-3.5" />
-                                                            Edit
-                                                        </summary>
-                                                        <div class="absolute right-0 top-9 z-20 w-96 rounded-2xl border border-ink-100 bg-white p-5 shadow-xl dark:border-ink-800 dark:bg-night-900">
-                                                            <p class="mb-3 text-sm font-bold text-ink-900 dark:text-white">Edit {{ $item->name }}</p>
-                                                            <form method="POST" action="{{ route('equipment.update', $item) }}" class="space-y-3">
-                                                                @csrf
-                                                                @method('PUT')
-                                                                <div class="grid grid-cols-2 gap-3">
-                                                                    <x-input label="Name" name="name" value="{{ old('name', $item->name) }}" required />
-                                                                    <x-input label="Category" name="category" value="{{ old('category', $item->category) }}" />
-                                                                </div>
-                                                                <div class="grid grid-cols-2 gap-3">
-                                                                    <x-input label="Purchase date" name="purchase_date" type="date" value="{{ old('purchase_date', $item->purchase_date) }}" />
-                                                                    <x-input label="Purchase cost" name="purchase_cost" type="number" step="0.01" min="0" value="{{ old('purchase_cost', $item->purchase_cost) }}" />
-                                                                </div>
-                                                                <div class="grid grid-cols-2 gap-3">
-                                                                    <x-input label="Warranty until" name="warranty_until" type="date" value="{{ old('warranty_until', $item->warranty_until) }}" />
-                                                                    <x-input label="Location" name="location" value="{{ old('location', $item->location) }}" />
-                                                                </div>
-                                                                <div class="grid grid-cols-2 gap-3">
-                                                                    <x-input label="Last maintenance" name="last_maintenance" type="date" value="{{ old('last_maintenance', $item->last_maintenance) }}" />
-                                                                    <x-input label="Next maintenance" name="next_maintenance" type="date" value="{{ old('next_maintenance', $item->next_maintenance) }}" />
-                                                                </div>
-                                                                <div class="grid grid-cols-2 gap-3">
-                                                                    <x-select label="Condition" name="condition">
-                                                                        @foreach (['excellent' => 'Excellent', 'good' => 'Good', 'fair' => 'Fair', 'poor' => 'Poor', 'needs_repair' => 'Needs repair'] as $value => $label)
-                                                                            <option value="{{ $value }}" @selected(old('condition', $item->condition) === $value)>{{ $label }}</option>
-                                                                        @endforeach
-                                                                    </x-select>
-                                                                    <x-select label="Status" name="status">
-                                                                        @foreach (['active' => 'Active', 'maintenance' => 'Maintenance', 'retired' => 'Retired'] as $value => $label)
-                                                                            <option value="{{ $value }}" @selected(old('status', $item->status) === $value)>{{ $label }}</option>
-                                                                        @endforeach
-                                                                    </x-select>
-                                                                </div>
-                                                                <x-field label="Notes" name="notes">
-                                                                    <textarea name="notes" rows="2" class="input">{{ old('notes', $item->notes) }}</textarea>
-                                                                </x-field>
-                                                                <div class="flex gap-2">
-                                                                    <x-button type="submit" size="sm" class="flex-1">Save</x-button>
-                                                                    <button type="button" onclick="this.closest('details').removeAttribute('open')" class="btn-outline btn-sm">Cancel</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </details>
+                                                    <button type="button" class="btn-outline btn-sm"
+                                                            x-on:click="edit = @js([
+                                                                'id' => $item->id,
+                                                                'name' => $item->name,
+                                                                'category' => $item->category,
+                                                                'purchase_date' => $item->purchase_date,
+                                                                'purchase_cost' => $item->purchase_cost,
+                                                                'warranty_until' => $item->warranty_until,
+                                                                'location' => $item->location,
+                                                                'last_maintenance' => $item->last_maintenance,
+                                                                'next_maintenance' => $item->next_maintenance,
+                                                                'condition' => $item->condition,
+                                                                'status' => $item->status,
+                                                                'notes' => $item->notes,
+                                                            ]); $dispatch('open-modal', 'edit-equipment')">
+                                                        <x-icon name="pencil" class="size-3.5" />
+                                                        Edit
+                                                    </button>
                                                     <form method="POST" action="{{ route('equipment.destroy', $item) }}"
                                                           x-data x-on:submit.prevent="$dispatch('confirm-ask', { action: $el, options: { title: 'Remove equipment?', message: 'Remove {{ $item->name }} from equipment.', confirmText: 'Remove' } })">
                                                         @csrf
@@ -135,6 +105,52 @@
                     <div class="p-4">
                         <x-pagination :model="$equipment" />
                     </div>
+                @endif
+
+                @if (can_manage('equipment.manage'))
+                    <x-modal id="edit-equipment" title="Edit Equipment">
+                        <form method="POST" :action="edit ? `/equipment/${edit.id}` : '#'" id="edit-equipment-form" class="space-y-3">
+                            @csrf
+                            @method('PUT')
+                            <div class="grid grid-cols-2 gap-3">
+                                <x-input label="Name" name="name" x-model="edit.name" required />
+                                <x-input label="Category" name="category" x-model="edit.category" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <x-input label="Purchase date" name="purchase_date" type="date" x-model="edit.purchase_date" />
+                                <x-input label="Purchase cost" name="purchase_cost" type="number" step="0.01" min="0" x-model="edit.purchase_cost" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <x-input label="Warranty until" name="warranty_until" type="date" x-model="edit.warranty_until" />
+                                <x-input label="Location" name="location" x-model="edit.location" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <x-input label="Last maintenance" name="last_maintenance" type="date" x-model="edit.last_maintenance" />
+                                <x-input label="Next maintenance" name="next_maintenance" type="date" x-model="edit.next_maintenance" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <x-select label="Condition" name="condition" x-model="edit.condition">
+                                    @foreach (['excellent' => 'Excellent', 'good' => 'Good', 'fair' => 'Fair', 'poor' => 'Poor', 'needs_repair' => 'Needs repair'] as $value => $label)
+                                        <option value="{{ $value }}" @selected($value === 'good')>{{ $label }}</option>
+                                    @endforeach
+                                </x-select>
+                                <x-select label="Status" name="status" x-model="edit.status">
+                                    @foreach (['active' => 'Active', 'maintenance' => 'Maintenance', 'retired' => 'Retired'] as $value => $label)
+                                        <option value="{{ $value }}" @selected($value === 'active')>{{ $label }}</option>
+                                    @endforeach
+                                </x-select>
+                            </div>
+                            <x-field label="Notes" name="notes">
+                                <textarea name="notes" rows="2" class="input" x-model="edit.notes"></textarea>
+                            </x-field>
+                            <x-slot name="footer">
+                                <div class="flex justify-end gap-3">
+                                    <x-button type="button" variant="outline" x-on:click="$dispatch('close-modal', 'edit-equipment')">Cancel</x-button>
+                                    <x-button type="submit" form="edit-equipment-form">Save</x-button>
+                                </div>
+                            </x-slot>
+                        </form>
+                    </x-modal>
                 @endif
             </x-card>
         </div>

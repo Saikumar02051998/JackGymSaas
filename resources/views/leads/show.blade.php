@@ -129,7 +129,7 @@
 
     @if (can_manage('leads.manage') && $lead->status !== 'converted')
         <x-modal id="convert-modal" title="Convert to Client">
-            <form method="POST" action="{{ route('leads.convert', $lead) }}">
+            <form method="POST" action="{{ route('leads.convert', $lead) }}" id="convert-form">
                 @csrf
                 <p class="text-sm text-ink-500 dark:text-ink-400">
                     This will create a client profile for <strong class="text-ink-900 dark:text-white">{{ $lead->name }}</strong> and mark the lead as converted.
@@ -147,7 +147,7 @@
                 <x-slot name="footer">
                     <div class="flex justify-end gap-3">
                         <x-button type="button" variant="outline" x-on:click="$dispatch('close-modal', 'convert-modal')">Cancel</x-button>
-                        <x-button type="submit">
+                        <x-button type="submit" form="convert-form">
                             <x-icon name="check-badge" class="size-4" />
                             Convert Lead
                         </x-button>

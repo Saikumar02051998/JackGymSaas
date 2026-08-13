@@ -97,7 +97,7 @@
 
         @if ($canManage)
             <x-modal id="reschedule-modal" title="Reschedule Follow-Up">
-                <form method="POST" :action="reschedule ? `/followups/${reschedule.id}/reschedule` : '#'">
+                <form method="POST" :action="reschedule ? `/followups/${reschedule.id}/reschedule` : '#'" id="reschedule-form">
                     @csrf
                     <div class="grid gap-4 sm:grid-cols-2">
                         <x-input label="Date" type="date" name="follow_up_date" x-model="rsDate" required />
@@ -106,7 +106,7 @@
                     <x-slot name="footer">
                         <div class="flex justify-end gap-3">
                             <x-button type="button" variant="outline" x-on:click="$dispatch('close-modal', 'reschedule-modal')">Cancel</x-button>
-                            <x-button type="submit">
+                            <x-button type="submit" form="reschedule-form">
                                 <x-icon name="refresh" class="size-4" />
                                 Reschedule
                             </x-button>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equipment;
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
 use Illuminate\Http\Request;
 
 class EquipmentController extends Controller
@@ -56,11 +58,13 @@ class EquipmentController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
-        Equipment::create(array_merge($data, [
+        $equipment = Equipment::create(array_merge($data, [
             'gym_id' => current_gym()->id,
             'condition' => $data['condition'] ?? 'good',
             'status' => $data['status'] ?? 'active',
         ]));
+
+        $this->syncExpense($equipment, $data);
 
         audit_log('equipment.created', 'equipment', null, "Added equipment {$data['name']}");
 
@@ -87,6 +91,8 @@ class EquipmentController extends Controller
 
         $equipment->update($data);
 
+        $this->syncExpense($equipment, $data);
+
         audit_log('equipment.updated', 'equipment', $equipment->id, "Updated equipment {$equipment->name}");
 
         return back()->with('success', 'Equipment updated.');
@@ -96,8 +102,47 @@ class EquipmentController extends Controller
     {
         abort_unless(auth()->user()->hasPermission('equipment.manage'), 403);
 
+        $equipment->expense?->delete();
+
         $equipment->delete();
 
         return back()->with('success', 'Equipment removed.');
+    }
+
+    private function syncExpense(Equipment $equipment, array $data): void
+    {
+        $cost = (float) ($data['purchase_cost'] ?? 0);
+
+        $category = ExpenseCategory::firstOrCreate(
+            ['gym_id' => $equipment->gym_id, 'name' => 'Equipment'],
+            ['description' => 'Equipment costs']
+        );
+
+        $payload = [
+            'category_id' => $category->id,
+            'amount' => $cost,
+            'expense_date' => $data['purchase_date'] ?? today()->toDateString(),
+            'description' => 'Equipment purchase: '.$equipment->name,
+        ];
+
+        $expense = $equipment->expense;
+
+        if ($cost <= 0) {
+            if ($expense) {
+                $expense->delete();
+            }
+
+            return;
+        }
+
+        if ($expense) {
+            $expense->update($payload);
+        } else {
+            Expense::create(array_merge($payload, [
+                'gym_id' => $equipment->gym_id,
+                'equipment_id' => $equipment->id,
+                'created_by' => auth()->id(),
+            ]));
+        }
     }
 }

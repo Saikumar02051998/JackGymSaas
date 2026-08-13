@@ -1,6 +1,6 @@
 @props(['title' => 'Modal', 'maxWidth' => 'max-w-lg'])
 
-<div x-data="modal()" @open-modal.window="openModal()" x-cloak
+<div x-data="modal()" @open-modal.window="openModal()" @close-modal.window="closeModal()" x-cloak
      x-show="open"
      @keydown.escape.window="closeModal()"
      x-transition:enter="transition ease-out duration-200"

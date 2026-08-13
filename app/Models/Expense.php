@@ -21,6 +21,11 @@ class Expense extends Model
         return $this->belongsTo(Gym::class);
     }
 
+    public function equipment()
+    {
+        return $this->belongsTo(Equipment::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
