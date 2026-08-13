@@ -402,18 +402,33 @@ window.JackAjax = (() => {
     return { request, submitForm, swapContainers, refreshAfter };
 })();
 
-// Page loading indicator: full-screen overlay shown while a page loads and during redirects.
+// Page loading indicator: full-screen overlay that stays visible while a page
+// navigates and until the target page has fully loaded.
 (() => {
     const KEY = 'page-loading';
+    const MAX_WAIT = 10000; // backstop only; normally hidden on the "load" event
+
+    // Clear any navigation flag left by a previous page, even if it had no loader.
+    const wasRedirect = sessionStorage.getItem(KEY) === '1';
+    if (wasRedirect) sessionStorage.removeItem(KEY);
 
     const loader = document.getElementById('page-loader');
     if (!loader) return;
 
     const show = () => loader.classList.remove('hidden');
+    let hideTimer = null;
 
-    const markNavigation = () => {
-        sessionStorage.setItem(KEY, '1');
-        show();
+    const hide = (delay = 0) => {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => loader.classList.add('hidden'), delay);
+    };
+
+    // Only hrefs that trigger a full document navigation should show the loader.
+    const navigatesDocument = (href) => {
+        if (!href || href.startsWith('#') || /^javascript:/i.test(href)) return false;
+        if (/^(mailto|tel|sms|whatsapp):/i.test(href)) return false;
+        if (href.startsWith('http') && ! href.includes(window.location.hostname)) return false;
+        return true;
     };
 
     document.addEventListener('click', (e) => {
@@ -423,34 +438,41 @@ window.JackAjax = (() => {
         if (!anchor) return;
 
         const href = anchor.getAttribute('href');
-        if (!href || href.startsWith('#') || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
-        if (href.startsWith('http') && ! href.includes(window.location.hostname)) return;
+        if (anchor.target === '_blank' || anchor.hasAttribute('download')) return;
         if (anchor.hasAttribute('x-on:click') || anchor.hasAttribute('@click')) return;
+        if (! navigatesDocument(href)) return;
 
-        markNavigation();
+        sessionStorage.setItem(KEY, '1');
+        show();
     });
 
     document.addEventListener('submit', (e) => {
         if (! e.defaultPrevented) {
-            markNavigation();
+            sessionStorage.setItem(KEY, '1');
         }
     });
 
-    const start = performance.now();
-    const wasRedirect = sessionStorage.getItem(KEY);
-    if (wasRedirect) {
-        sessionStorage.removeItem(KEY);
-    }
+    const started = performance.now();
 
+    // Hide only once the document (and its sub-resources) has finished loading.
     const finish = () => {
-        const wait = Math.max(0, (wasRedirect ? 350 : 500) - (performance.now() - start));
-        setTimeout(() => loader.classList.add('hidden'), wait);
+        const elapsed = performance.now() - started;
+        const min = wasRedirect ? 350 : 0; // avoid a jarring flash after a navigation
+        hide(Math.max(0, min - elapsed));
     };
 
     if (document.readyState === 'complete') {
+        // The page already finished loading while this script was being fetched.
         finish();
     } else {
         window.addEventListener('load', finish);
-        setTimeout(finish, 2500);
+
+        // Back/forward cache restores the page without firing "load".
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) hide();
+        });
+
+        // Long safety net for blocked sub-resources that prevent "load".
+        hideTimer = setTimeout(finish, MAX_WAIT);
     }
 })();

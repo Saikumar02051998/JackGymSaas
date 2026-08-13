@@ -12,6 +12,14 @@
     @stack('head')
 </head>
 <body class="bg-ink-50 dark:bg-night-950">
+    <div id="page-loader" aria-hidden="true">
+        <div class="loader-dots" role="status" aria-label="Loading">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
     <x-toast-container />
     {{ $slot }}
 
