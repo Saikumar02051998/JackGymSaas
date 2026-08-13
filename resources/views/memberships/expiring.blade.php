@@ -39,7 +39,7 @@
                                     <div class="flex justify-end gap-2">
                                         <a href="{{ route('clients.show', $membership->client_id) }}" class="btn-outline btn-sm">View Client</a>
                                         @if (can_manage('memberships.renew'))
-                                            <a href="{{ route('memberships.create', ['client' => $membership->client_id]) }}" class="btn-primary btn-sm">Renew</a>
+                                            <a href="{{ route('memberships.create', ['client_id' => $membership->client_id]) }}" class="btn-primary btn-sm">Renew</a>
                                         @endif
                                     </div>
                                 </td>

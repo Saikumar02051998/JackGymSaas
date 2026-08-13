@@ -72,7 +72,7 @@
                                             <a href="{{ route('leads.show', $trial->lead_id) }}" class="btn-outline btn-sm">Lead</a>
                                         @endif
                                         @if ($trial->status === 'active' && $trial->client && can_manage('memberships.create'))
-                                            <a href="{{ route('memberships.create', ['client' => $trial->client_id]) }}" class="btn-primary btn-sm">Convert</a>
+                                            <a href="{{ route('memberships.create', ['client_id' => $trial->client_id]) }}" class="btn-primary btn-sm">Convert</a>
                                         @endif
                                     </div>
                                 </td>
