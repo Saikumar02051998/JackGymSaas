@@ -21,7 +21,10 @@ class SubscriptionController extends Controller
             abort(403);
         }
 
-        $plans = SubscriptionPlan::where('status', 'active')->orderBy('price_monthly')->get();
+        $plans = SubscriptionPlan::where('status', 'active')
+            ->where('slug', '!=', 'trial')
+            ->orderBy('price_monthly')
+            ->get();
         $payments = $gym->saasPayments()->with('subscriptionPlan')->orderByDesc('created_at')->get();
 
         return view('subscription.index', compact('gym', 'plans', 'payments'));
@@ -41,15 +44,7 @@ class SubscriptionController extends Controller
         $gym = current_gym();
 
         if ($plan->isTrial()) {
-            $result = app(SaasPaymentService::class)->activateTrial($gym, $plan);
-
-            if (! $result['success']) {
-                return back()->withErrors(['payment' => $result['message']]);
-            }
-
-            audit_log('saas.trial.activated', 'saas', $gym->id, "Free trial activated for {$gym->name}");
-
-            return redirect()->route('subscription.index')->with('success', 'Free trial activated. Your trial runs until '.$gym->subscription_expires_at->format('d M Y').'.');
+            abort(403, 'Free trial is managed by the platform owner.');
         }
 
         $result = app(SaasPaymentService::class)->createOrder($gym, $plan, $data['billing_cycle']);
