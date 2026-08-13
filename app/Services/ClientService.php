@@ -30,6 +30,15 @@ class ClientService
 
             if ($email) {
                 $userData['email'] = $email;
+
+                User::withTrashed()
+                    ->where('email', $email)
+                    ->where(function ($q) {
+                        $q->whereNotNull('deleted_at')
+                            ->orWhere('status', '!=', 'active')
+                            ->orWhereIn('id', Client::onlyTrashed()->pluck('user_id'));
+                    })
+                    ->update(['email' => null]);
             }
 
             $user = User::create($userData);
@@ -155,9 +164,19 @@ class ClientService
     {
         $prefix = 'JG';
 
-        $last = Client::withTrashed()->orderByDesc('id')->first();
+        $numbers = Client::withTrashed()
+            ->where('member_id', 'like', $prefix . '%')
+            ->pluck('member_id')
+            ->map(fn ($m) => (int) substr((string) $m, strlen($prefix)));
 
-        return $prefix . str_pad((string) (($last?->id ?? 0) + 1), 5, '0', STR_PAD_LEFT);
+        $max = $numbers->max() ?? 0;
+
+        do {
+            $max++;
+            $memberId = $prefix . str_pad((string) $max, 5, '0', STR_PAD_LEFT);
+        } while (Client::withTrashed()->where('member_id', $memberId)->exists());
+
+        return $memberId;
     }
 
     private function calculateBmi(?float $heightCm, ?float $weightKg): ?float

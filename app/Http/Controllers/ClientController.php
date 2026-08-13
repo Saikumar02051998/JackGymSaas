@@ -86,7 +86,19 @@ class ClientController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->where(function ($q) {
+                    $q->where('status', 'active')
+                        ->whereNull('deleted_at')
+                        ->where(function ($sub) {
+                            $sub->whereRaw('exists (select 1 from clients where clients.user_id = users.id and clients.deleted_at is null)')
+                                ->orWhereRaw('not exists (select 1 from clients where clients.user_id = users.id)');
+                        });
+                }),
+            ],
             'phone' => ['nullable', 'string', 'max:20'],
             'gender' => ['nullable', 'in:male,female,other'],
             'dob' => ['nullable', 'date'],
@@ -108,6 +120,8 @@ class ClientController extends Controller
             'allergies' => ['nullable', 'string'],
             'important_notes' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
+        ], [
+            'email.unique' => 'User already registered with this email.',
         ]);
 
         $data['password'] = Str::random(8);
@@ -238,12 +252,21 @@ class ClientController extends Controller
     {
         abort_unless(auth()->user()->hasPermission('clients.delete'), 403);
 
+        $clientName = $client->display_name;
+
         DB::transaction(function () use ($client) {
-            $client->user->roles()->detach(\App\Models\Role::where('slug', 'client')->value('id'));
+            $user = $client->user;
+
+            if ($user) {
+                $user->roles()->detach(\App\Models\Role::where('slug', 'client')->value('id'));
+                $user->update(['email' => null]);
+                $user->delete();
+            }
+
             $client->delete();
         });
 
-        audit_log('client.deleted', 'clients', $client->id, "Deleted client {$client->display_name}");
+        audit_log('client.deleted', 'clients', $client->id, "Deleted client {$clientName}");
 
         return redirect()->route('clients.index')->with('success', 'Client removed.');
     }
