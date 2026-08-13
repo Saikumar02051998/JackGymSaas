@@ -37,6 +37,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'clients.health',
                     'attendance.view',
                     'attendance.manage',
+                    'attendance.staff',
                     'followups.view',
                     'followups.create',
                     'followups.manage',

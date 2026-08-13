@@ -3,7 +3,7 @@
     description="Submit a leave request."
     :breadcrumbs="[['label' => 'Staff', 'url' => route('staff.index')], ['label' => 'Leaves', 'url' => route('staff.leaves.index')], ['label' => 'Request Leave']]">
 
-    <form method="POST" action="{{ route('staff.leaves.store') }}" x-data="{ start: '{{ old('start_date', now()->toDateString()) }}', end: '{{ old('end_date', now()->toDateString()) }}', get days() { return leaveDays(this.start, this.end); } }">
+    <form method="POST" action="{{ route('staff.leaves.store') }}" x-data="leaveForm('{{ old('start_date', now()->toDateString()) }}', '{{ old('end_date', now()->toDateString()) }}', {{ old('is_half_day') ? 'true' : 'false' }})">
         @csrf
 
         <div class="grid gap-6 lg:grid-cols-3">
@@ -17,8 +17,22 @@
                             <option value="unpaid" {{ old('leave_type') === 'unpaid' ? 'selected' : '' }}>Unpaid Leave</option>
                             <option value="emergency" {{ old('leave_type') === 'emergency' ? 'selected' : '' }}>Emergency Leave</option>
                         </x-select>
-                        <x-input label="Start date" type="date" name="start_date" x-model="start" required />
-                        <x-input label="End date" type="date" name="end_date" x-model="end" required />
+                        <label class="flex cursor-pointer items-center gap-2.5 self-end pb-1 text-sm text-ink-600 dark:text-ink-300">
+                            <input type="checkbox" name="is_half_day" value="1" x-model="halfDay" class="size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400">
+                            Half day
+                        </label>
+                        <template x-if="!halfDay">
+                            <x-input label="Start date" type="date" name="start_date" x-model="start" required />
+                        </template>
+                        <template x-if="halfDay">
+                            <x-input label="Date" type="date" name="start_date" x-model="start" required />
+                        </template>
+                        <template x-if="!halfDay">
+                            <x-input label="End date" type="date" name="end_date" x-model="end" required />
+                        </template>
+                        <template x-if="halfDay">
+                            <input type="hidden" name="end_date" x-bind:value="start">
+                        </template>
                         <div class="flex items-end">
                             <p class="text-sm text-ink-500 dark:text-ink-400">
                                 Duration: <strong class="text-ink-900 dark:text-white" x-text="days"></strong> day(s)
@@ -52,12 +66,20 @@
     </form>
 
     <script>
-        function leaveDays(start, end) {
-            if (!start || !end) return 0;
-            const s = new Date(start);
-            const e = new Date(end);
-            if (e < s) return 0;
-            return Math.round((e - s) / 86400000) + 1;
+        function leaveForm(start, end, halfDay) {
+            return {
+                start,
+                end,
+                halfDay,
+                get days() {
+                    if (this.halfDay) return 0.5;
+                    if (!this.start || !this.end) return 0;
+                    const s = new Date(this.start);
+                    const e = new Date(this.end);
+                    if (e < s) return 0;
+                    return Math.round((e - s) / 86400000) + 1;
+                },
+            };
         }
     </script>
 </x-layouts.app>

@@ -16,6 +16,59 @@
         <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">{{ $message }}</div>
     @enderror
 
+    <div class="mb-6 grid gap-4 lg:grid-cols-3">
+        <x-card title="Leave Policy">
+            <ul class="space-y-3">
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="calendar" class="size-4" />
+                        Calendar days / month
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ $rules['calendar_days'] }} days</span>
+                </li>
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="sun" class="size-4" />
+                        Paid full-day leaves
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ $rules['paid_leave_days'] }} / month</span>
+                </li>
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="clock" class="size-4" />
+                        Paid half-day leaves
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ $rules['paid_half_days'] }} / month</span>
+                </li>
+            </ul>
+            <div class="mt-4 rounded-xl bg-ink-50 px-3 py-2.5 text-xs leading-relaxed text-ink-500 dark:bg-ink-800/60 dark:text-ink-400">
+                Leave taken beyond the paid allowance is deducted from the monthly salary at the per-day rate (monthly salary &divide; {{ $rules['calendar_days'] }}).
+            </div>
+        </x-card>
+
+        @if ($myLeaves)
+            <x-card title="My Leave Summary &mdash; {{ now()->format('F Y') }}" class="lg:col-span-2">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                        <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $myLeaves['pending'] }}</p>
+                        <p class="text-xs text-ink-500 dark:text-ink-400">{{ $myLeaves['pending_days'] }} day{{ $myLeaves['pending_days'] == 1 ? '' : 's' }} this month</p>
+                    </div>
+                    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Taken</p>
+                        <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $myLeaves['approved'] }}</p>
+                        <p class="text-xs text-ink-500 dark:text-ink-400">{{ $myLeaves['approved_days'] }} day{{ $myLeaves['approved_days'] == 1 ? '' : 's' }} approved</p>
+                    </div>
+                    <div class="rounded-xl border border-ink-100 bg-ink-50 px-4 py-3 dark:border-ink-800 dark:bg-ink-800/60">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">Total Requests</p>
+                        <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $myLeaves['total'] }}</p>
+                        <p class="text-xs text-ink-500 dark:text-ink-400">All requests this month</p>
+                    </div>
+                </div>
+            </x-card>
+        @endif
+    </div>
+
     <x-card :padding="false">
         <div class="flex flex-wrap items-center gap-3 border-b border-ink-100 p-4 dark:border-ink-800">
             <form method="GET" action="{{ route('staff.leaves.index') }}" class="flex items-center gap-2">
@@ -59,7 +112,12 @@
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $leave->leave_type }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($leave->start_date)->format('d M') }} &rarr; {{ \Carbon\Carbon::parse($leave->end_date)->format('d M Y') }}</td>
-                                <td class="px-5 py-4">{{ $leave->days }}</td>
+                                <td class="px-5 py-4">
+                                    {{ $leave->days }}
+                                    @if ($leave->is_half_day)
+                                        <x-badge color="blue" class="ml-1">Half</x-badge>
+                                    @endif
+                                </td>
                                 <td class="px-5 py-4 max-w-56 truncate text-ink-500 dark:text-ink-400" title="{{ $leave->reason }}">{{ $leave->reason ?? '—' }}</td>
                                 <td class="px-5 py-4">
                                     <x-badge :color="match($leave->status) { 'approved' => 'green', 'pending' => 'amber', 'rejected' => 'red', 'cancelled' => 'gray', default => 'gray' }">{{ ucfirst($leave->status) }}</x-badge>

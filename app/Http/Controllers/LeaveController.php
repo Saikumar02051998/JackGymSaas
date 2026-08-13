@@ -24,7 +24,33 @@ class LeaveController extends Controller
 
         $leaves = $query->orderByDesc('start_date')->paginate(15)->withQueryString();
 
-        return view('staff.leaves', compact('leaves'));
+        $gym = current_gym();
+        $rules = [
+            'calendar_days' => (int) $gym?->setting('salary_calendar_days', 30),
+            'paid_leave_days' => (int) $gym?->setting('salary_paid_leave_days', 2),
+            'paid_half_days' => (int) $gym?->setting('salary_paid_half_days', 4),
+        ];
+
+        $myLeaves = null;
+        if ($profile = auth()->user()->staffProfile) {
+            $monthStart = now()->startOfMonth()->toDateString();
+            $monthEnd = now()->endOfMonth()->toDateString();
+
+            $monthLeaves = StaffLeave::where('staff_id', $profile->id)
+                ->where('start_date', '<=', $monthEnd)
+                ->where('end_date', '>=', $monthStart)
+                ->get();
+
+            $myLeaves = [
+                'pending' => $monthLeaves->where('status', 'pending')->count(),
+                'pending_days' => round($monthLeaves->where('status', 'pending')->sum('days'), 1),
+                'approved' => $monthLeaves->where('status', 'approved')->count(),
+                'approved_days' => round($monthLeaves->where('status', 'approved')->sum('days'), 1),
+                'total' => $monthLeaves->count(),
+            ];
+        }
+
+        return view('staff.leaves', compact('leaves', 'rules', 'myLeaves'));
     }
 
     public function create()
@@ -43,20 +69,30 @@ class LeaveController extends Controller
         $data = $request->validate([
             'leave_type' => ['required', 'string', 'max:50'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'reason' => ['nullable', 'string'],
+            'is_half_day' => ['nullable'],
         ]);
 
-        $start = \Carbon\Carbon::parse($data['start_date']);
-        $end = \Carbon\Carbon::parse($data['end_date']);
-        $days = $start->diffInDays($end) + 1;
+        $halfDay = (bool) ($data['is_half_day'] ?? false);
 
-        StaffLeave::create(array_merge($data, [
+        $start = \Carbon\Carbon::parse($data['start_date']);
+        $end = $halfDay
+            ? $start->copy()
+            : \Carbon\Carbon::parse($data['end_date'] ?? $data['start_date']);
+        $days = $halfDay ? 0.5 : ($start->diffInDays($end) + 1);
+
+        StaffLeave::create([
             'gym_id' => current_gym()->id,
             'staff_id' => $staff->id,
+            'leave_type' => $data['leave_type'],
+            'start_date' => $data['start_date'],
+            'end_date' => $end->toDateString(),
+            'is_half_day' => $halfDay,
             'days' => $days,
+            'reason' => $data['reason'] ?? null,
             'status' => 'pending',
-        ]));
+        ]);
 
         audit_log('leave.requested', 'staff', null, "Leave requested by {$staff->display_name}");
 

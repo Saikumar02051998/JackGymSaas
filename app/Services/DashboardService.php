@@ -141,6 +141,24 @@ class DashboardService
     {
         $today = now()->toDateString();
 
+        $monthStart = now()->startOfMonth()->toDateString();
+        $monthEnd = now()->endOfMonth()->toDateString();
+
+        $monthLeaves = $staff
+            ? $staff->leaves()
+                ->where('start_date', '<=', $monthEnd)
+                ->where('end_date', '>=', $monthStart)
+                ->get()
+            : collect();
+
+        $basic = (float) ($staff?->basic_salary ?? 0);
+        $allowances = (float) ($staff?->allowances ?? 0);
+        $period = now()->format('Y-m');
+        $leaveDeduction = $staff
+            ? app(SalaryService::class)->leaveDeduction($staff, $period, $basic + $allowances)['deduction']
+            : 0.0;
+        $grossSalary = $basic + $allowances;
+
         return [
             'assigned_clients' => Client::where('assigned_trainer_id', $staffId)->count(),
             'today_sessions' => \App\Models\PersonalTrainingSession::where('trainer_id', $staffId)
@@ -153,6 +171,19 @@ class DashboardService
             'total_pt_sessions' => \App\Models\PersonalTrainingSession::where('trainer_id', $staffId)->count(),
             'completed_pt_sessions' => \App\Models\PersonalTrainingSession::where('trainer_id', $staffId)->where('status', 'completed')->count(),
             'commission' => (float) ($staff?->commission_rate ?? 0),
+            'basic_salary' => $basic,
+            'allowances' => $allowances,
+            'gross_salary' => round($grossSalary, 2),
+            'leave_deduction' => round($leaveDeduction, 2),
+            'expected_salary' => round($grossSalary - $leaveDeduction, 2),
+            'pending_leaves' => $monthLeaves->where('status', 'pending')->count(),
+            'pending_leave_days' => round($monthLeaves->where('status', 'pending')->sum('days'), 1),
+            'taken_leaves' => $monthLeaves->where('status', 'approved')->count(),
+            'taken_leave_days' => round($monthLeaves->where('status', 'approved')->sum('days'), 1),
+            'total_leaves' => $monthLeaves->count(),
+            'paid_leave_days' => (int) (current_gym()?->setting('salary_paid_leave_days', 2) ?? 2),
+            'paid_half_days' => (int) (current_gym()?->setting('salary_paid_half_days', 4) ?? 4),
+            'calendar_days' => (int) (current_gym()?->setting('salary_calendar_days', 30) ?? 30),
         ];
     }
 }

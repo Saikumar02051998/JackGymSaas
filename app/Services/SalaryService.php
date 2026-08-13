@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Salary;
+use App\Models\StaffLeave;
 use App\Models\StaffProfile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class SalaryService
@@ -32,9 +34,69 @@ class SalaryService
         ];
     }
 
-    public function createOrUpdate(StaffProfile $staff, array $data): Salary
+    public function leaveDeduction(StaffProfile $staff, string $period, float $gross = 0): array
     {
-        return DB::transaction(function () use ($staff, $data) {
+        $gym = $staff->gym ?? current_gym();
+
+        $calendarDays = (int) ($gym?->setting('salary_calendar_days', 30) ?? 30);
+        $paidLeaveDays = (int) ($gym?->setting('salary_paid_leave_days', 2) ?? 2);
+        $paidHalfDays = (int) ($gym?->setting('salary_paid_half_days', 4) ?? 4);
+
+        $month = Carbon::parse($period.'-01');
+        $start = $month->copy()->startOfMonth();
+        $end = $month->copy()->endOfMonth();
+
+        $leaves = $staff->leaves()
+            ->where('status', 'approved')
+            ->where('start_date', '<=', $end->toDateString())
+            ->where('end_date', '>=', $start->toDateString())
+            ->get();
+
+        $fullDays = 0.0;
+        $halfDays = 0.0;
+
+        foreach ($leaves as $leave) {
+            $leaveStart = Carbon::parse($leave->start_date);
+            $leaveEnd = Carbon::parse($leave->end_date);
+            $overlapStart = $leaveStart->greaterThan($start) ? $leaveStart : $start;
+            $overlapEnd = $leaveEnd->lessThan($end) ? $leaveEnd : $end;
+
+            if ($overlapEnd->lt($overlapStart)) {
+                continue;
+            }
+
+            $overlapDays = $overlapStart->diffInDays($overlapEnd) + 1;
+
+            if ($leave->is_half_day) {
+                $halfDays += $overlapDays * 0.5;
+            } else {
+                $fullDays += $overlapDays;
+            }
+        }
+
+        $excessFull = max(0.0, $fullDays - $paidLeaveDays);
+        $excessHalf = max(0.0, $halfDays - $paidHalfDays);
+
+        $perDay = $calendarDays > 0 ? $gross / $calendarDays : 0;
+
+        $deduction = round($excessFull * $perDay + $excessHalf * $perDay * 0.5, 2);
+
+        return [
+            'full_days' => round($fullDays, 2),
+            'half_days' => round($halfDays, 2),
+            'paid_leave_days' => $paidLeaveDays,
+            'paid_half_days' => $paidHalfDays,
+            'excess_full_days' => round($excessFull, 2),
+            'excess_half_days' => round($excessHalf, 2),
+            'calendar_days' => $calendarDays,
+            'per_day' => round($perDay, 2),
+            'deduction' => $deduction,
+        ];
+    }
+
+    public function createOrUpdate(StaffProfile $staff, array $data, bool $notify = true): Salary
+    {
+        return DB::transaction(function () use ($staff, $data, $notify) {
             $amounts = $this->computeNet($data);
 
             $salary = Salary::updateOrCreate(
@@ -74,8 +136,10 @@ class SalaryService
                 $salary->items()->create($item);
             }
 
-            $notif = app(NotificationService::class);
-            $notif->salaryProcessed($staff->user, $data['period']);
+            if ($notify) {
+                $notif = app(NotificationService::class);
+                $notif->salaryProcessed($staff->user, $data['period']);
+            }
 
             audit_log('salary.created', 'salaries', $salary->id, "Salary processed for {$staff->display_name} for {$data['period']}");
 

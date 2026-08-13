@@ -17,6 +17,75 @@
         <x-stat label="Gym Members" :value="$stats['active_members']" icon="check-badge" />
     </div>
 
+    <div class="mt-6 grid gap-4 lg:grid-cols-3">
+        <x-card title="Salary & Leave Summary">
+            <ul class="space-y-3">
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="banknotes" class="size-4" />
+                        Basic Salary
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ money($coachStats['basic_salary']) }}</span>
+                </li>
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="trending-up" class="size-4" />
+                        Allowances
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ money($coachStats['allowances']) }}</span>
+                </li>
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="bolt" class="size-4" />
+                        Commission rate
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ $coachStats['commission'] }}%</span>
+                </li>
+                <li class="flex items-center justify-between gap-2">
+                    <span class="flex items-center gap-2 text-sm text-ink-500 dark:text-ink-400">
+                        <x-icon name="clock" class="size-4" />
+                        Paid leave allowance
+                    </span>
+                    <span class="text-sm font-bold text-ink-900 dark:text-white">{{ $coachStats['paid_leave_days'] }} full / {{ $coachStats['paid_half_days'] }} half</span>
+                </li>
+            </ul>
+            <div class="mt-4 rounded-xl border border-gold-300/60 bg-gold-400/10 px-4 py-3 dark:border-gold-500/30 dark:bg-gold-400/10">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-700 dark:text-gold-400">Net Payable This Month</p>
+                <p class="mt-1 text-2xl font-bold tracking-tight text-ink-900 dark:text-white">{{ money($coachStats['expected_salary']) }}</p>
+                <p class="mt-0.5 text-xs text-ink-500 dark:text-ink-400">
+                    {{ money($coachStats['gross_salary']) }} gross &minus; {{ money($coachStats['leave_deduction']) }} leave deduction
+                </p>
+            </div>
+            <div class="mt-3 rounded-xl bg-ink-50 px-3 py-2.5 text-xs leading-relaxed text-ink-500 dark:bg-ink-800/60 dark:text-ink-400">
+                Salary is divided across {{ $coachStats['calendar_days'] }} calendar days; leaves beyond the paid allowance are deducted at the per-day rate.
+            </div>
+        </x-card>
+
+        <x-card title="My Leaves &mdash; {{ now()->format('F Y') }}" class="lg:col-span-2">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-500/30 dark:bg-amber-500/10">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $coachStats['pending_leaves'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">{{ $coachStats['pending_leave_days'] }} day{{ $coachStats['pending_leave_days'] == 1 ? '' : 's' }} this month</p>
+                </div>
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Taken</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $coachStats['taken_leaves'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">{{ $coachStats['taken_leave_days'] }} day{{ $coachStats['taken_leave_days'] == 1 ? '' : 's' }} approved</p>
+                </div>
+                <div class="rounded-xl border border-ink-100 bg-ink-50 px-4 py-3 dark:border-ink-800 dark:bg-ink-800/60">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">Total Requests</p>
+                    <p class="mt-1 text-2xl font-bold text-ink-900 dark:text-white">{{ $coachStats['total_leaves'] }}</p>
+                    <p class="text-xs text-ink-500 dark:text-ink-400">All requests this month</p>
+                </div>
+            </div>
+            <a href="{{ route('staff.leaves.index') }}" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-600 hover:text-gold-700 dark:text-gold-400">
+                Manage my leaves
+                <x-icon name="chevron-right" class="size-4" />
+            </a>
+        </x-card>
+    </div>
+
     @if (auth()->user()->hasPermission('dashboard.revenue.view'))
         <div class="mt-6 grid gap-4 lg:grid-cols-3">
             <x-card title="Revenue vs Expenses" class="lg:col-span-2">

@@ -5,6 +5,10 @@
 
     <x-slot name="actions">
         @if (can_manage('salary.manage'))
+            <x-button href="{{ route('staff.salaries.bonus') }}" size="sm" variant="ghost">
+                <x-icon name="gift" class="size-4" />
+                Give Bonus
+            </x-button>
             <x-button href="{{ route('staff.salaries.create') }}" size="sm">
                 <x-icon name="plus" class="size-4" />
                 Process Salary

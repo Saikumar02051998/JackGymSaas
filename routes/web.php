@@ -37,6 +37,7 @@ use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PtSessionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SalaryRuleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffRoleController;
@@ -159,6 +160,14 @@ Route::middleware('auth')->group(function () {
         });
     });
 
+    Route::prefix('staff/leaves')->name('staff.leaves.')->middleware('permission:attendance.staff')->group(function () {
+        Route::get('/', [LeaveController::class, 'index'])->name('index');
+        Route::get('/create', [LeaveController::class, 'create'])->name('create');
+        Route::post('/', [LeaveController::class, 'store'])->name('store');
+        Route::post('/{leave}/approve', [LeaveController::class, 'approve'])->name('approve');
+        Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
+    });
+
     Route::prefix('staff')->name('staff.')->middleware('permission:staff.view')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('index');
         Route::middleware('permission:staff.create')->group(function () {
@@ -185,15 +194,12 @@ Route::middleware('auth')->group(function () {
             Route::middleware('permission:salary.manage')->group(function () {
                 Route::get('/create', [SalaryController::class, 'create'])->name('create');
                 Route::post('/pay', [SalaryController::class, 'pay'])->name('pay');
+                Route::post('/deduction-preview', [SalaryController::class, 'deductionPreview'])->name('deduction-preview');
+                Route::get('/bonus', [SalaryController::class, 'bonus'])->name('bonus');
+                Route::post('/bonus', [SalaryController::class, 'applyBonus'])->name('bonus.apply');
+                Route::get('/rules', [SalaryRuleController::class, 'index'])->name('rules');
+                Route::put('/rules', [SalaryRuleController::class, 'update'])->name('rules.update');
             });
-        });
-
-        Route::prefix('leaves')->name('leaves.')->middleware('permission:attendance.staff')->group(function () {
-            Route::get('/', [LeaveController::class, 'index'])->name('index');
-            Route::get('/create', [LeaveController::class, 'create'])->name('create');
-            Route::post('/', [LeaveController::class, 'store'])->name('store');
-            Route::post('/{leave}/approve', [LeaveController::class, 'approve'])->name('approve');
-            Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
         });
 
         Route::get('/{user}', [StaffController::class, 'show'])->name('show');

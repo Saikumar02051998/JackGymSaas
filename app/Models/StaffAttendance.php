@@ -12,7 +12,7 @@ class StaffAttendance extends Model
 
     public function staff()
     {
-        return $this->belongsTo(StaffProfile::class);
+        return $this->belongsTo(StaffProfile::class, 'staff_id');
     }
 
     public function gym()

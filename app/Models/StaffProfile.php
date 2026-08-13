@@ -28,17 +28,17 @@ class StaffProfile extends Model
 
     public function attendance()
     {
-        return $this->hasMany(StaffAttendance::class);
+        return $this->hasMany(StaffAttendance::class, 'staff_id');
     }
 
     public function salaries()
     {
-        return $this->hasMany(Salary::class);
+        return $this->hasMany(Salary::class, 'staff_id');
     }
 
     public function leaves()
     {
-        return $this->hasMany(StaffLeave::class);
+        return $this->hasMany(StaffLeave::class, 'staff_id');
     }
 
     public function ptSessions()
