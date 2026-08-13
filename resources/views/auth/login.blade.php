@@ -1,5 +1,8 @@
 <x-layouts.guest title="Login">
-    @php $gym = current_gym(); @endphp
+    @php
+        $brandLogo = saas_owner_logo();
+        $brandName = saas_owner_name();
+    @endphp
     <div class="flex min-h-screen">
         <div class="relative hidden w-1/2 overflow-hidden bg-ink-950 lg:block">
             <div class="absolute inset-0 bg-gradient-to-br from-ink-900 via-ink-950 to-ink-950"></div>
@@ -9,15 +12,15 @@
 
             <div class="relative flex h-full flex-col justify-between p-12">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    @if ($gym?->logo)
-                        <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-11 rounded-xl object-cover shadow-lg shadow-gold-400/30">
+                    @if ($brandLogo)
+                        <img src="{{ asset('storage/' . $brandLogo) }}" alt="{{ $brandName }}" class="size-11 rounded-xl object-cover shadow-lg shadow-gold-400/30">
                     @else
                         <div class="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-500 text-lg font-extrabold text-ink-950 shadow-lg shadow-gold-400/30">
-                            {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+                            {{ substr($brandName, 0, 1) }}
                         </div>
                     @endif
                     <div>
-                        <p class="text-lg font-bold text-white">{{ $gym?->name ?? config('app.name') }}</p>
+                        <p class="text-lg font-bold text-white">{{ $brandName }}</p>
                         <p class="text-[10px] font-medium uppercase tracking-widest text-gold-400">Gym Management</p>
                     </div>
                 </a>
@@ -43,7 +46,7 @@
                     </div>
                 </div>
 
-                <p class="text-xs text-ink-500">&copy; {{ date('Y') }} {{ $gym?->name ?? config('app.name') }}. All rights reserved.</p>
+                <p class="text-xs text-ink-500">&copy; {{ date('Y') }} {{ $brandName }}. All rights reserved.</p>
             </div>
         </div>
 
@@ -51,15 +54,15 @@
             <div class="w-full max-w-md">
                 <div class="mb-8 lg:hidden">
                     <a href="{{ route('home') }}" class="flex items-center gap-2.5">
-                        @if ($gym?->logo)
-                            <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-10 rounded-xl object-cover">
+                        @if ($brandLogo)
+                            <img src="{{ asset('storage/' . $brandLogo) }}" alt="{{ $brandName }}" class="size-10 rounded-xl object-cover">
                         @else
                             <div class="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-500 font-extrabold text-ink-950">
-                                {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+                                {{ substr($brandName, 0, 1) }}
                             </div>
                         @endif
                         <div>
-                            <p class="font-bold text-ink-900 dark:text-white">{{ $gym?->name ?? config('app.name') }}</p>
+                            <p class="font-bold text-ink-900 dark:text-white">{{ $brandName }}</p>
                             <p class="text-[10px] font-medium uppercase tracking-widest text-gold-600">Gym Management</p>
                         </div>
                     </a>

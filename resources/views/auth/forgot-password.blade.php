@@ -1,18 +1,21 @@
 <x-layouts.guest title="Forgot Password">
-    @php $gym = current_gym(); @endphp
+    @php
+        $brandLogo = saas_owner_logo();
+        $brandName = saas_owner_name();
+    @endphp
     <div class="flex min-h-screen items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">
             <div class="mb-8 text-center">
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-2.5">
-                    @if ($gym?->logo)
-                        <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-10 rounded-xl object-cover">
+                    @if ($brandLogo)
+                        <img src="{{ asset('storage/' . $brandLogo) }}" alt="{{ $brandName }}" class="size-10 rounded-xl object-cover">
                     @else
                         <div class="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-500 font-extrabold text-ink-950">
-                            {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+                            {{ substr($brandName, 0, 1) }}
                         </div>
                     @endif
                     <div class="text-left">
-                        <p class="font-bold text-ink-900 dark:text-white">{{ $gym?->name ?? config('app.name') }}</p>
+                        <p class="font-bold text-ink-900 dark:text-white">{{ $brandName }}</p>
                         <p class="text-[10px] font-medium uppercase tracking-widest text-gold-600">Gym Management</p>
                     </div>
                 </a>

@@ -97,7 +97,7 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
             </main>
 
             <footer class="border-t border-ink-200 px-6 py-4 text-center text-xs text-ink-400 dark:border-ink-800">
-                &copy; {{ date('Y') }} {{ config('app.saas_owner') }}. All rights reserved. &middot; Premium Gym Management
+                &copy; {{ date('Y') }} {{ saas_owner_name() }}. All rights reserved. &middot; Premium Gym Management
             </footer>
         </div>
     </div>

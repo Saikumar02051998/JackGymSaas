@@ -88,6 +88,30 @@ if (! function_exists('saas_setting')) {
     }
 }
 
+if (! function_exists('saas_owner_name')) {
+    function saas_owner_name(): string
+    {
+        if (! is_saas()) {
+            return 'TechNano';
+        }
+
+        return (string) (saas_setting('company_name') ?: config('app.saas_owner', 'TechNano'));
+    }
+}
+
+if (! function_exists('saas_owner_logo')) {
+    function saas_owner_logo(): ?string
+    {
+        if (! is_saas()) {
+            return null;
+        }
+
+        $logo = saas_setting('logo');
+
+        return $logo ? (string) $logo : null;
+    }
+}
+
 if (! function_exists('can_manage')) {
     function can_manage(string $permission): bool
     {
