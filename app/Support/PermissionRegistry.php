@@ -7,6 +7,7 @@ class PermissionRegistry
     public const PERMISSIONS = [
         'dashboard' => [
             'dashboard.view' => 'View dashboard',
+            'dashboard.revenue.view' => 'View Revenue vs Expenses & Recent Revenue',
         ],
         'clients' => [
             'clients.view' => 'View clients',

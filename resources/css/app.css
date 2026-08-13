@@ -178,6 +178,14 @@
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23b7b7c0' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m6 9 6 6 6-6'/%3e%3c/svg%3e");
     }
 
+    input[type="date"].input {
+        color-scheme: light;
+    }
+
+    .dark input[type="date"].input {
+        color-scheme: dark;
+    }
+
     #page-loader {
         @apply fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink-50/95 backdrop-blur-sm dark:bg-night-950/95;
         transition: opacity 0.3s ease, visibility 0.3s ease;

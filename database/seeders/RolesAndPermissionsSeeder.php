@@ -80,6 +80,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'Accountant',
                 'permissions' => [
                     'dashboard.view',
+                    'dashboard.revenue.view',
                     'clients.view',
                     'memberships.view',
                     'payments.view',
