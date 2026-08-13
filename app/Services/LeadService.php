@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Followup;
 use App\Models\Lead;
 use App\Models\Membership;
+use App\Services\MembershipService;
 use App\Models\Trial;
 use Illuminate\Support\Facades\DB;
 
@@ -80,6 +81,8 @@ class LeadService
                     'status' => 'active',
                     'follow_up_date' => now()->addDays((int) ($data['trial_days'] ?? 7))->toDateString(),
                 ]);
+
+                app(MembershipService::class)->createTrial($client, (int) ($data['trial_days'] ?? 7));
             }
 
             audit_log('lead.converted', 'leads', $lead->id, "Lead {$lead->name} converted to client {$client->display_name}");

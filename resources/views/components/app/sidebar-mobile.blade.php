@@ -37,12 +37,13 @@
         </div>
 
         <nav class="flex-1 space-y-5 overflow-y-auto px-4 py-5">
-            @foreach ($menu as $group => $items)
-                @php
-                    $routeName = request()->route()?->getName() ?? '';
-                    $bestIndex = null;
-                    $bestScore = 0;
+            @php
+                $routeName = request()->route()?->getName() ?? '';
+                $bestGroup = null;
+                $bestIndex = null;
+                $bestScore = 0;
 
+                foreach ($menu as $group => $items) {
                     foreach ($items as $index => $item) {
                         $score = 0;
 
@@ -68,10 +69,13 @@
 
                         if ($score > $bestScore) {
                             $bestScore = $score;
+                            $bestGroup = $group;
                             $bestIndex = $index;
                         }
                     }
-                @endphp
+                }
+            @endphp
+            @foreach ($menu as $group => $items)
                 <div>
                     <p class="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-400">{{ $group }}</p>
                     <ul class="space-y-0.5">
@@ -80,7 +84,7 @@
                                 <a href="{{ isset($item['url']) ? $item['url'] : route($item['route']) }}"
                                    @class([
                                        'sidebar-link',
-                                       'sidebar-link-active' => $index === $bestIndex && $bestScore > 0,
+                                       'sidebar-link-active' => $group === $bestGroup && $index === $bestIndex && $bestScore > 0,
                                    ])
                                    @click="mobileOpen = false">
                                     <x-icon :name="$item['icon']" class="size-5 shrink-0" />

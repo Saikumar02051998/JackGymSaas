@@ -85,28 +85,32 @@
 
             <div class="space-y-6">
                 <x-card title="Membership Setup">
-                    <div class="space-y-4">
+                    <div x-data="{ trial: {{ old('start_trial', true) ? 'true' : 'false' }}, membership: {{ old('create_membership') ? 'true' : 'false' }} }" class="space-y-4">
                         <label class="flex items-start gap-3 rounded-xl border border-ink-200 p-4 transition-colors has-[:checked]:border-gold-400 has-[:checked]:bg-gold-400/5 dark:border-ink-700">
-                            <input type="checkbox" name="start_trial" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400" {{ old('start_trial') ? 'checked' : '' }}>
+                            <input type="checkbox" name="start_trial" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400"
+                                   x-model="trial"
+                                   x-on:change="if (trial) membership = false">
                             <span>
                                 <span class="block text-sm font-semibold text-ink-900 dark:text-white">Start a free trial</span>
-                                <span class="mt-0.5 block text-xs text-ink-400">Give the new client a trial period.</span>
+                                <span class="mt-0.5 block text-xs text-ink-400">Give the new client a free trial period.</span>
                             </span>
                         </label>
 
-                        <div>
+                        <div x-show="trial" x-cloak>
                             <x-input label="Trial days" type="number" min="1" max="30" name="trial_days" value="{{ old('trial_days', 7) }}" />
                         </div>
 
                         <label class="flex items-start gap-3 rounded-xl border border-ink-200 p-4 transition-colors has-[:checked]:border-gold-400 has-[:checked]:bg-gold-400/5 dark:border-ink-700">
-                            <input type="checkbox" name="create_membership" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400" {{ old('create_membership') ? 'checked' : '' }}>
+                            <input type="checkbox" name="create_membership" value="1" class="mt-0.5 size-4 rounded border-ink-300 text-gold-500 focus:ring-gold-400"
+                                   x-model="membership"
+                                   x-on:change="if (membership) trial = false">
                             <span>
                                 <span class="block text-sm font-semibold text-ink-900 dark:text-white">Create membership &amp; collect payment</span>
                                 <span class="mt-0.5 block text-xs text-ink-400">Register a plan and record the first payment.</span>
                             </span>
                         </label>
 
-                        <div>
+                        <div x-show="membership" x-cloak>
                             <x-select label="Membership plan" name="plan_id" placeholder="Select a plan">
                                 @foreach (\App\Models\MembershipPlan::where('gym_id', current_gym()?->id)->where('status', 'active')->get() as $plan)
                                     <option value="{{ $plan->id }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>
@@ -116,7 +120,7 @@
                             </x-select>
                         </div>
 
-                        <div>
+                        <div x-show="membership" x-cloak>
                             <x-input label="Amount received" type="number" step="0.01" name="amount" value="{{ old('amount') }}" placeholder="0.00" help="Leave blank to skip payment." />
                         </div>
                     </div>

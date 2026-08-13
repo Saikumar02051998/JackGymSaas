@@ -136,6 +136,8 @@ class ClientController extends Controller
                 'trial_end' => now()->addDays((int) ($request->input('trial_days', 7)))->toDateString(),
                 'status' => 'active',
             ]);
+
+            app(\App\Services\MembershipService::class)->createTrial($client, (int) ($request->input('trial_days', 7)));
         }
 
         if ($request->has('create_membership') && $request->boolean('create_membership')) {

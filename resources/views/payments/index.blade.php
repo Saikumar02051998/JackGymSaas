@@ -72,8 +72,12 @@
                             <tr class="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/50">
                                 <td class="px-5 py-4 font-semibold text-ink-900 dark:text-white">{{ $payment->payment_no }}</td>
                                 <td class="px-5 py-4">
-                                    <a href="{{ route('clients.show', $payment->client_id) }}" class="font-medium text-ink-900 hover:text-gold-600 dark:text-white">{{ $payment->client->display_name }}</a>
-                                    <p class="text-xs text-ink-400">{{ $payment->client->member_id }}</p>
+                                    @if ($payment->client)
+                                        <a href="{{ route('clients.show', $payment->client_id) }}" class="font-medium text-ink-900 hover:text-gold-600 dark:text-white">{{ $payment->client->display_name }}</a>
+                                        <p class="text-xs text-ink-400">{{ $payment->client->member_id }}</p>
+                                    @else
+                                        <span class="text-ink-400">Deleted client</span>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $payment->plan?->name ?? '—' }}</td>
                                 <td class="px-5 py-4">

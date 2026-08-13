@@ -46,8 +46,6 @@ class Menu
             ],
             'clients' => [
                 ['route' => 'clients.index', 'label' => 'All Clients', 'icon' => 'users', 'permission' => 'clients.view'],
-                ['url' => route('clients.index', ['status' => 'active']), 'label' => 'Active Members', 'icon' => 'check-badge', 'permission' => 'clients.view'],
-                ['url' => route('clients.index', ['status' => 'expired']), 'label' => 'Expired Members', 'icon' => 'clock', 'permission' => 'clients.view'],
                 ['route' => 'memberships.trials', 'label' => 'Trial Members', 'icon' => 'gift', 'permission' => 'clients.view'],
             ],
             'memberships' => [

@@ -52,6 +52,59 @@ class MembershipService
         });
     }
 
+    public function createTrial(Client $client, int $days): Membership
+    {
+        return DB::transaction(function () use ($client, $days) {
+            $start = now()->startOfDay();
+            $end = $start->copy()->addDays($days)->subDay();
+
+            $plan = MembershipPlan::firstOrCreate(
+                ['gym_id' => $client->gym_id, 'name' => 'Free Trial'],
+                [
+                    'duration_days' => $days,
+                    'duration_label' => "{$days} days",
+                    'price' => 0,
+                    'discount' => 0,
+                    'tax' => 0,
+                    'final_amount' => 0,
+                    'status' => 'active',
+                ]
+            );
+
+            $membership = Membership::create([
+                'gym_id' => $client->gym_id,
+                'client_id' => $client->id,
+                'plan_id' => $plan->id,
+                'membership_no' => next_sequence(Membership::class, 'membership_no', 'MS-'),
+                'start_date' => $start->toDateString(),
+                'end_date' => $end->toDateString(),
+                'status' => 'active',
+                'amount' => 0,
+                'discount' => 0,
+                'tax' => 0,
+                'final_amount' => 0,
+                'payment_status' => 'free',
+                'created_by' => auth()->id(),
+                'notes' => 'Free trial — no payment required',
+            ]);
+
+            $membership->histories()->create([
+                'client_id' => $client->id,
+                'plan_id' => $plan->id,
+                'action' => 'created',
+                'previous_end_date' => null,
+                'new_end_date' => $membership->end_date,
+                'amount' => 0,
+                'changed_by' => auth()->id(),
+                'notes' => 'Free trial started',
+            ]);
+
+            audit_log('membership.trial_created', 'memberships', $membership->id, "Free trial started for {$client->display_name}");
+
+            return $membership;
+        });
+    }
+
     public function renew(Client $client, MembershipPlan $plan, array $data = []): Membership
     {
         return DB::transaction(function () use ($client, $plan, $data) {

@@ -182,4 +182,79 @@ class ClientRegistrationTest extends TestCase
             \App\Models\Client::withTrashed()->pluck('member_id')->unique()->count()
         );
     }
+
+    public function test_creating_client_with_trial_creates_a_free_trial_membership(): void
+    {
+        [$gym, $owner] = $this->makeOwnerGym();
+
+        $this->actingAs($owner)
+            ->post(route('clients.store'), [
+                'name' => 'Trial Client',
+                'email' => 'trial@example.com',
+                'start_trial' => '1',
+                'trial_days' => '10',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $client = \App\Models\Client::whereHas('user', fn ($q) => $q->where('email', 'trial@example.com'))->first();
+        $this->assertNotNull($client);
+
+        $this->assertDatabaseHas('trials', ['client_id' => $client->id, 'status' => 'active']);
+
+        $membership = $client->activeMembership;
+        $this->assertNotNull($membership);
+        $this->assertSame('Free Trial', $membership->plan->name);
+        $this->assertSame('active', $membership->status);
+        $this->assertSame('free', $membership->payment_status);
+        $this->assertSame(0, (int) $membership->final_amount);
+        $this->assertSame(now()->addDays(9)->toDateString(), $membership->end_date);
+    }
+
+    public function test_creating_client_without_trial_does_not_create_trial_membership(): void
+    {
+        [$gym, $owner] = $this->makeOwnerGym();
+
+        $this->actingAs($owner)
+            ->post(route('clients.store'), [
+                'name' => 'Paid Client',
+                'email' => 'paid@example.com',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $client = \App\Models\Client::whereHas('user', fn ($q) => $q->where('email', 'paid@example.com'))->first();
+
+        $this->assertDatabaseMissing('trials', ['client_id' => $client->id]);
+        $this->assertSame(0, \App\Models\Membership::where('client_id', $client->id)->count());
+    }
+
+    public function test_process_expired_command_marks_overdue_trial_membership_and_trial_as_expired(): void
+    {
+        [$gym, $owner] = $this->makeOwnerGym();
+
+        $this->actingAs($owner)->post(route('clients.store'), [
+            'name' => 'Expiring Trial',
+            'email' => 'expiring@example.com',
+            'start_trial' => '1',
+            'trial_days' => '7',
+        ]);
+
+        $client = \App\Models\Client::whereHas('user', fn ($q) => $q->where('email', 'expiring@example.com'))->first();
+
+        $client->activeMembership->update(['end_date' => now()->subDay()->toDateString()]);
+        $trial = \App\Models\Trial::where('client_id', $client->id)->first();
+        $trial->update(['trial_end' => now()->subDay()->toDateString()]);
+
+        $this->artisan('memberships:process-expired')->assertSuccessful();
+
+        $this->assertSame('expired', $client->activeMembership->fresh()->status);
+        $this->assertSame('expired', $trial->fresh()->status);
+    }
+
+    public function test_client_create_page_defaults_to_free_trial(): void
+    {
+        [$gym, $owner] = $this->makeOwnerGym();
+
+        $this->actingAs($owner)->get(route('clients.create'))->assertStatus(200);
+    }
 }
