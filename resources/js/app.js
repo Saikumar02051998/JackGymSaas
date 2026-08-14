@@ -41,6 +41,65 @@ Alpine.store('toasts', {
 });
 
 /**
+ * Real-time notifications: polls /notifications/unread so the bell badge
+ * appears/disappears and the dropdown list stays fresh without a reload.
+ */
+Alpine.store('notifications', {
+    count: 0,
+    items: [],
+    open: false,
+    loading: true,
+
+    init() {
+        this.refresh();
+        this.interval = setInterval(() => this.refresh(), 15000);
+        document.addEventListener('visibilitychange', () => {
+            clearInterval(this.interval);
+            if (!document.hidden) {
+                this.refresh();
+                this.interval = setInterval(() => this.refresh(), 15000);
+            }
+        });
+    },
+
+    async refresh() {
+        try {
+            const res = await fetch('/notifications/unread', {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin',
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            this.count = data.count;
+            this.items = data.notifications;
+        } catch (err) {
+            /* ignore transient network errors */
+        } finally {
+            this.loading = false;
+        }
+    },
+
+    async read(item) {
+        try {
+            const res = await fetch(`/notifications/${item.id}/read`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                },
+                credentials: 'same-origin',
+            });
+            if (res.ok) {
+                item.read = true;
+                this.count = Math.max(0, this.count - 1);
+            }
+        } catch (err) {
+            /* ignore */
+        }
+    },
+});
+
+/**
  * Global toast helper – callable from anywhere: window.toast('Saved', 'success')
  */
 window.toast = (message, type = 'success', title = '') => {

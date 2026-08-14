@@ -23,9 +23,10 @@
         </button>
         <a href="{{ route('notifications.index') }}" class="relative rounded-lg p-2 text-ink-500 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800">
             <x-icon name="bell" class="size-5" />
-            @if ($unreadCount > 0)
-                <span class="absolute -right-0.5 -top-0.5 flex size-4.5 items-center justify-center rounded-full bg-gold-400 text-[10px] font-bold text-ink-950">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-            @endif
+            <span x-show="$store.notifications.count > 0"
+                  x-text="$store.notifications.count > 9 ? '9+' : $store.notifications.count"
+                  class="absolute -right-0.5 -top-0.5 flex size-4.5 items-center justify-center rounded-full bg-gold-400 text-[10px] font-bold text-ink-950"
+                  x-cloak></span>
         </a>
     </div>
 </header>

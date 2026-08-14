@@ -22,39 +22,42 @@
             <x-icon name="moon" class="size-5" x-show="!$store.theme.dark" x-cloak />
         </button>
 
-        <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" class="relative rounded-lg p-2 text-ink-500 transition-colors hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800" aria-label="Notifications">
+        <div class="relative" x-data>
+            <button @click="$store.notifications.open = !$store.notifications.open" class="relative rounded-lg p-2 text-ink-500 transition-colors hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800" aria-label="Notifications">
                 <x-icon name="bell" class="size-5" />
-                @if ($unreadCount > 0)
-                    <span class="absolute -right-0.5 -top-0.5 flex size-4.5 items-center justify-center rounded-full bg-gold-400 text-[10px] font-bold text-ink-950">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-                @endif
+                <span x-show="$store.notifications.count > 0"
+                      x-text="$store.notifications.count > 9 ? '9+' : $store.notifications.count"
+                      class="absolute -right-0.5 -top-0.5 flex size-4.5 items-center justify-center rounded-full bg-gold-400 text-[10px] font-bold text-ink-950"
+                      x-cloak></span>
             </button>
 
-            <div x-show="open" @click.away="open = false" x-cloak
+            <div x-show="$store.notifications.open" @click.away="$store.notifications.open = false" x-cloak
                  class="absolute right-0 top-12 w-80 overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-xl dark:border-ink-700 dark:bg-night-900 animate-scale-in">
                 <div class="flex items-center justify-between border-b border-ink-100 px-4 py-3 dark:border-ink-800">
                     <p class="text-sm font-semibold text-ink-900 dark:text-white">Notifications</p>
                     <a href="{{ route('notifications.index') }}" class="text-xs font-medium text-gold-600 hover:text-gold-500">View all</a>
                 </div>
                 <div class="max-h-96 overflow-y-auto">
-                    @forelse ($notifications as $notification)
-                        @php $data = $notification->data; @endphp
-                        <a href="{{ $data['url'] ?? route('notifications.index') }}" class="block border-b border-ink-100 px-4 py-3 transition-colors hover:bg-ink-50 dark:border-ink-800 dark:hover:bg-ink-800">
+                    <template x-for="notification in $store.notifications.items" :key="notification.id">
+                        <a :href="notification.url" @click="$store.notifications.read(notification)"
+                           class="block border-b border-ink-100 px-4 py-3 transition-colors hover:bg-ink-50 dark:border-ink-800 dark:hover:bg-ink-800">
                             <div class="flex items-start gap-3">
-                                <span class="mt-1.5 size-2 shrink-0 rounded-full {{ $notification->read_at ? 'bg-ink-300' : 'bg-gold-400' }}"></span>
+                                <span class="mt-1.5 size-2 shrink-0 rounded-full" :class="notification.read ? 'bg-ink-300' : 'bg-gold-400'"></span>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-medium text-ink-900 dark:text-white">{{ $data['title'] ?? 'Notification' }}</p>
-                                    <p class="mt-0.5 line-clamp-2 text-xs text-ink-500 dark:text-ink-400">{{ $data['message'] ?? '' }}</p>
-                                    <p class="mt-1 text-[10px] text-ink-400">{{ $notification->created_at->diffForHumans() }}</p>
+                                    <p class="text-sm font-medium text-ink-900 dark:text-white" x-text="notification.title"></p>
+                                    <p class="mt-0.5 line-clamp-2 text-xs text-ink-500 dark:text-ink-400" x-text="notification.message"></p>
+                                    <p class="mt-1 text-[10px] text-ink-400" x-text="notification.time"></p>
                                 </div>
                             </div>
                         </a>
-                    @empty
-                        <div class="px-4 py-8 text-center">
-                            <x-icon name="bell" class="mx-auto size-8 text-ink-300" />
-                            <p class="mt-2 text-sm text-ink-400">No notifications yet</p>
-                        </div>
-                    @endforelse
+                    </template>
+                    <div x-show="$store.notifications.items.length === 0 && !$store.notifications.loading" class="px-4 py-8 text-center">
+                        <x-icon name="bell" class="mx-auto size-8 text-ink-300" />
+                        <p class="mt-2 text-sm text-ink-400">No notifications yet</p>
+                    </div>
+                    <div x-show="$store.notifications.loading" class="px-4 py-8 text-center">
+                        <p class="text-sm text-ink-400">Loading…</p>
+                    </div>
                 </div>
             </div>
         </div>

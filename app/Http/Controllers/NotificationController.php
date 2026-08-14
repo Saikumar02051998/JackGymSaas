@@ -14,6 +14,23 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
+    public function unread()
+    {
+        $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
+
+        return response()->json([
+            'count' => auth()->user()->unreadNotifications()->count(),
+            'notifications' => $notifications->map(fn ($n) => [
+                'id' => $n->id,
+                'read' => ! is_null($n->read_at),
+                'title' => $n->data['title'] ?? 'Notification',
+                'message' => $n->data['message'] ?? '',
+                'url' => $n->data['url'] ?? route('notifications.index'),
+                'time' => $n->created_at->diffForHumans(),
+            ]),
+        ]);
+    }
+
     public function read(DatabaseNotification $notification)
     {
         abort_unless($notification->notifiable_id === auth()->id(), 403);
