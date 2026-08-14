@@ -34,7 +34,7 @@ class SetGymContext
                     }
                 }
 
-                $timezone = $gym->setting('timezone', $gym->timezone);
+                $timezone = gym_setting('timezone', $gym->timezone);
                 if ($timezone) {
                     config(['app.timezone' => $timezone]);
                     Date::setTestNow(null);

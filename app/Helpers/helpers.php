@@ -9,33 +9,42 @@ use Illuminate\Support\Str;
 if (! function_exists('current_gym')) {
     function current_gym(): ?Gym
     {
+        static $resolved = [];
+
         $user = Auth::user();
-        if ($user) {
-            if ($user->gym_id) {
-                return $user->gym;
-            }
+        $key = $user ? 'user:' . $user->id : 'guest';
 
-            $gymId = (int) config('app.default_gym_id', 1);
+        if (array_key_exists($key, $resolved)) {
+            return $resolved[$key];
+        }
 
-            return Gym::find($gymId);
+        if ($user && $user->gym_id) {
+            return $resolved[$key] = $user->gym;
         }
 
         $gymId = (int) config('app.default_gym_id', 1);
 
-        return Gym::find($gymId);
+        return $resolved[$key] = Gym::find($gymId);
     }
 }
 
 if (! function_exists('gym_setting')) {
     function gym_setting(string $key, mixed $default = null): mixed
     {
+        static $resolved = [];
+
         $gym = current_gym();
+        $cacheKey = ($gym ? $gym->id : 'default') . ':' . $key;
+
+        if (array_key_exists($cacheKey, $resolved)) {
+            return $resolved[$cacheKey];
+        }
 
         if ($gym) {
             $setting = $gym->settings()->where('key', $key)->first();
 
             if ($setting && $setting->value !== null) {
-                return $setting->value;
+                return $resolved[$cacheKey] = $setting->value;
             }
 
             $fallbacks = [
@@ -47,7 +56,7 @@ if (! function_exists('gym_setting')) {
             ];
 
             if (array_key_exists($key, $fallbacks)) {
-                return $fallbacks[$key];
+                return $resolved[$cacheKey] = $fallbacks[$key];
             }
         }
 
@@ -59,7 +68,7 @@ if (! function_exists('gym_setting')) {
             'timezone' => 'Asia/Kolkata',
         ];
 
-        return $default ?? ($envDefaults[$key] ?? $default);
+        return $resolved[$cacheKey] = $default ?? ($envDefaults[$key] ?? $default);
     }
 }
 
@@ -82,9 +91,15 @@ if (! function_exists('is_saas')) {
 if (! function_exists('saas_setting')) {
     function saas_setting(string $key, mixed $default = null): mixed
     {
+        static $resolved = [];
+
+        if (array_key_exists($key, $resolved)) {
+            return $resolved[$key];
+        }
+
         $setting = \App\Models\Setting::whereNull('gym_id')->where('key', 'saas_' . $key)->first();
 
-        return $setting ? $setting->value : $default;
+        return $resolved[$key] = ($setting ? $setting->value : $default);
     }
 }
 

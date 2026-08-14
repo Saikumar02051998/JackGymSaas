@@ -23,32 +23,57 @@ class DashboardService
         $monthStart = now()->startOfMonth()->toDateString();
         $monthEnd = now()->endOfMonth()->toDateString();
 
+        $clientStats = Client::where('gym_id', $gymId)
+            ->selectRaw('count(*) as total')
+            ->selectRaw("sum(case when status = 'active' then 1 else 0 end) as active")
+            ->first();
+
+        $memberStats = Membership::where('gym_id', $gymId)
+            ->selectRaw("sum(case when status = 'active' and end_date >= ? then 1 else 0 end) as active", [$today])
+            ->selectRaw("sum(case when status = 'expired' then 1 else 0 end) as expired")
+            ->selectRaw("sum(case when status = 'upcoming' then 1 else 0 end) as upcoming")
+            ->selectRaw("sum(case when status = 'cancelled' then 1 else 0 end) as cancelled")
+            ->selectRaw("sum(case when status = 'frozen' then 1 else 0 end) as frozen")
+            ->selectRaw("sum(case when status = 'active' and end_date >= ? and end_date <= ? then 1 else 0 end) as expiring", [$today, now()->addDays(30)->toDateString()])
+            ->selectRaw("sum(case when start_date between ? and ? then 1 else 0 end) as new_month", [$monthStart, $monthEnd])
+            ->first();
+
+        $paymentStats = Payment::where('gym_id', $gymId)
+            ->selectRaw("sum(case when status = 'success' then final_amount else 0 end) as revenue_total")
+            ->selectRaw("sum(case when status = 'success' and payment_date = ? then final_amount else 0 end) as revenue_today", [$today])
+            ->selectRaw("sum(case when status = 'success' and payment_date between ? and ? then final_amount else 0 end) as revenue_month", [$monthStart, $monthEnd])
+            ->selectRaw("sum(case when status in ('pending', 'processing') then final_amount else 0 end) as pending_payments")
+            ->first();
+
+        $expenseStats = Expense::where('gym_id', $gymId)
+            ->selectRaw('sum(amount) as total')
+            ->selectRaw("sum(case when expense_date between ? and ? then amount else 0 end) as month", [$monthStart, $monthEnd])
+            ->first();
+
+        $leadStats = Lead::where('gym_id', $gymId)
+            ->selectRaw('count(*) as total')
+            ->selectRaw("sum(case when status = 'converted' then 1 else 0 end) as converted")
+            ->selectRaw("sum(case when created_at between ? and ? then 1 else 0 end) as new_month", [$monthStart . ' 00:00:00', $monthEnd . ' 23:59:59'])
+            ->first();
+
         return [
-            'total_clients' => Client::where('gym_id', $gymId)->count(),
-            'active_members' => Membership::where('gym_id', $gymId)->where('status', 'active')
-                ->whereDate('end_date', '>=', $today)->count(),
-            'expiring_members' => Membership::where('gym_id', $gymId)->where('status', 'active')
-                ->whereBetween('end_date', [$today, now()->addDays(30)->toDateString()])->count(),
-            'expired_members' => Membership::where('gym_id', $gymId)->where('status', 'expired')->count(),
-            'new_members_month' => Membership::where('gym_id', $gymId)
-                ->whereBetween('start_date', [$monthStart, $monthEnd])->count(),
-            'revenue_month' => (float) Payment::where('gym_id', $gymId)->where('status', 'success')
-                ->whereBetween('payment_date', [$monthStart, $monthEnd])->sum('final_amount'),
-            'revenue_today' => (float) Payment::where('gym_id', $gymId)->where('status', 'success')
-                ->where('payment_date', $today)->sum('final_amount'),
-            'revenue_total' => (float) Payment::where('gym_id', $gymId)->where('status', 'success')->sum('final_amount'),
-            'pending_payments' => (float) Payment::where('gym_id', $gymId)
-                ->whereIn('status', ['pending', 'processing'])->sum('final_amount'),
-            'expenses_month' => (float) Expense::where('gym_id', $gymId)
-                ->whereBetween('expense_date', [$monthStart, $monthEnd])->sum('amount'),
-            'expenses_total' => (float) Expense::where('gym_id', $gymId)->sum('amount'),
-            'net_income_month' => 0,
+            'total_clients' => (int) ($clientStats->total ?? 0),
+            'active_members' => (int) ($memberStats->active ?? 0),
+            'expiring_members' => (int) ($memberStats->expiring ?? 0),
+            'expired_members' => (int) ($memberStats->expired ?? 0),
+            'new_members_month' => (int) ($memberStats->new_month ?? 0),
+            'revenue_month' => (float) ($paymentStats->revenue_month ?? 0),
+            'revenue_today' => (float) ($paymentStats->revenue_today ?? 0),
+            'revenue_total' => (float) ($paymentStats->revenue_total ?? 0),
+            'pending_payments' => (float) ($paymentStats->pending_payments ?? 0),
+            'expenses_month' => (float) ($expenseStats->month ?? 0),
+            'expenses_total' => (float) ($expenseStats->total ?? 0),
+            'net_income_month' => (float) (($paymentStats->revenue_month ?? 0) - ($expenseStats->month ?? 0)),
             'staff_count' => StaffProfile::where('gym_id', $gymId)->count(),
             'today_attendance' => Attendance::where('gym_id', $gymId)->whereDate('attendance_date', $today)->count(),
-            'total_leads' => Lead::where('gym_id', $gymId)->count(),
-            'new_leads_month' => Lead::where('gym_id', $gymId)
-                ->whereBetween('created_at', [$monthStart . ' 00:00:00', $monthEnd . ' 23:59:59'])->count(),
-            'converted_leads' => Lead::where('gym_id', $gymId)->where('status', 'converted')->count(),
+            'total_leads' => (int) ($leadStats->total ?? 0),
+            'new_leads_month' => (int) ($leadStats->new_month ?? 0),
+            'converted_leads' => (int) ($leadStats->converted ?? 0),
             'lead_conversion_rate' => 0,
             'upcoming_renewals' => Membership::with(['client.user', 'plan'])
                 ->where('gym_id', $gymId)->where('status', 'active')
@@ -71,21 +96,32 @@ class DashboardService
     public function revenueChart(string $months = '6'): array
     {
         $gymId = current_gym()?->id;
+
+        $start = now()->startOfMonth()->subMonths($months - 1);
         $labels = [];
         $revenue = [];
         $expenses = [];
 
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $start = now()->startOfMonth()->subMonths($i);
-            $end = now()->startOfMonth()->subMonths($i)->endOfMonth();
+        $revenueRows = Payment::where('gym_id', $gymId)->where('status', 'success')
+            ->where('payment_date', '>=', $start->toDateString())
+            ->selectRaw("DATE_FORMAT(payment_date, '%Y-%m') as ym, SUM(final_amount) as total")
+            ->groupBy('ym')
+            ->pluck('total', 'ym')
+            ->all();
 
-            $labels[] = $start->format('M Y');
-            $revenue[] = (float) Payment::where('gym_id', $gymId)->where('status', 'success')
-                ->whereBetween('payment_date', [$start->toDateString(), $end->toDateString()])
-                ->sum('final_amount');
-            $expenses[] = (float) Expense::where('gym_id', $gymId)
-                ->whereBetween('expense_date', [$start->toDateString(), $end->toDateString()])
-                ->sum('amount');
+        $expenseRows = Expense::where('gym_id', $gymId)
+            ->where('expense_date', '>=', $start->toDateString())
+            ->selectRaw("DATE_FORMAT(expense_date, '%Y-%m') as ym, SUM(amount) as total")
+            ->groupBy('ym')
+            ->pluck('total', 'ym')
+            ->all();
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $ym = now()->startOfMonth()->subMonths($i)->format('Y-m');
+
+            $labels[] = now()->startOfMonth()->subMonths($i)->format('M Y');
+            $revenue[] = (float) ($revenueRows[$ym] ?? 0);
+            $expenses[] = (float) ($expenseRows[$ym] ?? 0);
         }
 
         return ['labels' => $labels, 'revenue' => $revenue, 'expenses' => $expenses];
@@ -94,13 +130,22 @@ class DashboardService
     public function attendanceChart(int $days = 14): array
     {
         $gymId = current_gym()?->id;
+
+        $start = now()->subDays($days - 1)->toDateString();
         $labels = [];
         $counts = [];
+
+        $rows = Attendance::where('gym_id', $gymId)
+            ->where('attendance_date', '>=', $start)
+            ->selectRaw('attendance_date as d, count(*) as c')
+            ->groupBy('attendance_date')
+            ->pluck('c', 'd')
+            ->all();
 
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = now()->subDays($i)->toDateString();
             $labels[] = now()->subDays($i)->format('d M');
-            $counts[] = Attendance::where('gym_id', $gymId)->whereDate('attendance_date', $date)->count();
+            $counts[] = (int) ($rows[$date] ?? 0);
         }
 
         return ['labels' => $labels, 'counts' => $counts];
@@ -110,12 +155,18 @@ class DashboardService
     {
         $gymId = current_gym()?->id;
 
+        $rows = Membership::where('gym_id', $gymId)
+            ->selectRaw('status, count(*) as c')
+            ->groupBy('status')
+            ->pluck('c', 'status')
+            ->all();
+
         return [
-            'active' => Membership::where('gym_id', $gymId)->where('status', 'active')->count(),
-            'upcoming' => Membership::where('gym_id', $gymId)->where('status', 'upcoming')->count(),
-            'expired' => Membership::where('gym_id', $gymId)->where('status', 'expired')->count(),
-            'cancelled' => Membership::where('gym_id', $gymId)->where('status', 'cancelled')->count(),
-            'frozen' => Membership::where('gym_id', $gymId)->where('status', 'frozen')->count(),
+            'active' => (int) ($rows['active'] ?? 0),
+            'upcoming' => (int) ($rows['upcoming'] ?? 0),
+            'expired' => (int) ($rows['expired'] ?? 0),
+            'cancelled' => (int) ($rows['cancelled'] ?? 0),
+            'frozen' => (int) ($rows['frozen'] ?? 0),
         ];
     }
 

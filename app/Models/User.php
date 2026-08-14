@@ -20,6 +20,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected ?\Illuminate\Support\Collection $cachedRoleSlugs = null;
+
+    protected ?array $cachedPermissionSlugs = null;
+
     protected function casts(): array
     {
         return [
@@ -58,13 +62,24 @@ class User extends Authenticatable
         return $this->hasMany(SupportTicket::class);
     }
 
-    public function hasRole(string|array $roles): bool
+    protected function roleSlugs(): \Illuminate\Support\Collection
     {
-        if (is_array($roles)) {
-            return $this->roles()->whereIn('slug', $roles)->exists();
+        if ($this->cachedRoleSlugs === null) {
+            $this->cachedRoleSlugs = $this->roles()->pluck('slug');
         }
 
-        return $this->roles()->where('slug', $roles)->exists();
+        return $this->cachedRoleSlugs;
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        $slugs = $this->roleSlugs();
+
+        if (is_array($roles)) {
+            return $slugs->intersect($roles)->isNotEmpty();
+        }
+
+        return $slugs->contains($roles);
     }
 
     public function isOwner(): bool
@@ -79,7 +94,7 @@ class User extends Authenticatable
 
     public function isStaff(): bool
     {
-        return $this->roles()->where('slug', '!=', 'owner')->where('slug', '!=', 'client')->exists();
+        return $this->roleSlugs()->contains(fn ($slug) => $slug !== 'owner' && $slug !== 'client');
     }
 
     public function hasPermission(string $permission): bool
@@ -88,24 +103,40 @@ class User extends Authenticatable
             return true;
         }
 
-        return $this->roles()
-            ->whereHas('permissions', fn ($q) => $q->where('slug', $permission))
-            ->exists();
+        return in_array($permission, $this->permissionSlugs(), true);
     }
 
-    public function getAllPermissions(): array
+    public function permissionSlugs(): array
     {
-        if ($this->isOwner()) {
-            return Permission::pluck('slug')->all();
+        if ($this->cachedPermissionSlugs !== null) {
+            return $this->cachedPermissionSlugs;
         }
 
-        return $this->roles()
+        return $this->cachedPermissionSlugs = $this->roles()
             ->with('permissions')
             ->get()
             ->flatMap(fn (Role $role) => $role->permissions->pluck('slug'))
             ->unique()
             ->values()
             ->all();
+    }
+
+    public function getAllPermissions(): array
+    {
+        if ($this->isOwner()) {
+            return $this->allPermissionSlugs();
+        }
+
+        return $this->permissionSlugs();
+    }
+
+    public function allPermissionSlugs(): array
+    {
+        if ($this->cachedPermissionSlugs !== null) {
+            return $this->cachedPermissionSlugs;
+        }
+
+        return $this->cachedPermissionSlugs = Permission::pluck('slug')->all();
     }
 
     public function homeRoute(): string
@@ -118,7 +149,7 @@ class User extends Authenticatable
             return route('client.dashboard');
         }
 
-        if ($this->roles()->exists()) {
+        if ($this->roleSlugs()->isNotEmpty()) {
             return route('dashboard');
         }
 

@@ -164,12 +164,12 @@ class ClientService
     {
         $prefix = 'JG';
 
-        $numbers = Client::withTrashed()
+        $last = Client::withTrashed()
             ->where('member_id', 'like', $prefix . '%')
-            ->pluck('member_id')
-            ->map(fn ($m) => (int) substr((string) $m, strlen($prefix)));
+            ->orderByDesc('member_id')
+            ->value('member_id');
 
-        $max = $numbers->max() ?? 0;
+        $max = $last ? (int) substr((string) $last, strlen($prefix)) : 0;
 
         do {
             $max++;
