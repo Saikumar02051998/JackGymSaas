@@ -81,12 +81,30 @@
                     @csrf
                     <p class="text-xs font-semibold text-ink-900 dark:text-white">Reset {{ $owner->name }}'s password</p>
                     <div>
-                        <input type="password" name="password" class="input" placeholder="New password" autocomplete="new-password" required>
+                        <div class="relative">
+                            <input type="password" name="password" class="input !pr-11" placeholder="New password" autocomplete="new-password" required>
+                            <button type="button" x-data="{ show: false }"
+                                    @click="const input = $el.closest('.relative').querySelector('input'); input.type = show ? 'password' : 'text'; show = !show"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-400 transition-colors hover:text-ink-600 dark:text-ink-200 dark:hover:text-ink-50"
+                                    aria-label="Toggle password visibility">
+                                <x-icon name="eye" class="size-4" x-show="!show" />
+                                <x-icon name="eye-slash" class="size-4" x-show="show" x-cloak />
+                            </button>
+                        </div>
                         @error('password')
                             <p class="mt-1 text-xs font-medium text-red-500">{{ $message }}</p>
                         @enderror
                     </div>
-                    <input type="password" name="password_confirmation" class="input" placeholder="Confirm new password" autocomplete="new-password" required>
+                    <div class="relative">
+                        <input type="password" name="password_confirmation" class="input !pr-11" placeholder="Confirm new password" autocomplete="new-password" required>
+                        <button type="button" x-data="{ show: false }"
+                                @click="const input = $el.closest('.relative').querySelector('input'); input.type = show ? 'password' : 'text'; show = !show"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-400 transition-colors hover:text-ink-600 dark:text-ink-200 dark:hover:text-ink-50"
+                                aria-label="Toggle password visibility">
+                            <x-icon name="eye" class="size-4" x-show="!show" />
+                            <x-icon name="eye-slash" class="size-4" x-show="show" x-cloak />
+                        </button>
+                    </div>
                     <x-button type="submit" size="sm">Reset Password</x-button>
                 </form>
             @endif

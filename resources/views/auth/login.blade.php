@@ -100,7 +100,14 @@
                             <div class="relative">
                                 <x-icon name="lock" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
                                 <input type="password" id="password" name="password"
-                                       class="input !pl-10" placeholder="••••••••" autocomplete="current-password" required>
+                                       class="input !pl-10 !pr-11" placeholder="••••••••" autocomplete="current-password" required>
+                                <button type="button" x-data="{ show: false }"
+                                        @click="const input = $el.closest('.relative').querySelector('input'); input.type = show ? 'password' : 'text'; show = !show"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-ink-400 transition-colors hover:text-ink-600 dark:text-ink-200 dark:hover:text-ink-50"
+                                        aria-label="Toggle password visibility">
+                                    <x-icon name="eye" class="size-4" x-show="!show" />
+                                    <x-icon name="eye-slash" class="size-4" x-show="show" x-cloak />
+                                </button>
                             </div>
                             @error('password')
                                 <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>

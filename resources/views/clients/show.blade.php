@@ -165,14 +165,14 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
-                            @forelse ($attendance as $attendance)
+                            @forelse ($attendance as $record)
                                 <tr>
-                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($attendance->attendance_date)->format('d M Y') }}</td>
-                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $attendance->check_in ? \Carbon\Carbon::parse($attendance->check_in)->format('h:i A') : '—' }}</td>
-                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $attendance->check_out ? \Carbon\Carbon::parse($attendance->check_out)->format('h:i A') : '—' }}</td>
-                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $attendance->duration_minutes ? $attendance->duration_minutes . ' min' : '—' }}</td>
+                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($record->attendance_date)->format('d M Y') }}</td>
+                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $record->check_in ? \Carbon\Carbon::parse($record->check_in)->format('h:i A') : '—' }}</td>
+                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $record->check_out ? \Carbon\Carbon::parse($record->check_out)->format('h:i A') : '—' }}</td>
+                                    <td class="py-3 pr-4 text-ink-600 dark:text-ink-300">{{ $record->duration_minutes ? $record->duration_minutes . ' min' : '—' }}</td>
                                     <td class="py-3">
-                                        <x-badge :color="$attendance->status === 'present' ? 'green' : ($attendance->status === 'late' ? 'amber' : ($attendance->status === 'absent' ? 'red' : 'gray'))">{{ ucfirst(str_replace('_', ' ', $attendance->status)) }}</x-badge>
+                                        <x-badge :color="$record->status === 'present' ? 'green' : ($record->status === 'late' ? 'amber' : ($record->status === 'absent' ? 'red' : 'gray'))">{{ ucfirst(str_replace('_', ' ', $record->status)) }}</x-badge>
                                     </td>
                                 </tr>
                             @empty
