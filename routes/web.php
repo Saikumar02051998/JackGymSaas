@@ -24,7 +24,6 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FollowupController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\MembershipController;
@@ -50,7 +49,7 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WorkoutController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [LandingController::class, 'index'])->name('home');
+Route::get('/', [AuthController::class, 'showLogin'])->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
