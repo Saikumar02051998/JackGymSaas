@@ -1,8 +1,13 @@
 @props(['menu' => []])
 
 @php
-    $brandLogo = saas_owner_logo();
-    $brandName = saas_owner_name();
+    if (is_saas()) {
+        $brandLogo = saas_owner_logo();
+        $brandName = saas_owner_name();
+    } else {
+        $brandLogo = current_gym()?->logo;
+        $brandName = current_gym()?->name ?: config('app.name');
+    }
 @endphp
 
 <div x-show="mobileOpen" x-cloak

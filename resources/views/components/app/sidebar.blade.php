@@ -1,8 +1,13 @@
 @props(['menu' => []])
 
 @php
-    $brandLogo = saas_owner_logo();
-    $brandName = saas_owner_name();
+    if (is_saas()) {
+        $brandLogo = saas_owner_logo();
+        $brandName = saas_owner_name();
+    } else {
+        $brandLogo = current_gym()?->logo;
+        $brandName = current_gym()?->name ?: config('app.name');
+    }
 @endphp
 
 <aside class="fixed inset-y-0 left-0 z-40 hidden w-72 flex-col border-r border-ink-200 bg-white dark:border-ink-800 dark:bg-night-900 lg:flex">
