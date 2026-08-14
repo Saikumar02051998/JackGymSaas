@@ -11,7 +11,7 @@
     </div>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2">
+        <div class="min-w-0 lg:col-span-2">
             <x-card title="Equipment" x-data="{ edit: {} }">
                 <form method="GET" action="{{ route('equipment.index') }}" data-ajax-filter data-target="[data-ajax-table='equipment-table']" class="mb-4 flex flex-wrap items-end gap-3 border-b border-ink-100 pb-4 dark:border-ink-800">
                     <div class="min-w-48 flex-1">
