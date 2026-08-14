@@ -43,6 +43,7 @@
                             <th class="px-5 py-3 font-semibold">Role</th>
                             <th class="px-5 py-3 font-semibold">Designation</th>
                             <th class="px-5 py-3 font-semibold">Employee ID</th>
+                            <th class="px-5 py-3 font-semibold">Bank</th>
                             <th class="px-5 py-3 font-semibold">Phone</th>
                             <th class="px-5 py-3 font-semibold">Status</th>
                             <th class="px-5 py-3 text-right font-semibold">Actions</th>
@@ -65,6 +66,7 @@
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $member->staffProfile?->designation ?? '—' }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $member->staffProfile?->employee_id ?? '—' }}</td>
+                                <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $member->staffProfile?->bank_name ?? '—' }}</td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $member->phone ?? '—' }}</td>
                                 <td class="px-5 py-4">
                                     <x-badge :color="$member->status === 'active' ? 'green' : 'gray'">{{ ucfirst($member->status) }}</x-badge>

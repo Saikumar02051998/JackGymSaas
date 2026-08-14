@@ -9,6 +9,9 @@
             'allowances' => (float) ($s->allowances ?? 0),
             'commission' => (float) ($s->commission_rate ?? 0),
             'deduction' => (float) ($deductions[$s->id]['deduction'] ?? 0),
+            'bank_name' => $s->bank_name,
+            'bank_account' => $s->bank_account,
+            'bank_ifsc' => $s->bank_ifsc,
         ]]);
     @endphp
 
@@ -34,6 +37,41 @@
                             <option value="paid" {{ old('payment_status', 'paid') === 'paid' ? 'selected' : '' }}>Paid</option>
                         </x-select>
                     </div>
+                </x-card>
+
+                <x-card title="Bank Details">
+                    <template x-if="selected">
+                        <div>
+                            <div class="grid gap-4 sm:grid-cols-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Bank name</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900 dark:text-white" x-text="bankDetails.bank_name || '—'"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">Account number</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900 dark:text-white" x-text="bankDetails.bank_account || '—'"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">IFSC code</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900 dark:text-white" x-text="bankDetails.bank_ifsc || '—'"></p>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-ink-100 pt-3 dark:border-ink-800">
+                                <button type="button" class="btn-outline btn-sm" x-show="bankDetails.bank_account" x-on:click="copy(bankDetails.bank_account)">
+                                    <x-icon name="document-text" class="size-4" />
+                                    Copy account
+                                </button>
+                                <button type="button" class="btn-outline btn-sm" x-show="bankDetails.bank_ifsc" x-on:click="copy(bankDetails.bank_ifsc)">
+                                    <x-icon name="document-text" class="size-4" />
+                                    Copy IFSC
+                                </button>
+                                <p class="text-xs text-ink-400">Use these details to transfer the salary amount.</p>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="!selected">
+                        <p class="text-sm text-ink-500 dark:text-ink-400">Select a staff member to see their bank details for the transfer.</p>
+                    </template>
                 </x-card>
 
                 <x-card title="Salary Breakdown">
@@ -179,6 +217,15 @@
                 },
                 applyDeduction() {
                     this.deductions = this.preview.deduction;
+                },
+                copy(text) {
+                    if (!text) return;
+                    navigator.clipboard.writeText(text)
+                        .then(() => window.toast?.('Copied to clipboard', 'success'))
+                        .catch(() => window.toast?.('Could not copy', 'error'));
+                },
+                get bankDetails() {
+                    return this.staffData[this.selected] || { bank_name: null, bank_account: null, bank_ifsc: null };
                 },
                 get net() {
                     return (this.basic || 0) + (this.allowances || 0) + (this.bonus || 0) + (this.commission || 0) + (this.incentives || 0) - (this.deductions || 0) - (this.advance || 0);

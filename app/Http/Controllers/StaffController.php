@@ -70,6 +70,9 @@ class StaffController extends Controller
             'allowances' => ['nullable', 'numeric', 'min:0'],
             'commission_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'employee_id' => ['nullable', 'string', 'max:50'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'bank_account' => ['nullable', 'string', 'max:30'],
+            'bank_ifsc' => ['nullable', 'string', 'max:20'],
         ]);
 
         $user = DB::transaction(function () use ($data, $request) {
@@ -96,6 +99,9 @@ class StaffController extends Controller
                 'basic_salary' => $data['basic_salary'] ?? 0,
                 'allowances' => $data['allowances'] ?? 0,
                 'commission_rate' => $data['commission_rate'] ?? 0,
+                'bank_name' => $data['bank_name'] ?? null,
+                'bank_account' => $data['bank_account'] ?? null,
+                'bank_ifsc' => $data['bank_ifsc'] ?? null,
                 'status' => 'active',
             ]);
 
@@ -151,6 +157,9 @@ class StaffController extends Controller
             'commission_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'employee_id' => ['nullable', 'string', 'max:50'],
             'status' => ['nullable', 'in:active,inactive'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'bank_account' => ['nullable', 'string', 'max:30'],
+            'bank_ifsc' => ['nullable', 'string', 'max:20'],
         ]);
 
         DB::transaction(function () use ($user, $data) {
@@ -172,6 +181,9 @@ class StaffController extends Controller
                 'basic_salary' => $data['basic_salary'] ?? $user->staffProfile->basic_salary,
                 'allowances' => $data['allowances'] ?? $user->staffProfile->allowances,
                 'commission_rate' => $data['commission_rate'] ?? $user->staffProfile->commission_rate,
+                'bank_name' => $data['bank_name'] ?? $user->staffProfile->bank_name,
+                'bank_account' => $data['bank_account'] ?? $user->staffProfile->bank_account,
+                'bank_ifsc' => $data['bank_ifsc'] ?? $user->staffProfile->bank_ifsc,
             ]);
 
             audit_log('staff.updated', 'staff', $user->id, "Updated staff member {$user->name}");

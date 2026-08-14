@@ -44,6 +44,15 @@
                         <x-input label="Commission rate (%)" type="number" step="0.01" min="0" max="100" name="commission_rate" value="{{ old('commission_rate', 0) }}" />
                     </div>
                 </x-card>
+
+                <x-card title="Bank Details">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <x-input label="Bank name" name="bank_name" value="{{ old('bank_name') }}" placeholder="e.g. HDFC Bank" />
+                        <x-input label="Account number" name="bank_account" value="{{ old('bank_account') }}" placeholder="e.g. 50100234567890" />
+                        <x-input label="IFSC code" name="bank_ifsc" value="{{ old('bank_ifsc') }}" placeholder="e.g. HDFC0001234" />
+                    </div>
+                    <p class="mt-2 text-xs text-ink-400">Used for salary transfers and printed on the staff's payslip.</p>
+                </x-card>
             </div>
 
             <div class="space-y-6">

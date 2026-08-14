@@ -179,4 +179,47 @@ class SalaryController extends Controller
 
         return back()->with('success', "Bonus applied to {$count} staff member(s) for {$data['period']}.");
     }
+
+    public function myPayslips()
+    {
+        $profile = auth()->user()->staffProfile;
+
+        abort_if(! $profile, 404);
+
+        $salaries = $profile->salaries()
+            ->with(['staff.user', 'items'])
+            ->orderByDesc('period')
+            ->paginate(15);
+
+        return view('staff.my-payslips', compact('salaries'));
+    }
+
+    public function payslip(Salary $salary)
+    {
+        abort_if($salary->gym_id !== current_gym()?->id, 404);
+
+        $canViewAll = auth()->user()->hasPermission('salary.view');
+        $isOwn = auth()->user()->staffProfile?->id === $salary->staff_id;
+
+        abort_unless($canViewAll || $isOwn, 403);
+
+        $salary->load(['staff.user', 'items']);
+
+        return view('staff.payslip', compact('salary'));
+    }
+
+    public function status(Request $request, Salary $salary)
+    {
+        abort_unless(auth()->user()->hasPermission('salary.manage'), 403);
+
+        abort_if($salary->gym_id !== current_gym()?->id, 403);
+
+        $data = $request->validate([
+            'status' => ['required', 'in:pending,partially_paid,paid,cancelled'],
+        ]);
+
+        $this->salaries->updateStatus($salary, $data['status']);
+
+        return back()->with('success', 'Salary marked as '.str_replace('_', ' ', $data['status']).'.');
+    }
 }

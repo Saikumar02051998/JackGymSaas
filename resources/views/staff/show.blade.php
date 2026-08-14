@@ -38,6 +38,25 @@
         </div>
     </x-card>
 
+    @if ($profile?->bank_name || $profile?->bank_account || $profile?->bank_ifsc)
+        <x-card title="Bank Details" class="mt-6">
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div>
+                    <p class="text-xs text-ink-400">Bank name</p>
+                    <p class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-white">{{ $profile->bank_name ?? '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-ink-400">Account number</p>
+                    <p class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-white">{{ $profile->bank_account ? '•••• ' . substr($profile->bank_account, -4) : '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-ink-400">IFSC code</p>
+                    <p class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-white">{{ $profile->bank_ifsc ?? '—' }}</p>
+                </div>
+            </div>
+        </x-card>
+    @endif
+
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <x-stat label="Assigned Clients" :value="$profile?->assignedClients->count() ?? 0" icon="users" />
         <x-stat label="Salary Records" :value="$salaries?->total() ?? 0" icon="banknotes" />
@@ -60,6 +79,7 @@
                             <th class="px-5 py-3 font-semibold">Commission</th>
                             <th class="px-5 py-3 font-semibold">Net</th>
                             <th class="px-5 py-3 font-semibold">Status</th>
+                            <th class="px-5 py-3 font-semibold">Payslip</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
@@ -74,6 +94,12 @@
                                 <td class="px-5 py-3 font-bold text-ink-900 dark:text-white">{{ money($salary->net_salary) }}</td>
                                 <td class="px-5 py-3">
                                     <x-badge :color="match($salary->payment_status) { 'paid' => 'green', 'partially_paid' => 'amber', 'pending' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst(str_replace('_', ' ', $salary->payment_status)) }}</x-badge>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <a href="{{ route('staff.payslips.show', $salary) }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-gold-600 hover:text-gold-500">
+                                        <x-icon name="document-text" class="size-4" />
+                                        View
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

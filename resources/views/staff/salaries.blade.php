@@ -55,6 +55,7 @@
                             <th class="px-5 py-3 font-semibold">Net</th>
                             <th class="px-5 py-3 font-semibold">Paid On</th>
                             <th class="px-5 py-3 font-semibold">Status</th>
+                            <th class="px-5 py-3 font-semibold">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
@@ -74,6 +75,23 @@
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $salary->payment_date ? \Carbon\Carbon::parse($salary->payment_date)->format('d M Y') : '—' }}</td>
                                 <td class="px-5 py-4">
                                     <x-badge :color="match($salary->payment_status) { 'paid' => 'green', 'partially_paid' => 'amber', 'pending' => 'blue', 'cancelled' => 'red', default => 'gray' }">{{ ucfirst(str_replace('_', ' ', $salary->payment_status)) }}</x-badge>
+                                </td>
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('staff.payslips.show', $salary) }}" class="btn-outline btn-sm" title="View payslip">
+                                            <x-icon name="document-text" class="size-4" />
+                                            Payslip
+                                        </a>
+                                        @if (can_manage('salary.manage') && $salary->payment_status !== 'paid')
+                                            <form method="POST" action="{{ route('staff.salaries.status', $salary) }}" data-ajax>
+                                                @csrf
+                                                <input type="hidden" name="status" value="paid">
+                                                <button type="submit" class="btn-ghost btn-sm text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10" title="Mark as paid">
+                                                    Mark Paid
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

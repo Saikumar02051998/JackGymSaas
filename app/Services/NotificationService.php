@@ -54,9 +54,9 @@ class NotificationService
         $this->toUser(
             $user,
             'Salary processed',
-            "Your salary for {$period} has been processed.",
+            "Your salary for {$period} has been processed. View and print your payslip.",
             'success',
-            route('staff.salaries.index')
+            route('staff.my-payslips')
         );
     }
 

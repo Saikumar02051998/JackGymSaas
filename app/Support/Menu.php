@@ -118,6 +118,22 @@ class Menu
             ];
         }
 
+        if (auth()->user()->staffProfile) {
+            $payslips = ['route' => 'staff.my-payslips', 'label' => 'My Payslips', 'icon' => 'document-text'];
+
+            $staff = $filtered['staff'] ?? [];
+
+            $afterLeaves = collect($staff)->search(fn ($item) => $item['route'] === 'staff.leaves.index');
+
+            if ($afterLeaves !== false) {
+                array_splice($staff, $afterLeaves + 1, 0, [$payslips]);
+            } else {
+                $staff[] = $payslips;
+            }
+
+            $filtered['staff'] = $staff;
+        }
+
         return $filtered;
     }
 

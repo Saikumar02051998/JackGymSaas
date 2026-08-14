@@ -167,6 +167,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/{leave}/reject', [LeaveController::class, 'reject'])->name('reject');
     });
 
+    Route::prefix('staff')->name('staff.')->group(function () {
+        Route::get('/my-payslips', [SalaryController::class, 'myPayslips'])->name('my-payslips');
+        Route::get('/my-payslips/{salary}', [SalaryController::class, 'payslip'])->name('payslips.show');
+    });
+
     Route::prefix('staff')->name('staff.')->middleware('permission:staff.view')->group(function () {
         Route::get('/', [StaffController::class, 'index'])->name('index');
         Route::middleware('permission:staff.create')->group(function () {
@@ -196,6 +201,7 @@ Route::middleware('auth')->group(function () {
                 Route::post('/deduction-preview', [SalaryController::class, 'deductionPreview'])->name('deduction-preview');
                 Route::get('/bonus', [SalaryController::class, 'bonus'])->name('bonus');
                 Route::post('/bonus', [SalaryController::class, 'applyBonus'])->name('bonus.apply');
+                Route::post('/{salary}/status', [SalaryController::class, 'status'])->name('status');
             });
         });
 
