@@ -52,7 +52,6 @@ class GymService
                 'phone' => $data['phone'] ?? null,
                 'password' => $data['password'],
                 'status' => 'active',
-                'email_verified_at' => now(),
             ]);
 
             if ($ownerRole) {

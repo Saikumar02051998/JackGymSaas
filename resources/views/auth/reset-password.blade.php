@@ -34,15 +34,14 @@
 
             <form method="POST" action="{{ route('password.update') }}" class="card mt-8 animate-slide-up">
                 @csrf
-                <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="card-body space-y-5">
                     <div>
                         <label for="email" class="label">Email address</label>
                         <div class="relative">
                             <x-icon name="mail" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
-                            <input type="email" id="email" name="email" value="{{ old('email') }}"
-                                   class="input !pl-10" placeholder="you@example.com" autocomplete="email" required autofocus>
+                            <input type="email" id="email" name="email" value="{{ $email }}" readonly
+                                   class="input !pl-10 opacity-70" autocomplete="email" required autofocus>
                         </div>
                         @error('email')
                             <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>

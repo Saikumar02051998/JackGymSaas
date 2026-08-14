@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\GymService;
+use App\Services\MailService;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -54,12 +56,90 @@ class AuthController extends Controller
 
         audit_log('auth.register', 'auth', $user->id, "Gym registered ({$gym->name}) by {$user->name}");
 
-        Auth::login($user, true);
+        $otp = app(OtpService::class)->issue($user);
 
+        app(MailService::class)->sendOtp($user, $otp, 'Email verification');
+
+        $request->session()->put('verify_email', $user->email);
+
+        return redirect()->route('register.verify')
+            ->with('status', 'Your gym account has been created. Enter the verification code sent to your email to finish signing up.');
+    }
+
+    public function showVerifyEmail(Request $request)
+    {
+        $email = $request->session()->get('verify_email');
+
+        if (! $email) {
+            return redirect()->route('register');
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (! $user || $user->email_verified_at) {
+            $request->session()->forget('verify_email');
+
+            return redirect()->route('login');
+        }
+
+        return view('auth.verify-email', compact('email'));
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $email = $request->session()->get('verify_email');
+
+        if (! $email) {
+            return redirect()->route('register');
+        }
+
+        $data = $request->validate([
+            'otp' => ['required', 'string', 'size:6'],
+        ]);
+
+        $user = User::where('email', $email)->first();
+
+        if (! $user || $user->email_verified_at) {
+            return redirect()->route('login');
+        }
+
+        if (! app(OtpService::class)->verify($user, $data['otp'])) {
+            return back()->withErrors(['otp' => 'The verification code is invalid or has expired.'])->onlyInput('otp');
+        }
+
+        app(OtpService::class)->clear($user);
+        $user->markEmailAsVerified();
+
+        $request->session()->forget('verify_email');
+
+        Auth::login($user, true);
         $request->session()->regenerate();
 
+        audit_log('auth.verify_email', 'auth', $user->id, "Email verified ({$user->email})");
+
         return redirect()->intended($user->homeRoute())
-            ->with('success', 'Welcome to ' . $gym->name . '! Your gym account is ready.');
+            ->with('success', 'Your email has been verified. Welcome to ' . ($user->gym?->name ?? 'Jack Gym') . '!');
+    }
+
+    public function resendVerification(Request $request)
+    {
+        $email = $request->session()->get('verify_email');
+
+        if (! $email) {
+            return redirect()->route('register');
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (! $user || $user->email_verified_at) {
+            return redirect()->route('login');
+        }
+
+        $otp = app(OtpService::class)->issue($user);
+
+        app(MailService::class)->sendOtp($user, $otp, 'Email verification');
+
+        return back()->with('status', 'A new verification code has been sent to your email.');
     }
 
     public function login(Request $request)

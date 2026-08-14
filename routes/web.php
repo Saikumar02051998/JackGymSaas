@@ -59,11 +59,17 @@ Route::middleware('guest')->group(function () {
     if (is_saas()) {
         Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
         Route::post('/register', [AuthController::class, 'register']);
+        Route::get('/register/verify', [AuthController::class, 'showVerifyEmail'])->name('register.verify');
+        Route::post('/register/verify', [AuthController::class, 'verifyEmail']);
+        Route::post('/register/verify/resend', [AuthController::class, 'resendVerification'])->name('register.verify.resend');
     }
 
     Route::get('/forgot-password', [PasswordController::class, 'showForgot'])->name('password.request');
     Route::post('/forgot-password', [PasswordController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [PasswordController::class, 'showReset'])->name('password.reset');
+    Route::get('/forgot-password/otp', [PasswordController::class, 'showOtp'])->name('password.otp');
+    Route::post('/forgot-password/otp', [PasswordController::class, 'verifyOtp']);
+    Route::post('/forgot-password/otp/resend', [PasswordController::class, 'resendOtp'])->name('password.otp.resend');
+    Route::get('/reset-password', [PasswordController::class, 'showReset'])->name('password.reset');
     Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('password.update');
 });
 

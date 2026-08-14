@@ -28,8 +28,14 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'email_otp_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function markEmailAsVerified(): void
+    {
+        $this->forceFill(['email_verified_at' => now()])->save();
     }
 
     public function gym()
