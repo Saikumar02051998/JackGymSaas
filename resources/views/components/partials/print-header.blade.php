@@ -6,7 +6,7 @@
     $name = $gym?->name ?: config('app.name');
 @endphp
 
-<div class="flex flex-wrap items-start justify-between gap-6 border-b-2 border-ink-200 pb-6 print-block print-avoid-break">
+<div class="flex flex-wrap items-start justify-between gap-6 border-b-2 border-ink-200 pb-6 print-block print-avoid-break dark:border-ink-800">
     <div class="flex items-start gap-4">
         @if ($logo)
             <img src="{{ asset('storage/' . $logo) }}" alt="{{ $name }}" class="size-16 rounded-xl object-cover print-block">
@@ -16,19 +16,19 @@
             </div>
         @endif
         <div>
-            <p class="text-xl font-extrabold tracking-tight text-ink-900">{{ $name }}</p>
+            <p class="text-xl font-extrabold tracking-tight text-ink-900 dark:text-white">{{ $name }}</p>
             @if ($gym?->address)
-                <p class="mt-0.5 text-xs text-ink-500">{{ $gym->address }}</p>
+                <p class="mt-0.5 text-xs text-ink-500 dark:text-ink-400">{{ $gym->address }}</p>
             @endif
             @if ($gym?->phone || $gym?->email)
-                <p class="text-xs text-ink-500">
+                <p class="text-xs text-ink-500 dark:text-ink-400">
                     {{ $gym->phone }}{{ $gym->phone && $gym->email ? ' · ' : '' }}{{ $gym->email }}
                 </p>
             @endif
         </div>
     </div>
     <div class="text-right">
-        <p class="text-3xl font-extrabold tracking-tight text-gold-600">{{ $title }}</p>
+        <p class="text-3xl font-extrabold tracking-tight text-gold-600 dark:text-gold-400">{{ $title }}</p>
         {{ $slot }}
     </div>
 </div>
