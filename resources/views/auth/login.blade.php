@@ -1,7 +1,7 @@
 <x-layouts.guest title="Login">
     @php
-        $brandLogo = saas_owner_logo();
-        $brandName = saas_owner_name();
+        $brandLogo = brand_logo();
+        $brandName = brand_name();
     @endphp
     <div class="flex min-h-screen">
         <div class="relative hidden w-1/2 overflow-hidden bg-ink-950 lg:block">

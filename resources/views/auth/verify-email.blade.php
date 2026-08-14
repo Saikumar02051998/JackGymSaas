@@ -1,7 +1,7 @@
 <x-layouts.guest title="Verify Email">
     @php
-        $brandLogo = saas_owner_logo();
-        $brandName = saas_owner_name();
+        $brandLogo = brand_logo();
+        $brandName = brand_name();
     @endphp
     <div class="flex min-h-screen items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">

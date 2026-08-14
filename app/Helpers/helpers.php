@@ -127,6 +127,28 @@ if (! function_exists('saas_owner_logo')) {
     }
 }
 
+if (! function_exists('brand_name')) {
+    function brand_name(): string
+    {
+        if (is_saas()) {
+            return saas_owner_name();
+        }
+
+        return current_gym()?->name ?: config('app.name');
+    }
+}
+
+if (! function_exists('brand_logo')) {
+    function brand_logo(): ?string
+    {
+        if (is_saas()) {
+            return saas_owner_logo();
+        }
+
+        return current_gym()?->logo;
+    }
+}
+
 if (! function_exists('can_manage')) {
     function can_manage(string $permission): bool
     {
