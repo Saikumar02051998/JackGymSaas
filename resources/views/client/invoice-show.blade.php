@@ -84,7 +84,7 @@
                     <tbody class="divide-y divide-ink-100 dark:divide-ink-800">
                         @foreach ($invoice->items as $item)
                             <tr>
-                                <td class="px-4 py-3 font-medium text-ink-900 dark:text-white">{{ $item->description }}</td>
+                                <td class="px-4 py-3 !whitespace-normal font-medium text-ink-900 dark:text-white">{{ $item->description }}</td>
                                 <td class="px-4 py-3 text-right">{{ $item->quantity }}</td>
                                 <td class="px-4 py-3 text-right">{{ money($item->unit_price) }}</td>
                                 <td class="px-4 py-3 text-right font-semibold">{{ money($item->amount) }}</td>

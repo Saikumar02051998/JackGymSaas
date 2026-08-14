@@ -66,7 +66,7 @@
                                     @endif
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $followup->staff?->display_name ?? '—' }}</td>
-                                <td class="px-5 py-4 max-w-48 truncate text-ink-500 dark:text-ink-400" title="{{ $followup->notes }}">{{ $followup->notes ?? '—' }}</td>
+                                <td class="px-5 py-4 max-w-48 !whitespace-normal text-ink-500 dark:text-ink-400" title="{{ $followup->notes }}">{{ $followup->notes ?? '—' }}</td>
                                 <td class="px-5 py-4">
                                     <x-badge :color="match($followup->status) { 'completed' => 'green', 'pending' => 'amber', 'overdue' => 'red', 'rescheduled' => 'blue', 'cancelled' => 'gray', default => 'gray' }">{{ ucfirst($followup->status) }}</x-badge>
                                 </td>

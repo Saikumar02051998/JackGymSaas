@@ -139,7 +139,7 @@
                                         <x-badge color="blue" class="ml-1">Half</x-badge>
                                     @endif
                                 </td>
-                                <td class="px-5 py-4 max-w-56 truncate text-ink-500 dark:text-ink-400" title="{{ $leave->reason }}">{{ $leave->reason ?? '—' }}</td>
+                                <td class="px-5 py-4 max-w-56 !whitespace-normal text-ink-500 dark:text-ink-400" title="{{ $leave->reason }}">{{ $leave->reason ?? '—' }}</td>
                                 <td class="px-5 py-4">
                                     <x-badge :color="match($leave->status) { 'approved' => 'green', 'pending' => 'amber', 'rejected' => 'red', 'cancelled' => 'gray', default => 'gray' }">{{ ucfirst($leave->status) }}</x-badge>
                                 </td>

@@ -54,7 +54,7 @@
                                         <a href="{{ route('support.show', $ticket) }}" class="font-semibold text-ink-900 hover:text-gold-600 dark:text-white dark:hover:text-gold-400">
                                             {{ $ticket->subject }}
                                         </a>
-                                        <p class="max-w-xs truncate text-xs text-ink-400">{{ $ticket->messages->first()?->message ?: $ticket->message }}</p>
+                                        <p class="max-w-xs !whitespace-normal text-xs text-ink-400">{{ $ticket->messages->first()?->message ?: $ticket->message }}</p>
                                     </td>
                                     <td class="px-5 py-4">
                                         <div class="flex items-center gap-2.5">

@@ -60,7 +60,7 @@
                                     <x-badge>{{ $log->action }}</x-badge>
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $log->module ? ucwords(str_replace(['_', '.'], ' ', $log->module)) : '—' }}</td>
-                                <td class="max-w-xs truncate px-5 py-4 text-ink-500 dark:text-ink-400">{{ $log->description }}</td>
+                                <td class="max-w-xs px-5 py-4 !whitespace-normal text-ink-500 dark:text-ink-400">{{ $log->description }}</td>
                                 <td class="px-5 py-4 text-ink-400">{{ $log->ip_address }}</td>
                             </tr>
                         @endforeach

@@ -60,7 +60,7 @@
                                     <td class="px-4 py-2.5">
                                         <p class="font-medium text-ink-900 dark:text-white">{{ $exercise->exercise }}</p>
                                         @if ($exercise->instructions)
-                                            <p class="text-xs text-ink-400">{{ $exercise->instructions }}</p>
+                                            <p class="!whitespace-normal text-xs text-ink-400">{{ $exercise->instructions }}</p>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2.5 text-ink-600 dark:text-ink-300">{{ ucfirst($exercise->muscle_group ?? '—') }}</td>

@@ -108,7 +108,7 @@
                                 <tr>
                                     <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d M') }}</td>
                                     <td class="px-5 py-3 text-ink-600 dark:text-ink-300">{{ $expense->category?->name ?? '—' }}</td>
-                                    <td class="px-5 py-3 max-w-48 truncate text-ink-500 dark:text-ink-400">{{ $expense->description ?? '—' }}</td>
+                                    <td class="px-5 py-3 max-w-48 !whitespace-normal text-ink-500 dark:text-ink-400">{{ $expense->description ?? '—' }}</td>
                                     <td class="px-5 py-3 text-right font-bold text-ink-900 dark:text-white">{{ money($expense->amount) }}</td>
                                 </tr>
                             @endforeach

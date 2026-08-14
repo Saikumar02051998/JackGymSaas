@@ -276,6 +276,11 @@
         @apply transition-colors hover:bg-ink-50/70 dark:hover:bg-ink-800/40;
     }
 
+    .overflow-x-auto table th,
+    .overflow-x-auto table td {
+        white-space: nowrap;
+    }
+
     .stat-value {
         @apply text-2xl font-bold tracking-tight text-ink-900 dark:text-white;
     }

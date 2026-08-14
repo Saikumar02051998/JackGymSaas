@@ -71,7 +71,7 @@
                                     <td class="px-4 py-2.5">
                                         <p class="font-medium text-ink-900 dark:text-white">{{ $meal->food }}</p>
                                         @if ($meal->notes)
-                                            <p class="text-xs text-ink-400">{{ $meal->notes }}</p>
+                                            <p class="!whitespace-normal text-xs text-ink-400">{{ $meal->notes }}</p>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2.5 text-ink-600 dark:text-ink-300">{{ $meal->quantity ?? '—' }}</td>

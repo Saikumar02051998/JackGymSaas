@@ -64,7 +64,7 @@
                                     <x-badge color="gray">{{ $expense->category?->name ?? '—' }}</x-badge>
                                 </td>
                                 <td class="px-5 py-4 text-ink-600 dark:text-ink-300">{{ $expense->vendor ?? '—' }}</td>
-                                <td class="px-5 py-4 max-w-64 truncate text-ink-500 dark:text-ink-400" title="{{ $expense->description }}">{{ $expense->description ?? '—' }}</td>
+                                <td class="px-5 py-4 max-w-64 !whitespace-normal text-ink-500 dark:text-ink-400" title="{{ $expense->description }}">{{ $expense->description ?? '—' }}</td>
                                 <td class="px-5 py-4 font-bold text-ink-900 dark:text-white">{{ money($expense->amount) }}</td>
                                 @if (can_manage('expenses.manage'))
                                     <td class="px-5 py-4 text-right">
