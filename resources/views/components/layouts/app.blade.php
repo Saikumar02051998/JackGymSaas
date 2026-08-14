@@ -64,7 +64,7 @@ $notifications = auth()->user()->notifications()->latest()->limit(8)->get();
                     </nav>
                 @endif
 
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="page-titlebar mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 class="page-title">{{ $title }}</h1>
                         @if ($description)
