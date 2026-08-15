@@ -1,17 +1,27 @@
 @props(['unreadCount' => 0, 'notifications' => []])
 
-@php $gym = current_gym(); @endphp
+@php
+    $user = auth()->user();
+
+    if ($user->hasRole('saas_owner')) {
+        $brandLogo = saas_owner_logo();
+        $brandName = saas_owner_name();
+    } else {
+        $brandLogo = current_gym()?->logo;
+        $brandName = current_gym()?->name ?: config('app.name');
+    }
+@endphp
 
 <header class="sticky top-0 z-30 hidden h-16 items-center gap-3 border-b border-ink-200 bg-white/80 px-4 backdrop-blur-lg dark:border-ink-800 dark:bg-night-900/80 sm:px-6 lg:flex">
     <a href="{{ route('dashboard') }}" class="flex min-w-0 items-center gap-2.5">
-        @if ($gym?->logo)
-            <img src="{{ asset('storage/' . $gym->logo) }}" alt="{{ $gym->name }}" class="size-9 shrink-0 rounded-xl object-cover">
+        @if ($brandLogo)
+            <img src="{{ asset('storage/' . $brandLogo) }}" alt="{{ $brandName }}" class="size-9 shrink-0 rounded-xl object-cover">
         @else
             <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-gold-300 to-gold-500 text-sm font-extrabold text-ink-950 shadow-sm shadow-gold-400/40">
-                {{ substr($gym?->name ?? config('app.name'), 0, 1) }}
+                {{ substr($brandName, 0, 1) }}
             </div>
         @endif
-        <p class="truncate text-sm font-bold tracking-tight text-ink-900 dark:text-white">{{ $gym?->name ?? config('app.name') }}</p>
+        <p class="truncate text-sm font-bold tracking-tight text-ink-900 dark:text-white">{{ $brandName }}</p>
     </a>
     <div class="flex items-center gap-1.5 ml-auto">
         <button @click="$store.theme.toggle()"
